@@ -50,3 +50,7 @@ image.png
 postgress/
 tsconfig.tsbuildinfo
 .vercel
+.env*
+# ...tapi templatnya wajib tetap bisa di-commit: pola `.env*` di atas ikut
+# mengenai `.env.example`, jadi pengecualian ini bukan hiasan.
+!.env.example
