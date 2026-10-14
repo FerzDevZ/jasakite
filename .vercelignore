@@ -1,0 +1,54 @@
+# Berkas yang TIDAK dikirim ke Vercel saat deploy.
+#
+# Kenapa ada: tanpa berkas ini, `vercel` mengunggah seluruh pohon proyek apa
+# adanya — terukur 440 MB, hampir semuanya artefak build dan dokumen lomba.
+# Yang build Vercel butuhkan hanyalah sumber, `public/`, `prisma/`, dan
+# konfigurasi; sisanya memperlambat unggahan tanpa sedikit pun mempengaruhi
+# hasil build.
+#
+# Catatan: Vercel TIDAK membaca `.gitignore`, jadi aturan di sini harus berdiri
+# sendiri. Pola tanpa garis miring di depan cocok di kedalaman mana pun.
+
+# Artefak build lokal — Vercel membangun sendiri dari sumber.
+.next/
+.next-e2e/
+
+# Hasil test lokal.
+test-results/
+playwright-report/
+blob-report/
+
+# Rahasia lokal. `.env.local` memuat VERCEL_OIDC_TOKEN hasil `vercel link` dan
+# `.env` memuat AUTH_SECRET + kredensial database: keduanya tidak boleh ikut
+# terunggah sebagai berkas sumber.
+.env
+.env.local
+.env*.local
+
+# Dokumen & presentasi lomba — tidak dipakai aplikasi saat build.
+*.pdf
+*.docx
+ppt/
+ppt_slide-*.png
+docs/pdf-assets/
+
+# Templat agen/skill (bahan contoh, bukan bagian aplikasi).
+.example/
+
+# Skrip generator presentasi/PDF, bukan bagian runtime aplikasi.
+build_full_pdf.py
+generate_*.py
+generate-*.mjs
+scripts/fix_pptx_audit.py
+scripts/update_pptx.py
+agents_parsed.json
+skills_parsed.json
+
+# Halaman HTML presentasi di akar proyek (bukan rute Next.js).
+docs_titanium_swarm.html
+master_presentation_deck.html
+presentation_deck.html
+
+# Berkas kerja sementara.
+image.png
+tsconfig.tsbuildinfo
