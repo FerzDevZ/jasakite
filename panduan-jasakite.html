@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>JASAKITE — Panduan Lengkap untuk Pemula</title>
+<style>
+/* ====== DASAR ====== */
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0;
+  color: #1C1917; background: #FFFFFF;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size: 10pt; line-height: 1.55;
+}
+p { margin: 0 0 7pt; }
+strong { color: #1C1917; }
+.small { font-size: 8.5pt; color: #57534E; }
+
+h1 { font-size: 30pt; line-height: 1.1; margin: 0; letter-spacing: -0.5pt; }
+h2 {
+  font-size: 15.5pt; line-height: 1.25; margin: 0 0 10pt;
+  break-after: avoid; page-break-after: avoid;
+}
+h3 { font-size: 11.5pt; margin: 12pt 0 6pt; break-after: avoid; page-break-after: avoid; }
+
+/* ====== STRUKTUR HALAMAN ====== */
+.section { margin-bottom: 18pt; }
+.page-break { break-before: page; page-break-before: always; }
+.keep { break-inside: avoid; page-break-inside: avoid; }
+
+/* ====== JUDUL BAB ====== */
+.chap-head { display: flex; align-items: center; gap: 10pt; margin-bottom: 10pt; }
+.chap-num {
+  flex: 0 0 auto; width: 30pt; height: 30pt; border-radius: 9pt;
+  background: #EA580C; color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14pt; font-weight: 700;
+}
+.chap-head h2 { margin: 0; }
+.chap-sub { font-size: 9pt; color: #57534E; margin-top: 1pt; }
+
+/* ====== KOTAK & KARTU ====== */
+.card {
+  border: 1pt solid #E7E5E4; border-radius: 8pt;
+  padding: 9pt 11pt; margin-bottom: 8pt;
+  break-inside: avoid; page-break-inside: avoid;
+}
+.card-title { font-weight: 700; font-size: 10.5pt; margin-bottom: 3pt; }
+.box-tip { border-left: 3pt solid #EA580C; background: #FFF7ED; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-info { border-left: 3pt solid #1D4ED8; background: #EFF6FF; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-warn { border-left: 3pt solid #B45309; background: #FFFBEB; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-label { font-size: 8pt; font-weight: 700; letter-spacing: 0.6pt; text-transform: uppercase; margin-bottom: 2pt; }
+.box-tip .box-label { color: #C2410C; }
+.box-info .box-label { color: #1D4ED8; }
+.box-warn .box-label { color: #B45309; }
+.box-tip p:last-child, .box-info p:last-child, .box-warn p:last-child { margin-bottom: 0; }
+
+/* ====== TABEL ====== */
+table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
+th, td { border: 0.75pt solid #E7E5E4; padding: 5pt 7pt; text-align: left; vertical-align: top; }
+th { background: #FAFAF9; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.4pt; color: #57534E; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+
+/* ====== LANGKAH ====== */
+.step { display: flex; gap: 9pt; margin-bottom: 9pt; break-inside: avoid; page-break-inside: avoid; }
+.step-n {
+  flex: 0 0 auto; width: 19pt; height: 19pt; border-radius: 50%;
+  background: #EA580C; color: #FFFFFF; font-size: 9.5pt; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 1pt;
+}
+.step-body { flex: 1 1 auto; }
+.step-body p:last-child { margin-bottom: 0; }
+
+/* ====== DIAGRAM ALUR ====== */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 9pt 0; }
+.flow-box {
+  border: 1pt solid #FED7AA; background: #FFF7ED; border-radius: 6pt;
+  padding: 5pt 7pt; font-size: 8.5pt; font-weight: 600; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+  break-inside: avoid; page-break-inside: avoid;
+}
+.flow-arrow { color: #EA580C; font-weight: 700; padding: 0 4pt; align-self: center; font-size: 10pt; }
+.flow-box.dark { background: #1C1917; border-color: #1C1917; color: #FFFFFF; }
+.flow-box.green { background: #F0FDF4; border-color: #BBF7D0; }
+.flow-box.blue { background: #EFF6FF; border-color: #BFDBFE; }
+.flow-box.red { background: #FEF2F2; border-color: #FECACA; }
+
+/* ====== BADGE ====== */
+.badge { display: inline-block; font-size: 8pt; font-weight: 700; padding: 1.5pt 7pt; border-radius: 99pt; margin-right: 3pt; }
+.b-amber { background: #FFFBEB; color: #B45309; border: 0.75pt solid #FDE68A; }
+.b-green { background: #F0FDF4; color: #15803D; border: 0.75pt solid #BBF7D0; }
+.b-blue { background: #EFF6FF; color: #1D4ED8; border: 0.75pt solid #BFDBFE; }
+.b-gray { background: #FAFAF9; color: #57534E; border: 0.75pt solid #E7E5E4; }
+.b-red { background: #FEF2F2; color: #B91C1C; border: 0.75pt solid #FECACA; }
+.b-new { background: #EA580C; color: #FFFFFF; border: 0.75pt solid #EA580C; }
+/* ====== GRID 2/3 KOLOM ====== */
+.cols-3 { display: flex; gap: 8pt; margin-bottom: 8pt; }
+.cols-3 > * { flex: 1 1 0; }
+.cols-2 { display: flex; gap: 8pt; margin-bottom: 8pt; }
+.cols-2 > * { flex: 1 1 0; }
+
+.role-card { border: 1pt solid #E7E5E4; border-top: 3pt solid #EA580C; border-radius: 8pt; padding: 9pt 10pt; break-inside: avoid; page-break-inside: avoid; }
+.role-card.ink { border-top-color: #1C1917; }
+.role-card.blue { border-top-color: #1D4ED8; }
+.role-card .card-title { margin-bottom: 2pt; }
+.role-card p:last-child { margin-bottom: 0; }
+
+/* ====== DAFTAR ISI ====== */
+.toc { border: 1pt solid #E7E5E4; border-radius: 10pt; padding: 14pt 18pt; }
+.toc-row { display: flex; align-items: baseline; gap: 8pt; padding: 4.5pt 0; border-bottom: 0.75pt dotted #D6D3D1; font-size: 10pt; }
+.toc-row:last-child { border-bottom: none; }
+.toc-num { color: #EA580C; font-weight: 700; flex: 0 0 auto; }
+.toc-title { font-weight: 600; }
+.toc-desc { color: #57534E; font-size: 8.5pt; margin-left: auto; text-align: right; }
+
+/* ====== COVER ====== */
+.cover { text-align: left; padding-top: 30pt; }
+.cover-kicker {
+  display: inline-block; font-size: 8.5pt; font-weight: 700; letter-spacing: 1.5pt;
+  text-transform: uppercase; color: #C2410C; border: 1pt solid #FED7AA;
+  background: #FFF7ED; border-radius: 99pt; padding: 3pt 12pt; margin-bottom: 18pt;
+}
+.cover h1 { margin-bottom: 6pt; }
+.cover-sub { font-size: 13pt; color: #57534E; max-width: 130mm; margin-bottom: 4pt; }
+.cover-meta { font-size: 9pt; color: #78716C; margin-bottom: 22pt; }
+.cover-rule { width: 42pt; height: 3.5pt; background: #EA580C; border-radius: 99pt; margin: 14pt 0 18pt; }
+.cover-list { border: 1pt solid #E7E5E4; border-radius: 10pt; padding: 12pt 16pt; max-width: 150mm; }
+.cover-list-title { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.8pt; text-transform: uppercase; color: #57534E; margin-bottom: 6pt; }
+.cover-list-item { display: flex; gap: 8pt; font-size: 9.5pt; padding: 3pt 0; }
+.cover-list-item span:first-child { color: #EA580C; font-weight: 700; }
+
+/* ====== LAIN-LAIN ====== */
+.check-list { list-style: none; margin: 6pt 0; padding: 0; }
+.check-list li { padding: 2pt 0 2pt 15pt; position: relative; }
+.check-list li::before { content: ""; position: absolute; left: 0; top: 7pt; width: 7pt; height: 4pt; border-left: 2pt solid #EA580C; border-bottom: 2pt solid #EA580C; transform: rotate(-45deg); }
+.dash-list { list-style: none; margin: 4pt 0; padding: 0; }
+.dash-list li { padding: 1.5pt 0 1.5pt 12pt; position: relative; }
+.dash-list li::before { content: ""; position: absolute; left: 0; top: 8pt; width: 6pt; height: 1.5pt; background: #EA580C; }
+.kicker { font-size: 8pt; font-weight: 700; letter-spacing: 1pt; text-transform: uppercase; color: #C2410C; margin-bottom: 3pt; }
+ul, ol { margin: 4pt 0 7pt; padding-left: 16pt; }
+li { margin-bottom: 2pt; }
+.footer-note { border-top: 1pt solid #E7E5E4; margin-top: 16pt; padding-top: 7pt; font-size: 8pt; color: #78716C; }
+/*CSS-EXTRA*/
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="cover-kicker">Panduan Resmi · Edisi Pemula</div>
+  <h1>JASAKITE</h1>
+  <div class="cover-sub">Panduan Lengkap: Konsep, Alur Web, Dompet, dan Semua Fitur — Dijelaskan Paling Mudah untuk Pemula</div>
+  <div class="cover-rule"></div>
+  <p class="cover-meta">Marketplace jasa lokal wilayah Kepulauan Bangka Belitung (Babel) · Edisi Oktober 2026</p>
+  <div class="cover-list">
+    <div class="cover-list-title">Apa saja isi panduan ini?</div>
+    <div class="cover-list-item"><span>1–2</span><span>Konsep JASAKITE & tiga peran (Customer, Provider, Admin)</span></div>
+    <div class="cover-list-item"><span>3</span><span>10 kategori jasa — termasuk 4 kategori baru: Jasa Titip, Jasa Antar, Jasa Pembayaran, Jasa Belanja</span></div>
+    <div class="cover-list-item"><span>4–6</span><span>Alur lengkap tiap peran, dari daftar akun sampai ulasan, langkah demi langkah</span></div>
+    <div class="cover-list-item"><span>7</span><span>Dompet & pembayaran: top-up, kode JK-TOP, verifikasi admin, tarik saldo</span></div>
+    <div class="cover-list-item"><span>8–9</span><span>Fitur pendukung & penjelasan teknologi dengan bahasa sederhana</span></div>
+    <div class="cover-list-item"><span>10</span><span>Glosarium istilah + ringkasan 7 hal terpenting</span></div>
+  </div>
+  <p class="small" style="margin-top: 16pt; max-width: 150mm;">Dokumen ini ditulis untuk siapa saja yang baru pertama kali membuka JASAKITE — tanpa perlu latar belakang IT. Istilah teknis selalu dijelaskan begitu muncul, dan ada glosarium di bab terakhir.</p>
+</div>
+
+<div class="page-break section keep">
+  <h2>Daftar Isi</h2>
+  <div class="toc">
+    <div class="toc-row"><span class="toc-num">Bab 1</span><span class="toc-title">Apa Itu JASAKITE?</span><span class="toc-desc">Konsep pasar online jasa & wilayah layanan</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 2</span><span class="toc-title">Tiga Peran di JASAKITE</span><span class="toc-desc">Customer · Provider · Admin</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 3</span><span class="toc-title">10 Kategori Jasa</span><span class="toc-desc">Termasuk 4 kategori baru</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 4</span><span class="toc-title">Alur Lengkap Customer</span><span class="toc-desc">Dari cari jasa sampai memberi ulasan</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 5</span><span class="toc-title">Alur Lengkap Provider</span><span class="toc-desc">Dari buka jasa sampai terima pendapatan</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 6</span><span class="toc-title">Alur Admin</span><span class="toc-desc">Verifikasi, moderasi, statistik</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 7</span><span class="toc-title">Dompet & Pembayaran</span><span class="toc-desc">Top-up, kode JK-TOP, tarik saldo</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 8</span><span class="toc-title">Fitur Pendukung</span><span class="toc-desc">Keranjang, chat, voucher, notifikasi, dll.</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 9</span><span class="toc-title">Teknologi di Balik JASAKITE</span><span class="toc-desc">Bonus untuk yang penasaran</span></div>
+    <div class="toc-row"><span class="toc-num">Bab 10</span><span class="toc-title">Glosarium & Ringkasan</span><span class="toc-desc">Kamus istilah + 7 hal terpenting</span></div>
+  </div>
+  <div class="box-tip" style="margin-top: 12pt;">
+    <div class="box-label">Cara membaca panduan ini</div>
+    <p>Cukup ikuti bab sesuai peranmu: ingin <strong>memesan jasa</strong> → baca Bab 1–4 dan Bab 7. Ingin <strong>membuka jasa</strong> (mencari penghasilan) → baca Bab 1–3, lalu Bab 5 dan Bab 7. Ingin <strong>mengelola platform</strong> → baca Bab 6. Semua orang disarankan membaca Bab 1 sampai 3 dulu karena itu fondasi konsepnya.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">1</div><div><h2>Apa Itu JASAKITE?</h2><div class="chap-sub">Konsep dasar yang wajib dipahami sebelum pakai web-nya</div></div></div>
+
+  <p><strong>JASAKITE adalah marketplace jasa lokal</strong> — semacam "pasar online" khusus untuk jasa (bukan barang) di wilayah <strong>Kepulauan Bangka Belitung</strong>. Kalau di toko online biasa kamu membeli barang seperti baju atau HP, di JASAKITE kamu "membeli" pekerjaan orang: membersihkan rumah, memperbaiki AC, memasang lampu, mengantar paket, membayar tagihan, dan banyak lagi.</p>
+
+  <div class="box-info">
+    <div class="box-label">Analogi paling mudah</div>
+    <p>Bayangkan pasar tradisional. Ada <strong>penjual</strong> (penyedia jasa / provider), ada <strong>pembeli</strong> (pemesan jasa / customer), dan ada <strong>pengelola pasar</strong> yang menjaga ketertiban (admin). JASAKITE adalah pasar itu versi online: provider menata "gerainya" berupa halaman jasa, customer menjelajah dan memesan, admin memastikan semuanya berjalan jujur.</p>
+  </div>
+
+  <h3>Wilayah layanan: seluruh Kepulauan Bangka Belitung</h3>
+  <p>Provider di JASAKITE tersebar di 7 kabupaten/kota. Saat mencari jasa, kamu bisa memfilter lokasi supaya penyedianya benar-benar dekat denganmu:</p>
+  <table>
+    <tr><th style="width:50%">Kabupaten / Kota</th><th>Kota pusat / keterangan</th></tr>
+    <tr><td>Kota Pangkal Pinang</td><td>Ibu kota provinsi, provider terbanyak</td></tr>
+    <tr><td>Kabupaten Bangka</td><td>Pusatnya di Sungailiat</td></tr>
+    <tr><td>Kabupaten Bangka Barat</td><td>Pusatnya di Muntok</td></tr>
+    <tr><td>Kabupaten Bangka Tengah</td><td>Pusatnya di Koba</td></tr>
+    <tr><td>Kabupaten Bangka Selatan</td><td>Pusatnya di Toboali</td></tr>
+    <tr><td>Kabupaten Belitung</td><td>Pusatnya di Tanjung Pandan</td></tr>
+    <tr><td>Kabupaten Belitung Timur</td><td>Pusatnya di Manggar</td></tr>
+  </table>
+
+  <h3>Tiga janji utama platform</h3>
+  <div class="cols-3">
+    <div class="card keep"><div class="card-title">Bayar setelah selesai</div><p class="small">Ada opsi bayar di tempat (COD): pesanan dulu, uang menyusul saat kerjaan beres.</p></div>
+    <div class="card keep"><div class="card-title">Batal gratis</div><p class="small">Selama pesanan masih <strong>PENDING</strong> (belum diterima provider), kamu bisa membatalkan tanpa biaya.</p></div>
+    <div class="card keep"><div class="card-title">Ulasan asli</div><p class="small">Ulasan hanya bisa ditulis oleh orang yang benar-benar memesan dan pesanannya selesai.</p></div>
+  </div>
+
+  <h3>Cara kerja JASAKITE dalam 4 langkah</h3>
+  <div class="flow keep">
+    <div class="flow-box">Cari &amp; bandingkan jasa</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Pilih penyedia (lihat rating &amp; ulasan)</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Pesan &amp; bayar</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Jasa dikerjakan sampai selesai</div>
+  </div>
+
+  <div class="box-tip">
+    <div class="box-label">Kenapa namanya JASAKITE?</div>
+    <p><strong>Jasa</strong> + <strong>kite</strong> (layang-layang). Layang-layang identik dengan langit pantai Babel — dan filosofinya: jasa lokal yang "terbang tinggi", menghubungkan tukang, teknisi, dan pekerja lepas dengan orang yang membutuhkan mereka, lintas pulau.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">2</div><div><h2>Tiga Peran di JASAKITE</h2><div class="chap-sub">Setiap pengguna punya satu peran, dengan menu dan kewenangan berbeda</div></div></div>
+
+  <p>Ada tiga jenis akun di JASAKITE. Saat mendaftar, kamu memilih salah satu — dan dashboard web akan menyesuaikan isinya secara otomatis.</p>
+
+  <div class="cols-3">
+    <div class="role-card keep">
+      <div class="card-title">Customer</div>
+      <p class="small"><strong>Pemesan jasa.</strong> Orang yang butuh dibantu: rumah mau dibersihkan, AC rusak, paket harus diantar, tagihan harus dibayar.</p>
+      <ul class="dash-list small">
+        <li>Mencari &amp; membandingkan jasa</li>
+        <li>Memesan lewat checkout</li>
+        <li>Chat dengan provider</li>
+        <li>Memberi ulasan &amp; rating</li>
+      </ul>
+    </div>
+    <div class="role-card ink keep">
+      <div class="card-title">Provider</div>
+      <p class="small"><strong>Penyedia jasa.</strong> Tukang, teknisi, kurir, atau siapa pun yang punya keahlian dan ingin mendapat pelanggan.</p>
+      <ul class="dash-list small">
+        <li>Membuka jasa (gerai online)</li>
+        <li>Menerima &amp; mengerjakan pesanan</li>
+        <li>Membangun reputasi dari rating</li>
+        <li>Menerima pendapatan lewat dompet</li>
+      </ul>
+    </div>
+    <div class="role-card blue keep">
+      <div class="card-title">Admin</div>
+      <p class="small"><strong>Pengelola platform.</strong> Menjaga agar semua transaksi dan konten aman serta jujur.</p>
+      <ul class="dash-list small">
+        <li>Verifikasi isi &amp; tarik saldo</li>
+        <li>Memoderasi jasa baru</li>
+        <li>Pantau statistik platform</li>
+        <li>Menangani keluhan pengguna</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Perbandingan singkat hak akses</h3>
+  <table>
+    <tr><th>Bisa apa saja</th><th style="width:22%">Customer</th><th style="width:22%">Provider</th><th style="width:22%">Admin</th></tr>
+    <tr><td>Jelajah katalog &amp; detail jasa (tanpa login)</td><td>Ya</td><td>Ya</td><td>Ya</td></tr>
+    <tr><td>Memesan jasa (checkout)</td><td>Ya</td><td>Ya — tapi tidak bisa memesan jasa milik sendiri</td><td>Ya</td></tr>
+    <tr><td>Membuka / mengelola jasa</td><td>Tidak</td><td>Ya</td><td>Ya</td></tr>
+    <tr><td>Mengubah status pesanan (terima, selesai, batal)</td><td>Hanya batal saat PENDING</td><td>Ya</td><td>Ya</td></tr>
+    <tr><td>Verifikasi top-up &amp; tarik saldo</td><td>Tidak</td><td>Tidak</td><td>Ya</td></tr>
+    <tr><td>Menulis ulasan</td><td>Ya — untuk pesanan miliknya yang COMPLETED</td><td>Tidak</td><td>Tidak</td></tr>
+  </table>
+
+  <div class="box-info">
+    <div class="box-label">Catatan pendaftaran</div>
+    <p>Halaman registrasi menampilkan dua pilihan: <strong>"Saya ingin memesan jasa"</strong> (Customer) dan <strong>"Saya ingin membuka jasa"</strong> (Provider). Yang membedakan: Provider <em>wajib</em> mengisi alamat/kota, karena pelanggan akan mencarinya berdasarkan lokasi. Isi data yang diminta (nama, email, telepon, alamat), lalu masuk lewat halaman login dengan email + password.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">3</div><div><h2>10 Kategori Jasa</h2><div class="chap-sub">Saat ini tersedia 10 kategori — 6 klasik + 4 kategori baru</div></div></div>
+
+  <p>Kategori adalah "rak" tempat jasa dikelompokkan. Saat membuka menu <strong>Jelajahi Jasa</strong>, kamu bisa memilih kategori ini sebagai filter. Ikon Lucide di kolom kanan adalah ikon resmi yang tampil di web.</p>
+
+  <table>
+    <tr><th style="width:16%">Kategori</th><th style="width:44%">Isinya apa saja?</th><th>Contoh jasa nyata di katalog</th><th style="width:12%">Ikon</th></tr>
+    <tr><td><strong>Kebersihan</strong></td><td>Bersih rumah, kantor, kos, pasca renovasi, sampai pasca banjir.</td><td>Bersih rumah reguler, cuci sofa &amp; karpet steam, deep clean pasca renovasi</td><td>Sparkles</td></tr>
+    <tr><td><strong>Listrik</strong></td><td>Instalasi &amp; perbaikan instalasi listrik rumah.</td><td>Instalasi listrik standar SNI, cari gangguan korsleting, pasang titik lampu</td><td>Zap</td></tr>
+    <tr><td><strong>Pengecatan</strong></td><td>Cat tembok interior &amp; eksterior.</td><td>Cat ulang ruang tamu, pengecatan ruko, finishing dinding</td><td>Paintbrush</td></tr>
+    <tr><td><strong>Perbaikan Rumah</strong></td><td>Perbaikan AC, kulkas, mesin cuci, pipa, alat rumah tangga.</td><td>Cuci AC split, servis mesin cuci, perbaikan water heater</td><td>Wrench</td></tr>
+    <tr><td><strong>Pindahan</strong></td><td>Jasa pindah rumah &amp; kantor.</td><td>Angkut barang pindahan lengkap dengan bongkar-pasang</td><td>Truck</td></tr>
+    <tr><td><strong>Tukang</strong></td><td>Tukang bangunan &amp; renovasi.</td><td>Renovasi kamar mandi, perbaikan atap bocor, pasang keramik</td><td>Home</td></tr>
+    <tr><td><strong>Jasa Titip</strong> <span class="badge b-new">BARU</span></td><td>Titip beli &amp; titip antar barang lewat penyedia di sekitar kamu.</td><td>Titip beli obat di apotek, titip ambil paket di kantor pos</td><td>Package</td></tr>
+    <tr><td><strong>Jasa Antar</strong> <span class="badge b-new">BARU</span></td><td>Antar paket, barang &amp; dokumen — dalam kota sampai antar pulau.</td><td>Antar dokumen penting, kirim kue ulang tahun, antar barang antar pulau</td><td>Bike</td></tr>
+    <tr><td><strong>Jasa Pembayaran</strong> <span class="badge b-new">BARU</span></td><td>Bantuan membayar tagihan: listrik, air, PPOB, dan sejenisnya.</td><td>Bayar token listrik, tagihan PDAM, isi ulang pulsa</td><td>CreditCard</td></tr>
+    <tr><td><strong>Jasa Belanja</strong> <span class="badge b-new">BARU</span></td><td>Belanja kebutuhan harian ke pasar/toko sesuai daftar kamu.</td><td>Belanja sembako mingguan, beli bahan masakan di pasar</td><td>ShoppingCart</td></tr>
+  </table>
+
+  <h3>Kenal lebih dekat 4 kategori baru</h3>
+  <p class="small">Empat kategori ini diciptakan untuk kebutuhan sehari-hari masyarakat Babel yang belum terlayani kategori lama:</p>
+  <div class="cols-2">
+    <div class="card keep"><div class="card-title">Jasa Titip — bikin orang lain jadi "tanganmu"</div><p class="small">Sibuk kerja tapi harus ambil paket di kota sebelah? Titipkan ke provider terdekat. Kamu menulis kebutuhannya di catatan pesanan, provider menjalankannya, kamu pantau lewat chat.</p></div>
+    <div class="card keep"><div class="card-title">Jasa Antar — dari seberang jalan sampai seberang pulau</div><p class="small">Dokumen kerja, barang jualan online, makanan — provider mengantarkan dalam kota, bahkan lintas pulau Bangka–Belitung lewat jalur kapal.</p></div>
+    <div class="card keep"><div class="card-title">Jasa Pembayaran — tagihan lunas tanpa keluar rumah</div><p class="small">Antri loket bayar listrik memakan waktu. Provider bisa membayarkan tagihanmu (listrik, air, PPOB) lalu kamu mengganti uangnya lewat saldo/dompet.</p></div>
+    <div class="card keep"><div class="card-title">Jasa Belanja — daftar belanja, terima di rumah</div><p class="small">Kirim daftar (misal: 2 kg cabai, 1 liter minyak, telur 1 papan). Provider belanjakan di pasar/toko, foto hasilnya, lalu antar ke rumahmu.</p></div>
+  </div>
+
+  <div class="box-tip">
+    <div class="box-label">Tips memilih kategori</div>
+    <p>Bila ragu, pakai kolom pencarian dengan kata kunci pekerjaan (misal ketik "AC" atau "antar"). Sistem mencocokkan kata kunci dengan judul, deskripsi jasa, dan nama provider — jadi jasa bisa ditemukan walau kamu salah menebak kategorinya.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">4</div><div><h2>Alur Lengkap Customer (Pemesan Jasa)</h2><div class="chap-sub">Dari buka web sampai memberi ulasan — 8 langkah</div></div></div>
+
+  <p>Bagian ini adalah panduan langkah demi langkah untuk kamu yang ingin memesan jasa. Semua langkah bisa dilakukan dari HP maupun laptop.</p>
+
+  <div class="flow keep">
+    <div class="flow-box">Daftar &amp; login</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Cari jasa</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Buka detail jasa</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Pesan (checkout)</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Pesanan PENDING</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">Dikerjakan (IN_PROGRESS)</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Selesai (COMPLETED)</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Beri ulasan</div>
+  </div>
+
+  <h3>Langkah 1 — Daftar akun &amp; login</h3>
+  <div class="step"><div class="step-n">1</div><div class="step-body">
+    <p>Buka halaman <strong>Registrasi</strong>, pilih <strong>"Saya ingin memesan jasa"</strong>, lalu isi nama, email, telepon, dan alamat. Setelah terdaftar, masuk lewat halaman <strong>Login</strong> dengan email + password. Setelah login, kamu diarahkan ke <strong>Dashboard Customer</strong>.</p>
+  </div></div>
+
+  <h3>Langkah 2 — Cari jasa yang dibutuhkan</h3>
+  <div class="step"><div class="step-n">2</div><div class="step-body">
+    <p>Dari beranda ada dua pintu cepat: <strong>kotak pencarian besar</strong> (ketik misalnya "cuci AC") dan <strong>pill kategori</strong>. Atau buka menu <strong>Jelajahi Jasa</strong> lalu gunakan filter:</p>
+    <ul class="check-list small">
+      <li><strong>Kategori</strong> — misal Jasa Antar.</li>
+      <li><strong>Lokasi</strong> — pilih kabupaten/kota agar provider dekat.</li>
+      <li><strong>Rentang harga</strong> — ada chip cepat: di bawah 100rb, 100–300rb, 300rb+.</li>
+      <li><strong>Rating minimal</strong> — hanya tampilkan penyedia yang ratingnya bagus.</li>
+      <li><strong>Urutkan</strong> — terbaru, termurah, termahal, atau rating tertinggi.</li>
+    </ul>
+  </div></div>
+
+  <h3>Langkah 3 — Baca detail jasa dengan teliti</h3>
+  <div class="step"><div class="step-n">3</div><div class="step-body">
+    <p>Klik kartu jasa untuk membuka halaman detail. Di sini kamu bisa melihat: galeri foto, deskripsi lengkap, <strong>harga</strong>, <strong>estimasi hari pengerjaan</strong>, wilayah layanan, profil penyedia (sejak kapan bergabung, berapa pesanan selesai), serta <strong>distribusi rating &amp; ulasan asli</strong> dari pelanggan sebelumnya. Bila tertarik tapi belum yakin, klik ikon <strong>Simpan</strong> (bookmark) agar jasa tersimpan di dashboard-mu.</p>
+  </div></div>
+
+  <h3>Langkah 4 — Pesan lewat halaman Checkout</h3>
+  <div class="step"><div class="step-n">4</div><div class="step-body">
+    <p>Klik <strong>Pesan Sekarang</strong>. Di halaman checkout, isi:</p>
+    <ul class="dash-list small">
+      <li><strong>Alamat pengerjaan</strong> (wajib) — tulis alamat lengkap <em>dengan nama kota/kabupaten</em>, contoh: "Jl. Depati Amir No. 12, Pangkal Pinang". Tanpa nama kota, sistem menolak karena provider tidak tahu harus ke mana.</li>
+      <li><strong>Tenggat / tanggal pengerjaan</strong> — minimal besok; ada tombol cepat "Besok / 2 hari / Minggu depan".</li>
+      <li><strong>Catatan</strong> (opsional, maks. 500 karakter) — detail kebutuhanmu, misal daftar belanjaan atau jam kedatangan.</li>
+      <li><strong>Metode pembayaran</strong> — Saldo JASAKITE, Bank Transfer, E-Wallet, atau Bayar di Tempat (detail di Bab 7).</li>
+    </ul>
+    <p class="small">Ringkasan harga muncul di panel kanan: harga jasa + biaya layanan <strong>GRATIS</strong> = total. Klik <strong>Konfirmasi</strong> — layar sukses akan muncul dengan animasi confetti, dan kamu bisa membagikan detail pesanan lewat WhatsApp.</p>
+  </div></div>
+
+  <h3>Langkah 5 — Pantau status pesanan</h3>
+  <div class="step"><div class="step-n">5</div><div class="step-body">
+    <p>Pesanan yang baru dibuat berstatus <strong>PENDING</strong>: menunggu provider menerimanya. Selama PENDING kamu masih bisa <strong>membatalkan gratis</strong>. Setelah diterima, status berubah — lihat tabel di bawah. Semua pesanan milikmu ada di menu <strong>Pesanan</strong> dan di dashboard.</p>
+  </div></div>
+
+  <h3>Langkah 6 — Chat dengan provider</h3>
+  <div class="step"><div class="step-n">6</div><div class="step-body">
+    <p>Di halaman pesanan ada <strong>kolom chat</strong> khusus menghubungkan kamu dan provider: koordinasi jam datang, detail alamat, atau konfirmasi belanjaan. Pesan maksimal 500 karakter, dan daftar pesan diperbarui otomatis — tidak perlu refresh halaman.</p>
+  </div></div>
+
+  <h3>Langkah 7 — Jasa selesai dikerjakan</h3>
+  <div class="step"><div class="step-n">7</div><div class="step-body">
+    <p>Provider akan menandai pesanan <strong>COMPLETED</strong> setelah pekerjaan selesai. Bila pembayaranmu COD, inilah momen menyelesaikan pembayaran di tempat. Halaman pesanan menampilkan perayaan "pesanan selesai".</p>
+  </div></div>
+
+  <h3>Langkah 8 — Beri ulasan (penting!)</h3>
+  <div class="step"><div class="step-n">8</div><div class="step-body">
+    <p>Untuk pesanan COMPLETED, tombol <strong>Beri Ulasan</strong> aktif: pilih bintang 1–5 dan tulis komentar (maks. 500 karakter). Ulasanmu membuat penyedia lain lebih bisa dipercaya oleh pelanggan berikutnya. Syaratnya: hanya pemesan, hanya pesanan selesai, dalam <strong>60 hari</strong> setelah selesai, dan satu pesanan cukup satu ulasan.</p>
+  </div></div>
+
+  <h3 style="break-before: page; page-break-before: always;">Makna status pesanan (wajib hafal!)</h3>
+  <table>
+    <tr><th style="width:22%">Status</th><th style="width:55%">Artinya</th><th>Kamu bisa apa?</th></tr>
+    <tr><td><span class="badge b-amber">PENDING</span></td><td>Pesanan dibuat, belum diterima provider.</td><td>Batalkan gratis, edit rencana, chat belum tentu aktif.</td></tr>
+    <tr><td><span class="badge b-blue">IN_PROGRESS</span></td><td>Provider menerima dan sedang bekerja.</td><td>Chat koordinasi, pantau perkembangan.</td></tr>
+    <tr><td><span class="badge b-green">COMPLETED</span></td><td>Pekerjaan selesai.</td><td>Beri ulasan &amp; rating.</td></tr>
+    <tr><td><span class="badge b-red">CANCELLED</span></td><td>Dibatalkan (oleh kamu atau provider).</td><td>Tidak ada tindakan; pesan ulang bila perlu.</td></tr>
+  </table>
+
+  <div class="box-warn">
+    <div class="box-label">Batas waktu &amp; aturan yang perlu diingat</div>
+    <ul class="dash-list" style="margin-bottom:0">
+      <li>Tanggal pengerjaan harus di masa depan (minimal besok).</li>
+      <li>Tidak bisa memesan jasa milik diri sendiri.</li>
+      <li>Ulasan hanya dalam 60 hari setelah COMPLETED.</li>
+      <li>Batalkan gratis hanya saat status masih PENDING.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">5</div><div><h2>Alur Lengkap Provider (Penyedia Jasa)</h2><div class="chap-sub">Dari punya keahlian sampai terima pendapatan — 7 langkah</div></div></div>
+
+  <p>Bagian ini untuk kamu yang ingin <strong>memperoleh pelanggan dan penghasilan</strong> dari keahlianmu. Intinya: pasang "gerai" berupa halaman jasa, lalu layani pesanan dengan baik.</p>
+
+  <div class="flow keep">
+    <div class="flow-box">Daftar sebagai Provider</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Buka jasa</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Moderasi &amp; tampil</div><div class="flow-arrow">→</div>
+    <div class="flow-box amber">Pesanan masuk (PENDING)</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">Terima &amp; kerjakan</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Tandai selesai</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Terima pendapatan</div>
+  </div>
+
+  <h3>Langkah 1 — Daftar &amp; pilih peran Provider</h3>
+  <div class="step"><div class="step-n">1</div><div class="step-body"><p>Saat registrasi pilih <strong>"Saya ingin membuka jasa"</strong> dan isi alamat/kota — ini wajib, karena pelanggan mencari provider berdasarkan lokasi (misal "Pangkal Pinang" atau "Muntok").</p></div></div>
+
+  <h3>Langkah 2 — Buka jasa pertamamu</h3>
+  <div class="step"><div class="step-n">2</div><div class="step-body">
+    <p>Dari dashboard provider, klik <strong>Buka Jasa</strong> dan isi form:</p>
+    <ul class="dash-list small">
+      <li><strong>Judul</strong> — spesifik, misal "Instalasi AC Split 1 PK — Pangkal Pinang".</li>
+      <li><strong>Kategori</strong> — pilih salah satu dari 10 kategori (Bab 3).</li>
+      <li><strong>Harga</strong> — dalam rupiah, harus di atas 0.</li>
+      <li><strong>Estimasi hari pengerjaan</strong> — 1 sampai 90 hari.</li>
+      <li><strong>Deskripsi</strong> — jelaskan cakupan kerja, garansi, wilayah.</li>
+      <li><strong>Foto</strong> — unggah JPG/PNG/WebP maks. 10 MB (otomatis dikompres web) atau tempel tautan foto.</li>
+    </ul>
+  </div></div>
+
+  <h3>Langkah 3 — Moderasi &amp; tampil di katalog</h3>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p>Jasa baru masuk dengan status <strong>DRAFT</strong> dan diperiksa admin (Bab 6). Setelah disetujui, statusnya <strong>ACTIVE</strong> dan jasmu tampil di katalog, beranda, serta hasil pencarian. Kamu bisa menonaktifkan/mengarsipkan jasa kapan saja lewat daftar jasa di dashboard.</p></div></div>
+
+  <h3>Langkah 4 — Terima pesanan</h3>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p>Pesanan masuk tampil di <strong>papan pesanan (kanban)</strong> dashboard provider, dikelompokkan per status. Untuk pesanan PENDING, klik <strong>"Terima &amp; Mulai Kerjakan"</strong> — status berubah menjadi <strong>IN_PROGRESS</strong>. Bila kamu tidak sanggup, biarkan saja (customer bisa membatalkan sendiri), atau hubungi customer lewat chat.</p></div></div>
+
+  <h3>Langkah 5 — Kerjakan &amp; komunikasi</h3>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p>Selama mengerjakan, gunakan <strong>chat di halaman pesanan</strong> untuk konfirmasi alamat, jadwal, dan detail pekerjaan. Notifikasi lonceng di kanan atas akan memberitahu pesan baru.</p></div></div>
+
+  <h3>Langkah 6 — Tandai selesai</h3>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><p>Setelah pekerjaan beres, klik <strong>"Tandai Selesai"</strong> — status menjadi <strong>COMPLETED</strong>. Inilah pemicu agar customer bisa memberi ulasan dan (untuk pembayaran saldo) dana masuk ke dompetmu.</p></div></div>
+
+  <h3>Langkah 7 — Kelola pendapatan &amp; reputasi</h3>
+  <div class="step"><div class="step-n">7</div><div class="step-body"><p>Pendapatan tercatat di <strong>Dompet</strong> (menu transaksi "Pendapatan pesanan"). Saldo bisa kamu tarik ke rekening bank — minimal Rp50.000, dibahas lengkap di Bab 7. Sementara itu, kumpulkan <strong>rating &amp; ulasan</strong>: semakin banyak pesanan selesai dan semakin bagus ratingmu, semakin mudah menang bersaing di katalog (ada fitur urutkan "rating tertinggi").</p></div></div>
+
+  <div class="box-tip">
+    <div class="box-label">Kebiasaan provider sukses</div>
+    <ul class="check-list" style="margin-bottom:0">
+      <li>Respons chat cepat — customer sering memesan provider yang menjawab duluan.</li>
+      <li>Judul &amp; foto jasa jelas — jasmu lebih sering diklik di katalog.</li>
+      <li>Selesaikan pesanan tepat waktu agar rating tetap tinggi.</li>
+      <li>Pantau dashboard: statistik pesanan hari ini, pendapatan, dan rating tampil langsung.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">6</div><div><h2>Alur Admin (Pengelola Platform)</h2><div class="chap-sub">Penjaga kepercayaan: verifikasi uang, moderasi konten, pantau kesehatan platform</div></div></div>
+
+  <p>Admin adalah "pengelola pasar". Akun admin tidak bisa didaftar sendiri — disiapkan khusus oleh sistem. Tugas utamanya ada empat:</p>
+
+  <h3>1. Verifikasi isi saldo (top-up)</h3>
+  <div class="step"><div class="step-n">1</div><div class="step-body">
+    <p>Setiap pengajuan top-up muncul di <strong>antrean verifikasi saldo</strong>. Admin membuka foto bukti transfer, lalu mencocokkan tiga hal: <strong>nominal</strong>, <strong>waktu transfer</strong>, dan <strong>berita transfer yang memuat kode JK-TOP</strong>. Setelah yakin:</p>
+    <ul class="dash-list small">
+      <li><strong>Setujui</strong> → saldo user otomatis bertambah dan user menerima notifikasi "Isi saldo disetujui".</li>
+      <li><strong>Tolak</strong> + tulis alasan → user menerima notifikasi berisi alasannya (misal nominal tidak sesuai).</li>
+    </ul>
+    <p class="small">Komitmen layanan: verifikasi selesai <strong>maksimal 1×24 jam</strong>. Bila user mengganti foto bukti setelah mengajukan, antrean menampilkan tanda <strong>"Bukti diubah"</strong> agar admin lebih teliti.</p>
+  </div></div>
+
+  <h3>2. Verifikasi tarik saldo (withdraw)</h3>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><p>Ketika provider menarik saldo, admin mentransfer uangnya <strong>secara manual ke rekening user</strong> lewat bank, lalu menandai pengajuan <strong>"Sudah ditransfer"</strong>. Jika ditolak (misal data rekening bermasalah), uang yang tadinya dibekukan <strong>otomatis kembali ke saldo user</strong> — tidak ada uang hilang.</p></div></div>
+
+  <h3>3. Moderasi jasa baru</h3>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p>Jasa baru dari provider berstatus DRAFT sampai admin menyetujuinya menjadi ACTIVE. Admin mengecek: judul &amp; deskripsi pantas, harga masuk akal, foto sesuai kategori. Ini menjaga katalog bebas dari konten sampah.</p></div></div>
+
+  <h3>4. Pantau statistik platform</h3>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p>Dashboard admin menampilkan grafik <strong>pesanan 14 hari terakhir</strong>, pendapatan per kategori, jumlah pengguna, pesanan terbaru, dan daftar provider teratas — bekal untuk mengambil keputusan (misal: kategori mana yang perlu dipromosikan, termasuk memperkenalkan 4 kategori baru).</p></div></div>
+
+  <div class="box-info">
+    <div class="box-label">Prinsip kerja admin</div>
+    <p><strong>Cocokkan, jangan percaya.</strong> Keputusan verifikasi selalu berdasar bukti (foto transfer + kode JK-TOP), bukan kata-kata. Setiap keputusan otomatis dikirim sebagai notifikasi kepada user, sehingga semuanya transparan dan tercatat.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">7</div><div><h2>Dompet &amp; Pembayaran</h2><div class="chap-sub">Empat cara bayar + siklus hidup saldo: top-up → verifikasi → bayar → tarik</div></div></div>
+
+  <h3>Empat metode pembayaran saat checkout</h3>
+  <table>
+    <tr><th style="width:22%">Metode</th><th>Cara kerjanya</th><th style="width:30%">Cocok untuk</th></tr>
+    <tr><td><strong>Saldo JASAKITE</strong></td><td>Bayar instan langsung dari saldo dompet — tidak perlu transfer ulang setiap pesan.</td><td>Pengguna aktif yang rutin memesan</td></tr>
+    <tr><td><strong>Bank Transfer</strong></td><td>Setelah konfirmasi, nomor <strong>virtual account</strong> muncul di halaman pesanan (BCA, Mandiri, BRI, Permata). Status terkonfirmasi setelah transfer diverifikasi.</td><td>Pembayaran sekali dengan nominal besar</td></tr>
+    <tr><td><strong>E-Wallet</strong></td><td>Pembayaran lewat DANA, OVO, atau GoPay.</td><td>Pengguna tanpa rekening bank</td></tr>
+    <tr><td><strong>Bayar di Tempat (COD)</strong></td><td>Tanpa bayar di depan — tunai saat jasa selesai dikerjakan.</td><td>Percobaan pertama / kerjaan cepat</td></tr>
+  </table>
+
+  <h3>Kenapa pakai Saldo JASAKITE?</h3>
+  <p>Bayangkan kamu memesan jasa 5 kali sebulan. Tanpa saldo, kamu transfer bank 5 kali. Dengan saldo, kamu cukup <strong>top-up sekali</strong>, lalu setiap checkout hanya satu klik — uang terpotong otomatis dari saldo. Itulah gunanya dompet.</p>
+
+  <h3 style="break-before: page; page-break-before: always;">Siklus isi saldo (top-up) — 7 langkah</h3>
+  <div class="flow keep">
+    <div class="flow-box">Buka menu Dompet</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Isi nominal</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Dapat kode JK-TOP + no. rekening</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Transfer bank</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Lampirkan foto bukti</div><div class="flow-arrow">→</div>
+    <div class="flow-box amber">Tunggu verifikasi admin</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Saldo masuk</div>
+  </div>
+
+  <div class="step"><div class="step-n">1</div><div class="step-body"><p><strong>Isi nominal.</strong> Ketik jumlah rupiah yang ingin dimasukkan. Batasnya: <strong>minimal Rp10.000</strong> dan <strong>maksimal Rp10.000.000</strong> per pengajuan, dan harus kelipatan rupiah penuh (tidak boleh ada sen).</p></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><p><strong>Terima kode unik JK-TOP.</strong> Sistem memberi kode berbentuk <strong>JK-TOP-XXXX</strong> (4 karakter acak) khusus untuk pengajuan ini. Karakter yang mudah tertukar seperti 0/O dan 1/I sengaja dihindari supaya mudah dibaca.</p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p><strong>Transfer ke rekening platform</strong> yang tertera di layar. PENTING: tulis kode <strong>JK-TOP-XXXX di kolom berita transfer</strong>. Kode inilah yang membuat admin tahu uang itu milik siapa.</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p><strong>Lampirkan foto bukti transfer</strong> (foto struk/screenshot m-banking). Format JPG, PNG, atau WebP; foto otomatis dikompres web agar verifikasi cepat. Belum punya foto saat itu? Pengajuan tetap terkirim dan tombol <strong>"Lampirkan/Ganti bukti"</strong> aktif selama status masih PENDING.</p></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p><strong>Tunggu verifikasi admin (maks. 1×24 jam).</strong> Status pengajuanmu: <span class="badge b-amber">PENDING</span> → setelah diputuskan menjadi <span class="badge b-green">VERIFIED</span> (saldo masuk) atau <span class="badge b-red">REJECTED</span> (ditolak + alasan). Hasil keputusan muncul sebagai notifikasi otomatis tanpa perlu refresh halaman.</p></div></div>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><p><strong>Saldo masuk &amp; tercatat.</strong> Semua mutasi tercatat di <strong>riwayat dompet</strong>: Isi saldo, Bayar pesanan, Pendapatan pesanan, Tarik saldo, Pengembalian dana. Kamu juga bisa melihat thumbnail bukti transfer yang pernah kamu kirim.</p></div></div>
+
+  <div class="box-warn">
+    <div class="box-label">Aturan nominal dompet (angka penting!)</div>
+    <table style="margin:4pt 0 0">
+      <tr><th>Ketentuan</th><th style="width:30%">Nominal</th></tr>
+      <tr><td>Top-up (isi saldo) minimal</td><td><strong>Rp10.000</strong></td></tr>
+      <tr><td>Top-up maksimal per pengajuan</td><td><strong>Rp10.000.000</strong></td></tr>
+      <tr><td>Tarik saldo minimal</td><td><strong>Rp50.000</strong></td></tr>
+      <tr><td>Bentuk nominal</td><td>Kelipatan rupiah penuh</td></tr>
+    </table>
+  </div>
+
+  <h3 style="break-before: page; page-break-before: always;">Siklus tarik saldo (withdraw) — untuk provider</h3>
+  <div class="flow keep">
+    <div class="flow-box">Buka Dompet → Tarik saldo</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Isi nominal ≥ Rp50.000</div><div class="flow-arrow">→</div>
+    <div class="flow-box amber">Saldo dibekukan saat pengajuan</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Admin transfer manual ke rekeningmu</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Selesai — saldo berkurang permanen</div>
+  </div>
+  <p class="small">Bila admin <strong>menolak</strong> pengajuanmu (misal nomor rekening salah), dana yang dibekukan <strong>otomatis kembali ke saldo</strong> — kamu tinggal mengajukan ulang dengan data yang benar.</p>
+
+  <div class="box-warn">
+    <div class="box-label">Tips keamanan uang</div>
+    <ul class="dash-list" style="margin-bottom:0">
+      <li>Hanya transfer ke <strong>rekening platform yang tampil di halaman Dompet</strong> — bukan rekening pribadi siapa pun.</li>
+      <li>Selalu tulis kode JK-TOP-XXXX di berita transfer; tanpa kode, verifikasi jadi lambat.</li>
+      <li>Simpan bukti transfer; foto yang kamu unggah bisa dibuka ulang dari riwayat.</li>
+      <li>Jangan pernah memberikan password atau kode verifikasimu kepada "admin" yang menghubungi lewat chat pribadi.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">8</div><div><h2>Fitur Pendukung</h2><div class="chap-sub">Fitur kecil yang membuat pengalaman jauh lebih nyaman</div></div></div>
+
+  <table>
+    <tr><th style="width:24%">Fitur</th><th>Penjelasan sederhana</th></tr>
+    <tr><td><strong>Keranjang</strong></td><td>Seperti keranjang belanja: kumpulkan beberapa jasa sekaligus, lalu checkout semuanya dalam satu kali isi alamat &amp; metode bayar.</td></tr>
+    <tr><td><strong>Chat</strong></td><td>Percakapan khusus antara kamu dan provider di dalam halaman pesanan. Maks. 500 karakter per pesan, otomatis diperbarui — cocok untuk koordinasi jadwal, alamat, atau daftar belanjaan Jasa Belanja.</td></tr>
+    <tr><td><strong>Notifikasi</strong></td><td>Ikon lonceng di navbar memberi kabar: pesanan diterima/selesai, hasil verifikasi dompet, pesan baru. Ada pula halaman Notifikasi untuk membaca semua kabar sekaligus.</td></tr>
+    <tr><td><strong>Simpan jasa</strong></td><td>Ikon bookmark pada kartu jasa. Jasa tersimpan di dashboard agar mudah dipesan ulang tanpa mencari dari nol.</td></tr>
+    <tr><td><strong>Voucher &amp; promo</strong></td><td>Kode promo bisa dipakai saat ada kampanye — potongan harga otomatis dihitung saat checkout. Banner promo tampil di beranda.</td></tr>
+    <tr><td><strong>Pencarian &amp; filter</strong></td><td>Ketik kata kunci + filter kategori, lokasi, rentang harga, rating minimal, lalu urutkan sesuai keinginan. Hasil tetap tersimpan di alamat URL — bisa di-share ke orang lain.</td></tr>
+    <tr><td><strong>Rating &amp; ulasan</strong></td><td>Setiap jasa menampilkan rating rata-rata, jumlah ulasan, dan distribusi bintang 5→1. Karena hanya pesanan COMPLETED yang bisa mengulas, semua ulasan asli.</td></tr>
+    <tr><td><strong>Riwayat dompet</strong></td><td>Buku kas pribadi: semua Isi saldo, Bayar pesanan, Pendapatan, Tarik saldo, dan Pengembalian dana tercatat lengkap dengan tanggal.</td></tr>
+  </table>
+
+  <div class="box-info">
+    <div class="box-label">Contoh memakai fitur gabungan (skenario nyata)</div>
+    <p><strong>Andi (customer)</strong> menyimpan jasa "Bersih Rumah Reguler — Sungailiat" lewat bookmark. Bulan depan dia buka keranjang: tambah jasa bersih rumah + <span class="badge b-new">Jasa Belanja</span> untuk sembako mingguan → checkout sekali dengan saldo → chat provider untuk daftar belanjaan → kerjaan selesai → dia memberi 5 bintang. Semua tanpa keluar dari JASAKITE.</p>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">9</div><div><h2>Teknologi di Balik JASAKITE (Bonus)</h2><div class="chap-sub">Tidak wajib dipahami — tapi berguna bila kamu penasaran atau ingin ikut mengembangkan</div></div></div>
+
+  <p>JASAKITE dibangun dengan teknologi web modern. Berikut padanan sederhananya:</p>
+
+  <table>
+    <tr><th style="width:26%">Teknologi</th><th style="width:42%">Fungsinya di JASAKITE</th><th>Analogi gampangnya</th></tr>
+    <tr><td><strong>Next.js 15 + React 19</strong></td><td>Mesin utama website: merender halaman cepat di server &amp; browser.</td><td>Dapur restoran yang menyajikan menu sesuai pesanan</td></tr>
+    <tr><td><strong>TypeScript</strong></td><td>Bahasa kode yang ketat — salah ketik tertangkap sebelum jadi masalah.</td><td>Checklist ganda sebelum pengiriman barang</td></tr>
+    <tr><td><strong>Prisma + MongoDB</strong></td><td>Tempat menyimpan semua data: user, jasa, pesanan, saldo.</td><td>Juru tulis dengan arsip super rapi</td></tr>
+    <tr><td><strong>NextAuth</strong></td><td>Sistem login &amp; sesi: memastikan hanya kamu yang bisa masuk akunmu.</td><td>Satpam yang cek ID di pintu</td></tr>
+    <tr><td><strong>Tailwind CSS</strong></td><td>Sistem tampilan agar semua halaman konsisten dan rapi.</td><td>Kit seragam untuk semua petugas</td></tr>
+    <tr><td><strong>TanStack Query</strong></td><td>Mengelola data di layar: menyimpan cache &amp; menyegarkan otomatis.</td><td>Asisten yang selalu update datanya</td></tr>
+    <tr><td><strong>Vitest + Playwright</strong></td><td>Pengujian otomatis: ratusan tes memastikan fitur tidak rusak saat ada perubahan.</td><td>Petugas QA yang mengetes tiap produk</td></tr>
+  </table>
+
+  <h3>Kenapa uangmu dijamin aman (versi teknis sederhana)</h3>
+  <ul class="check-list">
+    <li><strong>Harga diverifikasi di server</strong> — angka harga yang dipakai menghitung tagihan bukan yang bisa dimanipulasi di browser, tapi yang tersimpan di database.</li>
+    <li><strong>Saldo diubah secara atomik</strong> — penambahan/pengurangan saldo dilakukan sebagai satu operasi tunggal; tidak mungkin saldo "terpotong dobel" walau dua tombol ditekan bersamaan.</li>
+    <li><strong>Batas laju (rate limit)</strong> — aksi sensitif (daftar akun, kirim pesan, ajukan top-up) dibatasi per menit agar tidak bisa disalahgunakan bot.</li>
+    <li><strong>Bukti transfer diproses aman</strong> — foto dikompres di perangkatmu sebelum dikirim, dan formatnya divalidasi ketat.</li>
+  </ul>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head keep"><div class="chap-num">10</div><div><h2>Glosarium &amp; Ringkasan</h2><div class="chap-sub">Kamus istilah + 7 hal terpenting yang harus kamu ingat</div></div></div>
+
+  <h3>Glosarium istilah</h3>
+  <table>
+    <tr><th style="width:26%">Istilah</th><th>Artinya dalam bahasa sehari-hari</th></tr>
+    <tr><td><strong>Marketplace</strong></td><td>Pasar online yang mempertemukan penjual dan pembeli; pemiliknya tidak menjual sendiri, hanya menyediakan tempatnya.</td></tr>
+    <tr><td><strong>Customer</strong></td><td>Pemesan jasa — orang yang membutuhkan pekerjaan selesai.</td></tr>
+    <tr><td><strong>Provider</strong></td><td>Penyedia jasa — orang yang punya keahlian dan mencari pelanggan.</td></tr>
+    <tr><td><strong>Admin</strong></td><td>Pengelola platform yang memverifikasi uang &amp; menjaga katalog.</td></tr>
+    <tr><td><strong>Checkout</strong></td><td>Halaman pengisian akhir sebelum pesanan dibuat: alamat, tanggal, metode bayar.</td></tr>
+    <tr><td><strong>Saldo</strong></td><td>Uang elektronik yang tersimpan di dompet JASAKITE-mu.</td></tr>
+    <tr><td><strong>Top-up</strong></td><td>Isi saldo — transfer uang dari bank ke dompet JASAKITE.</td></tr>
+    <tr><td><strong>Kode JK-TOP-XXXX</strong></td><td>Kode unik per pengajuan top-up; ditulis di berita transfer agar uang dikenali.</td></tr>
+    <tr><td><strong>Bukti transfer</strong></td><td>Foto struk/screenshot transfer yang dilampirkan sebagai bukti pembayaran.</td></tr>
+    <tr><td><strong>Verifikasi</strong></td><td>Proses admin mengecek bukti sebelum saldo masuk / penarikan diproses (maks. 1×24 jam).</td></tr>
+    <tr><td><strong>Tarik saldo (withdraw)</strong></td><td>Memindahkan saldo di dompet ke rekening bank pribadi (minimal Rp50.000).</td></tr>
+    <tr><td><strong>Virtual account (VA)</strong></td><td>Nomor rekening sementara khusus untuk satu pembayaran transfer bank.</td></tr>
+    <tr><td><strong>COD</strong></td><td>Cash on Delivery — bayar tunai saat jasa selesai, bukan di depan.</td></tr>
+    <tr><td><strong>PENDING</strong></td><td>Menunggu — pesanan belum diterima provider / top-up belum diverifikasi.</td></tr>
+    <tr><td><strong>IN_PROGRESS</strong></td><td>Sedang dikerjakan oleh provider.</td></tr>
+    <tr><td><strong>COMPLETED</strong></td><td>Selesai — bisa diberi ulasan.</td></tr>
+    <tr><td><strong>CANCELLED</strong></td><td>Dibatalkan.</td></tr>
+    <tr><td><strong>VERIFIED / REJECTED</strong></td><td>Pengajuan dompet disetujui (saldo masuk) / ditolak (dengan alasan).</td></tr>
+    <tr><td><strong>Rating</strong></td><td>Nilai bintang 1–5 dari pelanggan pesanan selesai.</td></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Halaman "markas" per peran: statistik, daftar pesanan, menu utama.</td></tr>
+    <tr><td><strong>Moderasi</strong></td><td>Pemeriksaan admin sebelum konten (jasa baru) tampil publik.</td></tr>
+  </table>
+
+  <div class="page-break"></div>
+  <h3>7 hal terpenting untuk diingat</h3>
+  <div class="step"><div class="step-n">1</div><div class="step-body"><p><strong>JASAKITE = pasar online jasa lokal Babel.</strong> Customer memesan, provider mengerjakan, admin menjaga — 7 kabupaten/kota terjangkau.</p></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><p><strong>10 kategori siap dipakai</strong> — termasuk 4 baru: Jasa Titip, Jasa Antar, Jasa Pembayaran, dan Jasa Belanja untuk kebutuhan harian.</p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p><strong>Alur pesanan selalu sama:</strong> PENDING → IN_PROGRESS → COMPLETED (atau CANCELLED). Batal gratis hanya saat PENDING.</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p><strong>Empat cara bayar:</strong> Saldo JASAKITE, Bank Transfer (VA), E-Wallet, dan COD. Biaya layanan GRATIS.</p></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p><strong>Isi saldo pakai kode JK-TOP:</strong> transfer + tulis kode di berita + unggah bukti + tunggu verifikasi admin maksimal 1×24 jam. Minimal Rp10.000, maksimal Rp10.000.000.</p></div></div>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><p><strong>Tarik saldo minimal Rp50.000</strong> untuk provider; ditolak berarti uang kembali ke saldo, tidak hilang.</p></div></div>
+  <div class="step"><div class="step-n">7</div><div class="step-body"><p><strong>Ulasan itu kekuatan:</strong> hanya dari pesanan selesai, maksimal 60 hari setelah COMPLETED. Rating bagus = lebih banyak pelanggan.</p></div></div>
+
+  <div class="box-tip" style="margin-top: 10pt;">
+    <div class="box-label">Butuh bantuan lagi?</div>
+    <p>Buka menu <strong>FAQ &amp; Bantuan</strong> di situs — berisi jawaban ringkas per topik: cara pesan, pembayaran, untuk penyedia jasa, kebijakan, dan tentang JASAKITE. Bila pertanyaanmu belum terjawab, hubungi tim lewat kanal kontak yang tercantum di halaman tersebut.</p>
+  </div>
+
+  <p class="footer-note">Dokumen: Panduan Lengkap JASAKITE untuk Pemula · Edisi Oktober 2026 · Mencakup fitur dompet, verifikasi admin, bukti transfer, dan 4 kategori baru (Jasa Titip, Jasa Antar, Jasa Pembayaran, Jasa Belanja). Selamat mencoba — dan selamat bertransaksi dengan aman di Kepulauan Bangka Belitung!</p>
+</div>
+</body>
+</html>

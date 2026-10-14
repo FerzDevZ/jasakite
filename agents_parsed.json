@@ -1,0 +1,278 @@
+[
+  {
+    "name": "accessibility-champion",
+    "description": "Accessibility specialist for WCAG 2.2 AAA compliance, keyboard focus traps, screen reader live regions, and color contrast",
+    "color": "#14b8a6",
+    "mode": "subagent"
+  },
+  {
+    "name": "ai-engineer",
+    "description": "AI & RAG Engineer for vector databases (pgvector/Qdrant), LLM prompt evaluation, token routing & local LLMs",
+    "color": "#a855f7",
+    "mode": "subagent"
+  },
+  {
+    "name": "architect",
+    "description": "1. **First-Principles Decomposition**: Understand the core problem and data flow before deciding on classes or libraries.",
+    "color": "#2563eb",
+    "mode": "primary"
+  },
+  {
+    "name": "backend",
+    "description": "Backend specialist for APIs, DB, auth, queuing with production safety",
+    "color": "#22c55e",
+    "mode": "subagent"
+  },
+  {
+    "name": "chaos-tester",
+    "description": "Chaos engineering & load testing specialist for Grafana k6, fault injection, resilience & circuit breaker testing",
+    "color": "#f43f5e",
+    "mode": "subagent"
+  },
+  {
+    "name": "cloud-native-devops-k8s",
+    "description": "Enterprise cloud-native engineer for Kubernetes, Helm, Terraform IaC, ArgoCD GitOps, and AWS/GCP serverless",
+    "color": "#059669",
+    "mode": "subagent"
+  },
+  {
+    "name": "cloud-security-architect",
+    "description": "Cloud security architect for AWS, GCP, IAM least-privilege, Zero-Trust networking, and secret management",
+    "color": "#3b82f6",
+    "mode": "subagent"
+  },
+  {
+    "name": "data-engineer-olap",
+    "description": "Data engineer for real-time analytics, ClickHouse OLAP, DuckDB, Parquet pipelines, and high-throughput streaming",
+    "color": "#8b5cf6",
+    "mode": "subagent"
+  },
+  {
+    "name": "database",
+    "description": "Database developer for schema, indexing, query plans and migrations",
+    "color": "#0ea5e9",
+    "mode": "subagent"
+  },
+  {
+    "name": "debugger",
+    "description": "Systematic debugger that reproduces, isolates and fixes bugs with minimal patch",
+    "color": "#f59e0b",
+    "mode": "subagent"
+  },
+  {
+    "name": "deepseek-reasoner-pro",
+    "description": "Advanced AI reasoning agent specialized in mathematical proofs, algorithm optimization, and multi-step cognitive deconstruction",
+    "color": "#4f46e5",
+    "mode": "subagent"
+  },
+  {
+    "name": "design-engineer",
+    "description": "Design engineer that bridges brand, design system and frontend implementation end-to-end",
+    "color": "#8b5cf6",
+    "mode": "subagent"
+  },
+  {
+    "name": "devops",
+    "description": "DevOps & Cloud Infrastructure engineer for Docker, Kubernetes, CI/CD GitHub Actions, Terraform & deployments",
+    "color": "#06b6d4",
+    "mode": "subagent"
+  },
+  {
+    "name": "explore-plus",
+    "description": "Enhanced codebase explorer for fast mapping of entry points, flows and deps",
+    "color": "#8b5cf6",
+    "mode": "subagent"
+  },
+  {
+    "name": "fintech-architect",
+    "description": "Fintech & payments lifecycle architect for Stripe/Xendit webhooks, double-entry ledgers & idempotent billing",
+    "color": "#eab308",
+    "mode": "subagent"
+  },
+  {
+    "name": "flutter-specialist",
+    "description": "Cross-platform mobile expert for Flutter, BLoC/Riverpod, CustomPainter animations, and native platform channels",
+    "color": "#0284c7",
+    "mode": "subagent"
+  },
+  {
+    "name": "frontend",
+    "description": "Frontend specialist for React, Next.js, Tailwind, shadcn with anti-slop design",
+    "color": "#3b82f6",
+    "mode": "subagent"
+  },
+  {
+    "name": "game-dev-3d",
+    "description": "3D web graphics & interactive game developer for Three.js, WebGL, GLSL shaders, React Three Fiber, and physics engines",
+    "color": "#ec4899",
+    "mode": "subagent"
+  },
+  {
+    "name": "generative-ui-engineer",
+    "description": "AI & Web specialist for Generative UI, Vercel AI SDK RSC streaming, client-side WebGPU LLMs, and tool calling",
+    "color": "#a855f7",
+    "mode": "subagent"
+  },
+  {
+    "name": "glm-chat",
+    "description": "\"Chat, brainstorming, and idea consultation agent powered by GLM 5.3 Free (144 tok/s).\"",
+    "color": "#2563eb",
+    "mode": "primary"
+  },
+  {
+    "name": "implementer",
+    "description": "Implement fullstack features end-to-end with minimal diff and build verification",
+    "color": "#10b981",
+    "mode": "subagent"
+  },
+  {
+    "name": "localization-i18n-pro",
+    "description": "Enterprise internationalization (i18n) architect for multilingual routing, RTL CSS logical properties, and ICU translations",
+    "color": "#06b6d4",
+    "mode": "subagent"
+  },
+  {
+    "name": "microservices-mesh",
+    "description": "Distributed systems architect for microservices, Istio service mesh, gRPC, Kafka event streaming, and CQRS",
+    "color": "#06b6d4",
+    "mode": "subagent"
+  },
+  {
+    "name": "mobile-engineer",
+    "description": "Cross-platform mobile developer for React Native (Expo), Flutter, touch gestures, bottom-sheets & offline sync",
+    "color": "#ec4899",
+    "mode": "subagent"
+  },
+  {
+    "name": "monorepo-architect",
+    "description": "Enterprise monorepo architect for Turborepo, Nx, PNPM workspaces, package isolation, and shared tooling graphs",
+    "color": "#8b5cf6",
+    "mode": "subagent"
+  },
+  {
+    "name": "nlp-rag-specialist",
+    "description": "AI & NLP specialist for advanced RAG, hybrid search (BM25 + Vector), semantic chunking, and LLM prompt evals",
+    "color": "#f59e0b",
+    "mode": "subagent"
+  },
+  {
+    "name": "perf",
+    "description": "Performance optimizer that profiles, measures before/after and fixes bottleneck with minimal diff",
+    "color": "#f59e0b",
+    "mode": "subagent"
+  },
+  {
+    "name": "planner",
+    "description": "Planning agent that designs architecture and breaks tasks without editing code",
+    "color": "#3b82f6",
+    "mode": "subagent"
+  },
+  {
+    "name": "programmer-omni",
+    "description": "Ultimate Programmer-Omni (Supreme Commander \u2014 Mode Bantai) \u2014 Autonomous Deep Research Engine, Multi-Agent Swarm Orchestrator, Strict Anti-AI-Slop, Dual-Gate QA & 66 Skills",
+    "color": "#f59e0b",
+    "mode": "primary"
+  },
+  {
+    "name": "programmer",
+    "description": "Ultimate Super Programmer v3.5 \u2014 Precision surgical engineer, single-stream execution, strict Anti-AI-Slop, Hallmark craftsmanship & silent memory-by-ferz",
+    "color": "#a855f7",
+    "mode": "primary"
+  },
+  {
+    "name": "prompt-red-teamer",
+    "description": "AI security specialist for adversarial prompt injection testing, jailbreak defense, indirect data poisoning, and NeMo guardrails",
+    "color": "#ef4444",
+    "mode": "subagent"
+  },
+  {
+    "name": "pwa-offline-architect",
+    "description": "Progressive Web App architect for offline-first capabilities, Workbox service workers, background sync, and mobile web APIs",
+    "color": "#f97316",
+    "mode": "subagent"
+  },
+  {
+    "name": "qa",
+    "description": "QA tester for unit/integration/e2e strategy, fixtures and Playwright e2e with defect reporting",
+    "color": "#10b981",
+    "mode": "subagent"
+  },
+  {
+    "name": "refactor-expert",
+    "description": "Codebase refactoring & AST migration specialist for legacy modernization, clean architecture & zero regression",
+    "color": "#14b8a6",
+    "mode": "subagent"
+  },
+  {
+    "name": "release",
+    "description": "Release manager for version bump, changelog and GitHub releases",
+    "color": "#06b6d4",
+    "mode": "subagent"
+  },
+  {
+    "name": "researcher",
+    "description": "Autonomous deep researcher for web research, competitive technical analysis, whitepapers & codebase forensics",
+    "color": "#38bdf8",
+    "mode": "subagent"
+  },
+  {
+    "name": "reviewer",
+    "description": "Review changes for correctness, security and missing tests without editing files",
+    "color": "#ff6b6b",
+    "mode": "subagent"
+  },
+  {
+    "name": "security",
+    "description": "Security auditor for OWASP Top 10, secrets scanning, headers and IAM hardening",
+    "color": "#ef4444",
+    "mode": "subagent"
+  },
+  {
+    "name": "seo-growth",
+    "description": "Programmatic SEO (pSEO), Schema.org JSON-LD, OpenGraph generator, GEO & Core Web Vitals optimization",
+    "color": "#84cc16",
+    "mode": "subagent"
+  },
+  {
+    "name": "smart-contract-auditor",
+    "description": "Web3, Solidity, EVM smart contract auditor for reentrancy, gas optimization, Foundry fuzzing, and DeFi security",
+    "color": "#10b981",
+    "mode": "subagent"
+  },
+  {
+    "name": "sre",
+    "description": "SRE for SLOs, alerting, error budgets and incident response",
+    "color": "#f97316",
+    "mode": "subagent"
+  },
+  {
+    "name": "system-debugger-forensics",
+    "description": "Low-level system forensics debugger for memory leaks, CPU flamegraphs, race condition isolation, and eBPF tracing",
+    "color": "#ef4444",
+    "mode": "subagent"
+  },
+  {
+    "name": "tddmaster",
+    "description": "1. **Red-Green-Refactor**:",
+    "color": "#2563eb",
+    "mode": "primary"
+  },
+  {
+    "name": "tokenomics-fintech-ledger",
+    "description": "Fintech & cryptographic ledger architect for double-entry bookkeeping, ACID transactions, and immutable audit trails",
+    "color": "#eab308",
+    "mode": "subagent"
+  },
+  {
+    "name": "websocket-realtime",
+    "description": "Real-time systems architect for WebSockets, Server-Sent Events (SSE), Redis Pub/Sub & presence tracking",
+    "color": "#6366f1",
+    "mode": "subagent"
+  },
+  {
+    "name": "writer",
+    "description": "Writer for docs, README, changelog and handoff notes",
+    "color": "#84cc16",
+    "mode": "subagent"
+  }
+]

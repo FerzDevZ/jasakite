@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Offline — JASAKITE</title>
+<style>
+  /* Self-contained: tanpa font eksternal, tanpa CSS eksternal, tanpa gambar —
+     halaman ini harus tampil sempurna saat SELURUH jaringan mati. */
+  :root { color-scheme: light; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #FBFAF8;
+    color: #292524;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    text-align: center;
+  }
+  main { max-width: 26rem; }
+  .badge {
+    display: inline-grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 9999px;
+    background: rgba(249, 115, 22, 0.12);
+    margin-bottom: 20px;
+  }
+  h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  p { margin-top: 10px; font-size: 0.925rem; line-height: 1.6; color: #57534E; }
+  .tip { margin-top: 18px; font-size: 0.8rem; color: #79716B; }
+  button {
+    margin-top: 22px;
+    min-height: 44px;
+    padding: 0 28px;
+    border: 0;
+    border-radius: 12px;
+    background: #F97316;
+    color: #fff;
+    font-size: 0.925rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid #C2410C; outline-offset: 2px; }
+  button:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+<main>
+  <div class="badge" aria-hidden="true">
+    <!-- Ikon wifi-off inline: tanpa permintaan jaringan apa pun. -->
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#EA580C"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         role="img" aria-label="Koneksi terputus">
+      <line x1="2" y1="2" x2="22" y2="22"/>
+      <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
+      <path d="M5 12.55a11 11 0 0 1 5.17-2.39"/>
+      <path d="M10.71 5.05A16 16 0 0 1 22.58 9"/>
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+      <path d="M16.85 11.25a10.95 10.95 0 0 1 2.16 1.3"/>
+      <circle cx="12" cy="20" r="0.5" fill="#EA580C"/>
+    </svg>
+  </div>
+  <h1>Kamu sedang offline</h1>
+  <p>
+    Koneksi internet terputus. Halaman yang pernah kamu buka tetap bisa
+    diakses dari perangkat ini.
+  </p>
+  <button type="button" onclick="location.reload()">Coba Lagi</button>
+  <p class="tip">
+    Tip: setiap halaman yang dibuka saat online tersimpan otomatis untuk
+    dibaca offline.
+  </p>
+</main>
+</body>
+</html>

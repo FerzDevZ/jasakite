@@ -1,0 +1,204 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Batalkan run lama pada branch/PR yang sama: hanya commit terakhir yang relevan.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Database CI = MongoDB, sama seperti produksi dan `.env` lokal.
+    #
+    # Sebelumnya CI memakai `DATABASE_URL: file:./dev.db` (warisan era SQLite),
+    # tetapi `prisma/schema.prisma` sudah `provider = "mongodb"` sejak commit
+    # 83a4703. Akibatnya hampir setiap langkah yang menyentuh Prisma gagal duluan
+    # dengan P1012 "the URL must start with the protocol `mongo`" — generate,
+    # migrate, bahkan `next build` (beranda & sitemap me-query Prisma saat
+    # prerender) — sehingga tes tidak pernah sempat dijalankan.
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # MongoDB (provider schema = mongodb) — bukan SQLite. `directConnection`
+      # menunjuk tepat ke container ini: Prisma tidak mencari replica set yang
+      # memang tidak ada di CI.
+      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?directConnection=true&retryWrites=true&w=majority"
+      # NextAuth v5 menolak start tanpa dua env ini, termasuk saat `next build`
+      # mengevaluasi route handler.
+      AUTH_SECRET: "ci-placeholder-secret-not-used-in-production"
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: "http://localhost:3000"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # `npm ci` menuntut package-lock.json sinkron dengan package.json —
+      # itu memang yang kita inginkan sebagai pagar di CI.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      # Migrasi + seed dijalankan supaya build punya database yang valid dan
+      # skema yang sama dengan yang diharapkan kode.
+      #
+      # `db push`, BUKAN `migrate deploy`: MongoDB tidak memakai direktori
+      # migrasi (provider schema = mongodb), dan `prisma/migrations/` yang ada
+      # adalah warisan era SQLite (migration_lock.toml bertuliskan "sqlite").
+      - name: Prepare database
+        run: |
+          npx prisma db push --skip-generate
+          node prisma/seed.js
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test -- --run
+
+      # Audit DNS domain (`jasakite.id`) sengaja dipisah dari langkah unit di
+      # atas: domainnya memang belum terdaftar, jadi tes itu akan gagal di
+      # setiap run. Tetap dijalankan agar sinyalnya terlihat di CI, tetapi tidak
+      # memblokir — `continue-on-error` menandainya sebagai peringatan, bukan
+      # kegagalan job. Aktifkan juga lokal dengan `npm run test:branding-dns`.
+      - name: Audit DNS domain (non-blocking)
+        run: npm run test:branding-dns
+        continue-on-error: true
+
+      - name: Build
+        run: npm run build
+
+      # Verifikasi runtime: server produksi harus benar-benar melayani rute,
+      # bukan hanya berhasil di-build. Tanpa langkah ini, kesalahan yang hanya
+      # muncul saat render (mis. kueri Prisma di server component) lolos CI.
+      - name: Smoke test rute produksi
+        run: |
+          npm run start &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+
+          for i in $(seq 1 30); do
+            if curl -sf -o /dev/null http://localhost:3000/; then break; fi
+            sleep 2
+          done
+
+          fail=0
+          check() {
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3000$1")
+            if [ "$code" != "$2" ]; then
+              echo "FAIL $1 -> $code (harusnya $2)"
+              fail=1
+            else
+              echo "ok   $1 -> $code"
+            fi
+          }
+
+          check / 200
+          check /services 200
+          check /faq 200
+          check /login 200
+          check /register 200
+          # Rute terproteksi harus me-redirect, bukan membocorkan halaman.
+          check /dashboard 307
+          check /checkout 307
+
+          exit $fail
+
+  e2e:
+    runs-on: ubuntu-latest
+    # Dua project (chromium + mobile-320) berjalan berurutan dengan workers:1;
+    # terukur ±7–8 menit per project, ditambah build & seed.
+    timeout-minutes: 40
+
+    # Sama dengan job `verify`: MongoDB, bukan SQLite — lihat catatan di atas.
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?directConnection=true&retryWrites=true&w=majority"
+      AUTH_SECRET: "ci-placeholder-secret-not-used-in-production"
+      AUTH_TRUST_HOST: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Cache browser Playwright: unduhannya ~130 MB, tanpa cache setiap run
+      # menghabiskan menit hanya untuk mengunduh ulang.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare database
+        run: |
+          npx prisma generate
+          npx prisma db push --skip-generate
+          node prisma/seed.js
+
+      # Build ke folder khusus E2E (`.next-e2e`, lihat next.config.mjs). Di CI
+      # tidak ada `next dev` yang berjalan, tetapi jalur yang dipakai harus sama
+      # dengan jalur lokal supaya kegagalan "tidak menemukan build produksi"
+      # tidak hanya muncul di mesin pengembang.
+      - name: Build (khusus E2E)
+        run: npm run build:e2e
+
+      # playwright.config.ts menjalankan `npm run start:e2e` sendiri lewat
+      # webServer, jadi tidak perlu start manual di sini.
+      # CI hanya memasang Chromium (langkah "Install Playwright chromium" di
+      # atas), jadi project iPhone SE/WebKit sengaja TIDAK ikut — aktifkan
+      # dengan E2E_WEBKIT=1 setelah `npx playwright install webkit`.
+      - name: E2E tests
+        run: npm run test:e2e
+
+      - name: Upload laporan kegagalan
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

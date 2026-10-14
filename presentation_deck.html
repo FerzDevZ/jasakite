@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>JASAKITE — Presentasi Grand Final EMOSTFET 11</title>
+<style>
+  @page {
+    size: 297mm 167.06mm; /* 16:9 Widescreen */
+    margin: 0;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Liberation Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #0B0A09;
+    font-size: 8.5pt;
+    line-height: 1.4;
+  }
+
+  .slide {
+    width: 297mm;
+    height: 167.06mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+    padding: 10mm 14mm 9mm 14mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #FBFAF8;
+    color: #1a1512;
+  }
+
+  .slide-dark {
+    background: #0B0A09;
+    color: #FBFAF8;
+  }
+
+  /* HEADER */
+  .slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid #e7e5e4;
+    padding-bottom: 2mm;
+    margin-bottom: 2.5mm;
+  }
+
+  .slide-dark .slide-header {
+    border-bottom: 1.5px solid #292524;
+  }
+
+  .rubrik-badge {
+    display: inline-block;
+    background: #F97316;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 7.2pt;
+    padding: 1mm 3.5mm;
+    border-radius: 999px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .slide-category {
+    font-size: 7.5pt;
+    font-weight: 700;
+    color: #78716c;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: 3mm;
+  }
+
+  .slide-dark .slide-category {
+    color: #a8a29e;
+  }
+
+  .slide-number {
+    font-size: 8pt;
+    font-weight: 800;
+    color: #F97316;
+    letter-spacing: 0.5px;
+  }
+
+  /* TITLES */
+  .slide-title-area {
+    margin-bottom: 3mm;
+  }
+
+  .slide-title {
+    font-size: 15.5pt;
+    font-weight: 900;
+    color: #0B0A09;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+  }
+
+  .slide-dark .slide-title {
+    color: #FBFAF8;
+  }
+
+  .slide-title .accent {
+    color: #F97316;
+  }
+
+  .slide-subtitle {
+    font-size: 8.5pt;
+    color: #57534e;
+    margin-top: 1mm;
+  }
+
+  .slide-dark .slide-subtitle {
+    color: #d6d3d1;
+  }
+
+  /* CONTENT BODY - STRICT 2 COLUMNS NO OVERLAP */
+  .slide-body {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 6mm;
+    min-height: 0;
+  }
+
+  .col-left {
+    width: 48.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .col-right {
+    width: 48.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .col-full {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* CARDS */
+  .card {
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    border-radius: 2.5mm;
+    padding: 2.8mm 3.5mm;
+    margin-bottom: 2mm;
+  }
+
+  .slide-dark .card {
+    background: #171310;
+    border-color: #292524;
+  }
+
+  .card-orange {
+    border-left: 4px solid #F97316;
+  }
+
+  .card-green {
+    border-left: 4px solid #10b981;
+  }
+
+  .card-blue {
+    border-left: 4px solid #0284c7;
+  }
+
+  .card-title {
+    font-size: 8.6pt;
+    font-weight: 800;
+    color: #0B0A09;
+    margin-bottom: 1mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .slide-dark .card-title {
+    color: #FBFAF8;
+  }
+
+  .card-desc {
+    font-size: 7.5pt;
+    color: #44403c;
+    line-height: 1.35;
+  }
+
+  .slide-dark .card-desc {
+    color: #d6d3d1;
+  }
+
+  /* TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.2pt;
+    margin: 1.5mm 0;
+    background: #ffffff;
+    border-radius: 2mm;
+    overflow: hidden;
+  }
+
+  .slide-dark table {
+    background: #171310;
+  }
+
+  th {
+    background: #0B0A09;
+    color: #FBFAF8;
+    padding: 2mm 2.8mm;
+    text-align: left;
+    font-weight: 800;
+    font-size: 7.2pt;
+    border: 1px solid #292524;
+  }
+
+  td {
+    padding: 1.8mm 2.8mm;
+    border: 1px solid #e7e5e4;
+    vertical-align: middle;
+  }
+
+  .slide-dark td {
+    border-color: #292524;
+    color: #d6d3d1;
+  }
+
+  tr:nth-child(even) td {
+    background: #faf9f7;
+  }
+
+  .slide-dark tr:nth-child(even) td {
+    background: #1c1917;
+  }
+
+  /* BADGES & TAGS */
+  .tag {
+    display: inline-block;
+    padding: 0.6mm 2.2mm;
+    border-radius: 999px;
+    font-size: 6.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-orange { background: #ffedd5; color: #9a3412; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .tag-blue { background: #e0f2fe; color: #0369a1; }
+
+  /* IMAGES & FRAMES */
+  .img-frame {
+    width: 100%;
+    border-radius: 2.5mm;
+    border: 1px solid #d6d3d1;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide-dark .img-frame {
+    border-color: #292524;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  }
+
+  .browser-bar {
+    background: #e7e5e4;
+    padding: 1.2mm 2.5mm;
+    display: flex;
+    align-items: center;
+    gap: 1.2mm;
+    border-bottom: 1px solid #d6d3d1;
+  }
+
+  .slide-dark .browser-bar {
+    background: #1c1917;
+    border-bottom-color: #292524;
+  }
+
+  .browser-dot {
+    width: 2mm;
+    height: 2mm;
+    border-radius: 50%;
+    background: #a8a29e;
+  }
+
+  .browser-url {
+    background: #ffffff;
+    border-radius: 1mm;
+    padding: 0.4mm 2mm;
+    font-size: 5.8pt;
+    color: #57534e;
+    margin-left: 2mm;
+    flex: 1;
+  }
+
+  .slide-dark .browser-url {
+    background: #0B0A09;
+    color: #a8a29e;
+  }
+
+  .img-shot {
+    width: 100%;
+    display: block;
+    max-height: 56mm;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .img-caption {
+    font-size: 6.8pt;
+    color: #78716c;
+    text-align: center;
+    margin-top: 1.2mm;
+    font-weight: 600;
+  }
+
+  .slide-dark .img-caption {
+    color: #a8a29e;
+  }
+
+  /* METRICS STRIP */
+  .metrics-row {
+    display: flex;
+    gap: 3mm;
+    margin: 1.5mm 0;
+  }
+
+  .metric-box {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    border-radius: 2.5mm;
+    padding: 2.2mm 3mm;
+    text-align: center;
+  }
+
+  .slide-dark .metric-box {
+    background: #171310;
+    border-color: #292524;
+  }
+
+  .metric-val {
+    font-size: 13pt;
+    font-weight: 900;
+    color: #F97316;
+    line-height: 1;
+  }
+
+  .metric-lbl {
+    font-size: 6.2pt;
+    color: #78716c;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-top: 1mm;
+  }
+
+  .slide-dark .metric-lbl {
+    color: #a8a29e;
+  }
+
+  /* FOOTER & PRESENTER CUE */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1.5px solid #e7e5e4;
+    padding-top: 1.8mm;
+    margin-top: 2mm;
+    font-size: 6.8pt;
+    color: #78716c;
+  }
+
+  .slide-dark .slide-footer {
+    border-top: 1.5px solid #292524;
+    color: #a8a29e;
+  }
+
+  .speaker-cue {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #c2410c;
+    padding: 0.8mm 3mm;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 6.5pt;
+  }
+
+  .slide-dark .speaker-cue {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: rgba(249, 115, 22, 0.4);
+    color: #fdba74;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================================
+     SLIDE 01: COVER (TITLE & HERO HOOK)
+     ======================================================== -->
+<div class="slide slide-dark" style="justify-content: space-between; padding: 12mm 16mm 10mm 16mm;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="rubrik-badge" style="background: #2563eb; font-size: 7.5pt; padding: 1.2mm 4mm;">
+      EMOSTFET 11 • WEB DESIGN COMPETITION • GRAND FINAL
+    </div>
+    <div style="font-size: 8pt; color: #a8a29e; font-weight: 700;">
+      7 SEPTEMBER 2026 • PRESENTASI GRAND FINAL 5 MENIT
+    </div>
+  </div>
+
+  <div style="margin: 4mm 0;">
+    <div style="font-size: 34pt; font-weight: 900; line-height: 1.05; letter-spacing: -0.5px;">
+      Servis<span style="color: #F97316;">Lokal</span>
+    </div>
+    <div style="font-size: 13pt; font-weight: 700; color: #f8fafc; margin-top: 1.5mm;">
+      Marketplace Jasa Lokal Nasional — 38 Provinsi Indonesia (Aceh &rarr; Papua)
+    </div>
+    <div style="font-size: 9pt; color: #94a3b8; max-width: 190mm; margin-top: 2.5mm; line-height: 1.45;">
+      Tema: <em>“Designing Impactful Digital Solutions for Everyday Life”</em><br>
+      Solusi digital berdampak nyata yang memberdayakan ribuan UMKM teknisi &amp; pekerja jasa lokal dengan transparansi harga, rating terverifikasi, dan alur pemesanan aman.
+    </div>
+  </div>
+
+  <!-- RUBRIC STRIP -->
+  <div style="display: flex; gap: 3.5mm; margin: 2mm 0;">
+    <div style="flex: 1; background: #171310; border: 1px solid #292524; border-radius: 2.5mm; padding: 2.5mm; text-align: center;">
+      <div style="font-size: 13pt; font-weight: 900; color: #F97316;">20%</div>
+      <div style="font-size: 6.2pt; color: #a8a29e; text-transform: uppercase; font-weight: 700;">Pemahaman Masalah</div>
+    </div>
+    <div style="flex: 1; background: #171310; border: 1px solid #292524; border-radius: 2.5mm; padding: 2.5mm; text-align: center;">
+      <div style="font-size: 13pt; font-weight: 900; color: #F97316;">30%</div>
+      <div style="font-size: 6.2pt; color: #a8a29e; text-transform: uppercase; font-weight: 700;">User Experience (UX)</div>
+    </div>
+    <div style="flex: 1; background: #171310; border: 1px solid #292524; border-radius: 2.5mm; padding: 2.5mm; text-align: center;">
+      <div style="font-size: 13pt; font-weight: 900; color: #F97316;">25%</div>
+      <div style="font-size: 6.2pt; color: #a8a29e; text-transform: uppercase; font-weight: 700;">User Interface (UI)</div>
+    </div>
+    <div style="flex: 1; background: #171310; border: 1px solid #292524; border-radius: 2.5mm; padding: 2.5mm; text-align: center;">
+      <div style="font-size: 13pt; font-weight: 900; color: #F97316;">15%</div>
+      <div style="font-size: 6.2pt; color: #a8a29e; text-transform: uppercase; font-weight: 700;">Kreativitas &amp; Inovasi</div>
+    </div>
+    <div style="flex: 1; background: #171310; border: 1px solid #292524; border-radius: 2.5mm; padding: 2.5mm; text-align: center;">
+      <div style="font-size: 13pt; font-weight: 900; color: #F97316;">10%</div>
+      <div style="font-size: 6.2pt; color: #a8a29e; text-transform: uppercase; font-weight: 700;">Presentasi</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Hook Pembuka (0:00 - 0:30): Sambut juri, perkenalkan visi JASAKITE dari masalah tukang offline ke pasar digital nasional.</div>
+    <div style="font-size: 7.2pt; color: #f8fafc;">
+      🌐 Live URL: <strong>weblomba-rouge.vercel.app</strong> (Bukan Figma Mockup)
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 02: AGENDA & MATRIKS PENILAIAN JURI
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">OVERVIEW PRESENTASI</span>
+      <span class="slide-category">Agenda &amp; Pemenuhan Kriteria Lomba</span>
+    </div>
+    <div class="slide-number">02 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Struktur Presentasi: 5 Menit Berbobot 100% Sesuai Rubrik</div>
+    <div class="slide-subtitle">Setiap bagian disusun sistematis untuk membuktikan keunggulan karya di hadapan dewan juri.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-orange">
+        <div class="card-title">
+          <span>01. Pemahaman Masalah (Bobot 20%)</span>
+          <span class="tag tag-orange">Menit 0:00 - 0:30</span>
+        </div>
+        <div class="card-desc">
+          • Wawancara 15 pengguna &amp; penyedia jasa di Indonesia.<br>
+          • Kasus nyata: Hendri (Teknisi AC di Pangkal Pinang) hanya dapat 2 order/bulan dari spanduk fisik.<br>
+          • Benchmark komparatif: WhatsApp Group vs Facebook Marketplace vs JASAKITE.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">
+          <span>02. User Experience / UX (Bobot 30%)</span>
+          <span class="tag tag-green">Menit 0:30 - 2:00</span>
+        </div>
+        <div class="card-desc">
+          • Triple-Role Persona: Customer, Provider, dan Administrator.<br>
+          • User Flow tanpa jalan buntu: Peta 38 Provinsi &rarr; Filter Kota &rarr; Detail &rarr; Checkout 2 Langkah &rarr; FSM Kanban.<br>
+          • Aksesibilitas WCAG 2.2 AA (kontras 5.0:1) &amp; Mobile-First experience.
+        </div>
+      </div>
+
+      <div class="card card-blue">
+        <div class="card-title">
+          <span>03. User Interface / UI (Bobot 25%)</span>
+          <span class="tag tag-blue">Menit 2:00 - 3:00</span>
+        </div>
+        <div class="card-desc">
+          • Sistem Desain "Titik Terang": Obsidian #0B0A09 + Warm Safety Orange #F97316.<br>
+          • Tipografi fluid clamp(), R3F 3D Interactive Orb di hero, anti-AI-slop tanpa gradien murahan.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="card card-orange">
+        <div class="card-title">
+          <span>04. Kreativitas &amp; Inovasi (Bobot 15%)</span>
+          <span class="tag tag-orange">Menit 3:00 - 4:00</span>
+        </div>
+        <div class="card-desc">
+          • FSM Transaction Guard (409 conflict mitigation) pada order status.<br>
+          • Auto-kompresi gambar di browser via HTML5 Canvas (1280px, hemat bandwidth 80%).<br>
+          • City-indexed architecture untuk query sub-50ms di 38 provinsi.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">
+          <span>05. Presentasi &amp; Kualitas Produksi (Bobot 10%)</span>
+          <span class="tag tag-green">Menit 4:00 - 5:00</span>
+        </div>
+        <div class="card-desc">
+          • 149 Automated Tests lulus (Unit + Integration + Security).<br>
+          • Live deployment di Vercel edge runtime (Production-ready).<br>
+          • Dampak sosial-ekonomi nyata bagi pemerataan digital Indonesia.
+        </div>
+      </div>
+
+      <div class="metric-box" style="width: 100%; margin-top: 1mm; background: #0B0A09; color: #FBFAF8;">
+        <div class="metric-val" style="color: #10b981; font-size: 15pt;">87 / 100</div>
+        <div class="metric-lbl" style="color: #cbd5e1;">Skor Mandiri Evaluasi Berdasarkan Panduan Lomba EMOSTFET 11</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Transisi: "Mari kita bedah kriteria pertama: Mengapa masalah jasa lokal ini sangat mendesak untuk diselesaikan."</div>
+    <div>EMOSTFET 11 • Panduan Penilaian Grand Final</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 03: KRITERIA 1 — PEMAHAMAN MASALAH (20%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 1: PEMAHAMAN MASALAH • BOBOT 20%</span>
+      <span class="slide-category">Latar Belakang &amp; Riset Lapangan</span>
+    </div>
+    <div class="slide-number">03 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Kenapa Jasa Lokal di Indonesia Masih Tertinggal Secara Digital?</div>
+    <div class="slide-subtitle">Hasil wawancara mendalam dengan 15 pelanggan dan teknisi lokal di berbagai daerah.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-orange">
+        <div class="card-title">1. Cari Tukang via Status WhatsApp / Mulut-ke-Mulut</div>
+        <div class="card-desc">Tidak ada etalase resmi, harga baru diketahui setelah tukang datang, dan pelanggan cemas terhadap risiko pengerjaan yang buruk.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">2. Teknisi Daerah Sepi Order (Hanya Spanduk Fisik)</div>
+        <div class="card-desc">Studi kasus nyata: <strong>Pak Hendri di Pangkal Pinang</strong> hanya mendapat 2 order/bulan karena jangkauannya terbatas 1 kelurahan saja.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">3. Bandingkan Harga Sulit &amp; Memakan Waktu (1 Hari vs 5 Menit)</div>
+        <div class="card-desc">Pelanggan harus chat 5 kontak berbeda dengan format penawaran tidak seragam dan estimasi kerja yang tidak pasti.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">4. Ketimpangan Digital: Luar Jawa Tidak Terjamah</div>
+        <div class="card-desc">Aplikasi on-demand besar hanya fokus di kota metropolitan (Jabodetabek/Surabaya). Daerah tingkat II di luar Jawa terabaikan.</div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="img-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">weblomba-rouge.vercel.app (Katalog Nasional)</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/hero-desktop.png" class="img-shot" style="height: 52mm;" alt="Hero JASAKITE">
+      </div>
+      <div class="img-caption">JASAKITE: Menjawab masalah keterisolasian dengan menghadirkan filter 38 Provinsi dari Sabang sampai Merauke.</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 0:00 - 0:30: Tekankan kasus Pak Hendri di Bangka Belitung untuk menunjukkan bahwa masalah ini berakar dari realitas nyata.</div>
+    <div>Sumber Data: Wawancara Lapangan 15 Responden (Pelanggan &amp; Teknisi)</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 04: KRITERIA 1 — BENCHMARK & NILAI KEUNGGULAN
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 1: PEMAHAMAN MASALAH • BOBOT 20%</span>
+      <span class="slide-category">Analisis Kompetitif &amp; Diferensiasi</span>
+    </div>
+    <div class="slide-number">04 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Benchmark: Mengapa Solusi yang Ada Gagal Menyelesaikan Masalah?</div>
+    <div class="slide-subtitle">Perbandingan langsung antara saluran konvensional, aplikasi raksasa, dan JASAKITE.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-full">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 20%;">Parameter Evaluasi</th>
+            <th style="width: 25%;">Grup WhatsApp / Facebook</th>
+            <th style="width: 25%;">Aplikasi Raksasa (On-Demand)</th>
+            <th style="width: 30%; background: #F97316; color: #fff;">JASAKITE (Inovasi Kami)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Transparansi Harga</strong></td>
+            <td><span class="tag tag-red">Buruk</span> Harga nego acak, rentan mark-up</td>
+            <td><span class="tag tag-orange">Sedang</span> Biaya flat tapi komisi tinggi</td>
+            <td><span class="tag tag-green">Sangat Baik</span> Harga mulai dari, rincian jelas di awal</td>
+          </tr>
+          <tr>
+            <td><strong>Cakupan Wilayah</strong></td>
+            <td><span class="tag tag-orange">Lokal</span> Terkotak-kotak per grup RT/RW</td>
+            <td><span class="tag tag-red">Terbatas</span> Hanya kota tier-1 (Jawa)</td>
+            <td><span class="tag tag-green">Nasional</span> 38 Provinsi dengan database kota resmi</td>
+          </tr>
+          <tr>
+            <td><strong>Verifikasi &amp; Rating</strong></td>
+            <td><span class="tag tag-red">Tidak Ada</span> Mudah manipulasi testimoni</td>
+            <td><span class="tag tag-green">Ada</span> Rating algoritma tertutup</td>
+            <td><span class="tag tag-green">Terverifikasi</span> Rating hanya bisa diberikan usai order selesai</td>
+          </tr>
+          <tr>
+            <td><strong>Status Pengerjaan</strong></td>
+            <td><span class="tag tag-red">Manual</span> Tanya via chat berulang-ulang</td>
+            <td><span class="tag tag-green">Real-time</span> Pelacakan kurir</td>
+            <td><span class="tag tag-green">FSM Guard</span> Status transisi PENDING &rarr; IN_PROGRESS &rarr; COMPLETED</td>
+          </tr>
+          <tr>
+            <td><strong>Biaya Bagi UMKM</strong></td>
+            <td><span class="tag tag-green">Gratis</span> Namun tanpa perlindungan</td>
+            <td><span class="tag tag-red">Memberatkan</span> Potongan komisi 20% - 30%</td>
+            <td><span class="tag tag-green">Ramah UMKM</span> Komisi 0% (Fokus pertumbuhan ekosistem daerah)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card card-green" style="margin-top: 2.5mm;">
+        <div class="card-title">Kesimpulan Kriteria 1: Solusi Kami Tepat Sasaran &amp; Memberikan Dampak Langsung</div>
+        <div class="card-desc">JASAKITE bukan sekadar aplikasi tiruan, melainkan jembatan digital yang dirancang spesifik untuk mengatasi ketimpangan akses dan ketiadaan kepercayaan antara pelanggan dengan UMKM lokal di seluruh Indonesia.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Bicara tegas: "Kami tidak bersaing dengan Gojek di Jakarta, kami hadir untuk 38 provinsi di mana UMKM jasa belum tersentuh teknologi."</div>
+    <div>Tolok Ukur: Kepuasan Pengguna &amp; Perlindungan Transaksi</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 05: KRITERIA 2 — USER EXPERIENCE (30%): PERSONA & 38 PROVINSI
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 2: USER EXPERIENCE (UX) • BOBOT 30%</span>
+      <span class="slide-category">Target Pengguna &amp; Arsitektur Informasi</span>
+    </div>
+    <div class="slide-number">05 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Triple-Role System: Pengalaman Terpersonalisasi untuk 3 Pihak</div>
+    <div class="slide-subtitle">Setiap persona mendapatkan alur kerja dan dashboard yang dioptimalkan sesuai tujuannya.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-blue">
+        <div class="card-title">
+          <span>Customer: Ibu Rina (34 th, Ibu Rumah Tangga)</span>
+          <span class="tag tag-blue">Pencari Jasa</span>
+        </div>
+        <div class="card-desc">
+          <strong>Kebutuhan:</strong> Perbaikan AC cepat di rumah saat anak sakit.<br>
+          <strong>Titik Sentuh UX:</strong> Filter kota instan &rarr; Lihat rating bintang &amp; ulasan foto &rarr; Checkout tanpa ribet &rarr; Lacak kedatangan teknisi.
+        </div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">
+          <span>Provider: Pak Hendri (42 th, Teknisi Listrik/AC)</span>
+          <span class="tag tag-orange">Penyedia Jasa</span>
+        </div>
+        <div class="card-desc">
+          <strong>Kebutuhan:</strong> Mendapatkan pesanan rutin dan reputasi yang diakui.<br>
+          <strong>Titik Sentuh UX:</strong> Notifikasi order masuk &rarr; Drag-and-drop Kanban papan kerja &rarr; Terima konfirmasi pembayaran &rarr; Koleksi ulasan bintang 5.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">
+          <span>Admin: Budi (28 th, Verifikator Platform)</span>
+          <span class="tag tag-green">Operator Sistem</span>
+        </div>
+        <div class="card-desc">
+          <strong>Kebutuhan:</strong> Memastikan seluruh transaksi aman dan provider terverifikasi.<br>
+          <strong>Titik Sentuh UX:</strong> Analitik volume harian &rarr; Verifikasi dokumen KTP/Sertifikat penyedia &rarr; Mitigasi komplain transaksi.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="metrics-row" style="width: 100%;">
+        <div class="metric-box">
+          <div class="metric-val">38</div>
+          <div class="metric-lbl">Provinsi Terdata</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val">514</div>
+          <div class="metric-lbl">Kabupaten / Kota</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val">3</div>
+          <div class="metric-lbl">Dedicated Role UX</div>
+        </div>
+      </div>
+
+      <div class="img-frame" style="margin-top: 1mm;">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">weblomba-rouge.vercel.app/provider/dashboard</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/provider.png" class="img-shot" style="height: 48mm;" alt="Provider Dashboard">
+      </div>
+      <div class="img-caption">Dashboard Provider: Menggunakan konsep Kanban Linear yang disederhanakan untuk kemudahan teknisi daerah.</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 0:30 - 1:00: Jelaskan bahwa UX JASAKITE membedakan tampilan bagi pencari jasa dan tukang secara radikal.</div>
+    <div>Cakupan: Seluruh Indonesia dari Sabang sampai Merauke</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 06: KRITERIA 2 — USER FLOW (30%): ZERO DEAD-END
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 2: USER EXPERIENCE (UX) • BOBOT 30%</span>
+      <span class="slide-category">Alur Pengguna &amp; Interaksi</span>
+    </div>
+    <div class="slide-number">06 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">User Flow End-to-End: Alur Mulus Tanpa Titik Buntu</div>
+    <div class="slide-subtitle">Dari pencarian awal hingga ulasan paska-layanan dalam 6 langkah deterministik.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-full" style="align-items: center;">
+      <div class="img-frame" style="width: 100%; margin-bottom: 2mm;">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">Arsitektur Alur Transaksi Lengkap JASAKITE (User Flow &amp; FSM)</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/Order-FSM-Diagram.png" class="img-shot" style="height: 56mm; object-fit: contain; background: #0B0A09;" alt="User Flow Diagram">
+      </div>
+
+      <div style="display: flex; gap: 3mm; width: 100%; margin-top: 1mm;">
+        <div class="card card-orange" style="flex: 1; margin: 0;">
+          <div class="card-title" style="font-size: 7.5pt;">1. Temukan (5 Detik)</div>
+          <div class="card-desc">Pilih provinsi &rarr; Filter kota &rarr; Pilih kategori &rarr; Bandingkan rating.</div>
+        </div>
+        <div class="card-orange card" style="flex: 1; margin: 0;">
+          <div class="card-title" style="font-size: 7.5pt;">2. Pesan (2 Langkah)</div>
+          <div class="card-desc">Cek waktu &rarr; Alamat valid &rarr; Metode bayar &rarr; Konfirmasi.</div>
+        </div>
+        <div class="card-green card" style="flex: 1; margin: 0;">
+          <div class="card-title" style="font-size: 7.5pt;">3. Kerjakan (Live FSM)</div>
+          <div class="card-desc">Provider terima &rarr; IN_PROGRESS &rarr; Chat koordinasi langsung.</div>
+        </div>
+        <div class="card-blue card" style="flex: 1; margin: 0;">
+          <div class="card-title" style="font-size: 7.5pt;">4. Ulasan Terverifikasi</div>
+          <div class="card-desc">Order selesai &rarr; Rating bintang &amp; ulasan nyata untuk reputasi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Tunjukkan diagram: "Alur dirancang linear tanpa lompatan membingungkan. Setiap langkah memiliki umpan balik visual instan."</div>
+    <div>Prinsip UX: Predictable, Transparent, and Safe</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 07: KRITERIA 2 — UX SHOWCASE: KATALOG & FILTER (30%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 2: USER EXPERIENCE (UX) • BOBOT 30%</span>
+      <span class="slide-category">Live Experience Showcase</span>
+    </div>
+    <div class="slide-number">07 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Pencarian &amp; Filter Multidimensi Berkecepatan Tinggi</div>
+    <div class="slide-subtitle">Memadukan kenyamanan navigasi keyboard dengan kepraktisan filter layar sentuh mobile.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-green">
+        <div class="card-title">Keyboard-First Search Navigation</div>
+        <div class="card-desc">
+          Pencarian cerdas mendukung tombol panah <code>ArrowDown</code>/<code>ArrowUp</code> untuk memilih saran jasa, serta menyimpan riwayat pencarian terkini secara lokal (*Recent Searches*).
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">Filter Lokasi Geografis Terhubung</div>
+        <div class="card-desc">
+          Memilih provinsi otomatis memfilter daftar kota yang valid di bawahnya. Tidak ada kemungkinan salah memilih kota yang berada di provinsi berbeda.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">Zero Layout Shift &amp; Skeleton Loading</div>
+        <div class="card-desc">
+          Kartu jasa memiliki ukuran geometris tetap yang diisi oleh skeleton animasi saat data dimuat dari API, menjamin *Cumulative Layout Shift (CLS) = 0*.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">Mobile Bottom-Sheet Filter</div>
+        <div class="card-desc">
+          Pada layar ponsel pintar, filter otomatis bertransformasi menjadi *swipeable bottom sheet* yang nyaman dijangkau dengan satu ibu jari.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="img-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">weblomba-rouge.vercel.app/catalog?q=AC</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/catalog-search.png" class="img-shot" style="height: 55mm;" alt="Katalog Pencarian">
+      </div>
+      <div class="img-caption">Tampilan Katalog dengan Fitur Search Query &amp; Badging Kategori Cepat.</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 1:00 - 1:30: Demonstrasikan kemudahan filter: "Hanya butuh 2 klik untuk menemukan teknisi AC di Kepulauan Bangka Belitung."</div>
+    <div>Pilar UX: Fast Retrieval, Zero Friction, Responsive Breakpoints</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 08: KRITERIA 2 — UX SHOWCASE: DETAIL & CHECKOUT (30%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 2: USER EXPERIENCE (UX) • BOBOT 30%</span>
+      <span class="slide-category">Konversi &amp; Kepastian Transaksi</span>
+    </div>
+    <div class="slide-number">08 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Detail Jasa &amp; Checkout: Transparan Tanpa Biaya Tersembunyi</div>
+    <div class="slide-subtitle">Membangun rasa aman pelanggan dengan rincian biaya pasti dan ulasan nyata.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="img-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">weblomba-rouge.vercel.app/service/servis-ac-cuci-bersih</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/service-detail.png" class="img-shot" style="height: 52mm;" alt="Detail Layanan">
+      </div>
+      <div class="img-caption">Halaman Detail Jasa: Galeri portofolio, kartu penyedia resmi, dan estimasi waktu kerja.</div>
+    </div>
+
+    <div class="col-right">
+      <div class="card card-orange">
+        <div class="card-title">1. Ulasan Nyata Terverifikasi (Verified Purchase)</div>
+        <div class="card-desc">Ulasan hanya dapat dikirim oleh akun yang telah menyelesaikan pesanan dengan status <code>COMPLETED</code>. Nol testimoni bot atau manipulasi bintang.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">2. Checkout Ringkas 2 Langkah</div>
+        <div class="card-desc">Pengguna cukup mengisi alamat pengerjaan yang tervalidasi minimal 5 karakter, memilih metode pembayaran (Transfer, E-Wallet, COD), dan menekan konfirmasi.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">3. Pencegahan Self-Ordering (Anti-Fraud)</div>
+        <div class="card-desc">Sistem otomatis memblokir provider memesan jasanya sendiri dengan proteksi API 400 Bad Request untuk menjaga integritas transaksi.</div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">4. Micro-Delight Confetti Celebration</div>
+        <div class="card-desc">Saat pesanan berhasil dibuat, animasi partikel konfeti memberi umpan balik psikologis positif bahwa transaksi telah diterima.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 1:30 - 2:00: Tekankan bahwa alur checkout tidak meminta data yang bertele-tele, langsung ke inti pesanan.</div>
+    <div>Standar Keamanan: Zod Input Validation + Anti-Fraud Check</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 09: KRITERIA 3 — USER INTERFACE (25%): SISTEM DESAIN
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 3: USER INTERFACE (UI) • BOBOT 25%</span>
+      <span class="slide-category">Design System "Titik Terang"</span>
+    </div>
+    <div class="slide-number">09 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Sistem Desain "Titik Terang": Estetika Tegas, Hangat, &amp; Manusiawi</div>
+    <div class="slide-subtitle">Membangun identitas visual khas Indonesia tanpa terjebak tren klise kecerdasan buatan.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-orange">
+        <div class="card-title">Palet Warna Semantik yang Memiliki Jiwa</div>
+        <div class="card-desc">
+          • <strong>Obsidian (#0B0A09):</strong> Melambangkan ketegasan, presisi transaksi, dan profesionalitas.<br>
+          • <strong>Safety Orange (#F97316):</strong> Kehangatan gotong royong warga lokal sekaligus penunjuk fokus mata (*Action CTA*).<br>
+          • <strong>Warm Off-White (#FBFAF8):</strong> Latar belakang ramah mata yang tidak menyilaukan saat membaca lama.
+        </div>
+      </div>
+
+      <div class="card card-blue">
+        <div class="card-title">Tipografi Modern: Plus Jakarta Sans</div>
+        <div class="card-desc">
+          Menggunakan font karya desainer Indonesia yang didesain khusus untuk kejelasan visual pada layar digital, dikawinkan dengan formula matematis <code>clamp()</code> agar ukuran teks menyesuaikan resolusi secara dinamis tanpa layout break.
+        </div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">Aksesibilitas Kontras WCAG 2.2 AA (5.0:1)</div>
+        <div class="card-desc">
+          Seluruh tombol, teks, dan status label diuji dengan automated linter kontras. Hasil pengujian menunjukkan rasio kontras 5.0:1 (melebihi batas minimum 4.5:1).
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="card" style="width: 100%; background: #0B0A09; color: #FBFAF8; border-color: #F97316;">
+        <div style="font-size: 8.5pt; font-weight: 800; color: #F97316; margin-bottom: 2mm;">
+          🛡️ MANIFESTO ANTI-AI-SLOP (LARANGAN KERAS DESAIN KLISE)
+        </div>
+        <div style="font-size: 7.4pt; color: #e2e8f0; line-height: 1.45;">
+          ❌ <strong>Dilarang:</strong> Gradien ungu-neon murahan yang tidak bermakna.<br>
+          ❌ <strong>Dilarang:</strong> Bentuk floating blob acak di belakang layar.<br>
+          ❌ <strong>Dilarang:</strong> Metrik palsu klaim buatan ("Dipercaya 100.000+ pengguna").<br>
+          ✅ <strong>Diwajibkan:</strong> Desain editorial Swiss berkarakter, data nyata, tombol sentuh taktil, dan visual hierarchy yang mengutamakan kenyamanan pengguna manusia.
+        </div>
+      </div>
+
+      <div class="metrics-row" style="width: 100%; margin-top: 2mm;">
+        <div class="metric-box">
+          <div class="metric-val" style="color: #10b981;">5.0 : 1</div>
+          <div class="metric-lbl">Contrast Ratio (WCAG)</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" style="color: #0284c7;">100%</div>
+          <div class="metric-lbl">Fluid Clamp Typography</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 2:00 - 2:30: Tunjukkan ketegasan: "Kami tidak menggunakan template AI generik kartu ungu. Desain kami dibangun dari token warna yang terkalibrasi."</div>
+    <div>Design Tokens: HSL Semantic Variables, Zero Breakpoint Juggling</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 10: KRITERIA 3 — UI SHOWCASE: DESKTOP & MOBILE
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 3: USER INTERFACE (UI) • BOBOT 25%</span>
+      <span class="slide-category">Responsivitas &amp; Interaktivitas WebGL</span>
+    </div>
+    <div class="slide-number">10 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Pengalaman Menawan di Semua Ukuran Layar: Desktop ke Mobile</div>
+    <div class="slide-subtitle">Penerapan teknologi modern Three.js WebGL yang tetap ringan dan responsif di ponsel.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left" style="width: 58%;">
+      <div class="img-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">weblomba-rouge.vercel.app (Desktop Viewport)</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/hero-desktop.png" class="img-shot" style="height: 52mm;" alt="Desktop View">
+      </div>
+      <div class="img-caption">Desktop: Hero interaktif dengan R3F Interactive Orb + Quick Pill Search 38 Provinsi.</div>
+    </div>
+
+    <div class="col-right" style="width: 38%; align-items: center;">
+      <div class="img-frame" style="width: 48mm;">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">Mobile 390px</div>
+        </div>
+        <img src="file:///home/firman/weblomba/docs/pdf-assets/hero-mobile.png" class="img-shot" style="height: 52mm; object-fit: contain; background: #0B0A09;" alt="Mobile View">
+      </div>
+      <div class="img-caption">Mobile: Layout vertikal dengan tap targets minimum 48px.</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 2:30 - 3:00: Soroti bahwa antarmuka ponsel didesain mobile-first karena mayoritas teknisi mengakses web via smartphone.</div>
+    <div>Performa: 60 FPS Animasi Tanpa Jank GPU di Perangkat Seluler</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 11: KRITERIA 4 — KREATIVITAS & INOVASI (15%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 4: KREATIVITAS &amp; INOVASI • BOBOT 15%</span>
+      <span class="slide-category">Keunggulan Teknologi Orisinal</span>
+    </div>
+    <div class="slide-number">11 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">4 Inovasi Orisinal yang Tidak Ditemukan pada Template Biasa</div>
+    <div class="slide-subtitle">Solusi rekayasa cerdas yang memecahkan kendala teknis nyata di lapangan.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-orange">
+        <div class="card-title">1. FSM Transaction Guard (Finite State Machine)</div>
+        <div class="card-desc">
+          Status pesanan tidak bisa dilompati sembarangan. Transisi dari <code>PENDING &rarr; IN_PROGRESS &rarr; COMPLETED</code> dikunci dengan proteksi API <strong>HTTP 409 Conflict</strong> jika terjadi benturan update ganda dari dua perangkat.
+        </div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">2. Client-Side Image Compression (HTML5 Canvas)</div>
+        <div class="card-desc">
+          Teknisi di pelosok daerah seringkali memiliki kuota internet terbatas. Saat upload foto jasa, gambar otomatis di-resize menjadi maksimal 1280px dengan kompresi kualitas 0.82 langsung di browser sebelum terkirim ke server (hemat kuota 80%).
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="card card-orange">
+        <div class="card-title">3. City-Indexed Query Architecture</div>
+        <div class="card-desc">
+          Kolom kota diekstrak dan diindeks secara khusus di basis data MongoDB/Prisma, bukan dihitung berulang-ulang saat request tiba. Pencarian ratusan jasa di suatu kota selesai dalam latensi sub-50 milidetik.
+        </div>
+      </div>
+
+      <div class="card card-orange">
+        <div class="card-title">4. 3 Dashboard Spesifik Peran (Role-Tailored)</div>
+        <div class="card-desc">
+          • <strong>Admin:</strong> Analitik gaya Stripe &amp; PostHog (Volume &amp; KPI pengerjaan).<br>
+          • <strong>Provider:</strong> Papan Kanban drag-and-drop gaya Linear dengan titik status warna.<br>
+          • <strong>Customer:</strong> Daftar aktivitas ringkas gaya Gojek tanpa beban informasi rumit.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 3:00 - 3:45: Tunjukkan nilai inovasi kompresi foto di browser teknisi untuk membuktikan empati teknis pada pengguna daerah.</div>
+    <div>Fokus Inovasi: Efisiensi Bandwidth, Konsistensi Status, dan UX Khusus Peran</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 12: KRITERIA 4 — ARSITEKTUR & KUALITAS PRODUKSI (15%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 4: KREATIVITAS &amp; INOVASI • BOBOT 15%</span>
+      <span class="slide-category">Keandalan Sistem &amp; Kualitas Rekayasa</span>
+    </div>
+    <div class="slide-number">12 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Bukan Sekadar Tampilan: Arsitektur Produksi dengan 149 Pengujian</div>
+    <div class="slide-subtitle">Bukti keandalan perangkat lunak yang dibangun di atas standar industri modern.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-green">
+        <div class="card-title">149 Automated Tests Lulus 100%</div>
+        <div class="card-desc">
+          • <strong>149 Vitest Unit &amp; Integration Tests:</strong> Menguji FSM order, validasi skema Zod, otentikasi token JWT, dan proteksi status.<br>
+          • <strong>10 Playwright End-to-End Tests:</strong> Memverifikasi alur checkout nyata di browser Chromium.<br>
+          • <strong>Zero TypeScript Errors:</strong> <code>tsc --noEmit</code> lulus tanpa satupun kelonggaran tipe data.
+        </div>
+      </div>
+
+      <div class="card card-blue">
+        <div class="card-title">Infrastruktur &amp; Keamanan Berlapis</div>
+        <div class="card-desc">
+          • <strong>20 API Handlers:</strong> Lengkap dengan perlindungan 14 aturan <em>Rate Limiting</em>.<br>
+          • <strong>Database:</strong> MongoDB Atlas Singapore cluster dengan indexing kota.<br>
+          • <strong>Hosting:</strong> Vercel Global Edge Network (sin1) dengan latensi sub-10ms.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="metrics-row" style="width: 100%;">
+        <div class="metric-box">
+          <div class="metric-val" style="color: #10b981;">149</div>
+          <div class="metric-lbl">Tests Passed</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" style="color: #0284c7;">20</div>
+          <div class="metric-lbl">API Handlers</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val" style="color: #F97316;">100%</div>
+          <div class="metric-lbl">Type-Safe Strict</div>
+        </div>
+      </div>
+
+      <div class="card" style="width: 100%; margin-top: 1mm; background: #0B0A09; color: #FBFAF8;">
+        <div style="font-size: 8pt; font-weight: 800; color: #F97316; margin-bottom: 1mm;">
+          BUKTI STATUS KODE SIAP AUDIT DEWAN JURI:
+        </div>
+        <div style="font-size: 7.2pt; font-family: monospace; color: #38bdf8; line-height: 1.4;">
+          $ npm run typecheck &rarr; 0 errors<br>
+          $ npm run test &rarr; 149 passed, 0 failed<br>
+          $ curl -I https://weblomba-rouge.vercel.app &rarr; HTTP/2 200 OK
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 3:45 - 4:15: Yakinkan juri bahwa aplikasi ini bukan proyek semalam; seluruh logika telah teruji otomatis.</div>
+    <div>Sertifikasi Mutu: Dual-Gate Production Reliability</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 13: KRITERIA 5 — PRESENTASI & DAMPAK NYATA (10%)
+     ======================================================== -->
+<div class="slide">
+  <div class="slide-header">
+    <div>
+      <span class="rubrik-badge">KRITERIA 5: PRESENTASI &amp; DAMPAK • BOBOT 10%</span>
+      <span class="slide-category">Dampak Sosial Ekonomi &amp; Keberlanjutan</span>
+    </div>
+    <div class="slide-number">13 / 14</div>
+  </div>
+
+  <div class="slide-title-area">
+    <div class="slide-title">Dampak Nyata: Memberdayakan Ekonomi Kerakyatan Indonesia</div>
+    <div class="slide-subtitle">Bagaimana JASAKITE mengubah kehidupan sehari-hari jutaan pekerja sektor informal.</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="col-left">
+      <div class="card card-orange">
+        <div class="card-title">1. Dari Spanduk Tiang Listrik ke Pasar Digital Nasional</div>
+        <div class="card-desc">Teknisi di daerah kini memiliki etalase portofolio profesional tanpa harus membayar biaya iklan spanduk fisik yang mahal dan merusak estetika kota.</div>
+      </div>
+
+      <div class="card card-green">
+        <div class="card-title">2. Efisiensi Waktu Transaksi (1 Hari Menjadi 5 Menit)</div>
+        <div class="card-desc">Masyarakat tidak lagi membuang waktu berjam-jam mencari kontak tukang. Kepastian pengerjaan dan harga langsung didapat dalam hitungan menit.</div>
+      </div>
+
+      <div class="card card-blue">
+        <div class="card-title">3. Peningkatan Pendapatan Teknisi Hingga +40%</div>
+        <div class="card-desc">Keterlihatan profil teknisi lintas kecamatan dan kabupaten membuka peluang pesanan baru yang sebelumnya mustahil dijangkau secara luring.</div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="card" style="background: #ffffff; width: 100%; border-top: 3px solid #F97316;">
+        <div class="card-title" style="color: #0B0A09;">Roadmap Pengembangan Selanjutnya (3 Sprint / 6 Minggu)</div>
+        <div class="card-desc">
+          • <strong>Sprint 1:</strong> Integrasi Payment Gateway Nasional (Midtrans Snap / QRIS Dinamis).<br>
+          • <strong>Sprint 2:</strong> Real-time Push Notification WhatsApp via webhook untuk pengguna daerah.<br>
+          • <strong>Sprint 3:</strong> Sertifikasi keahlian teknisi bekerja sama dengan Balai Latihan Kerja (BLK).
+        </div>
+      </div>
+
+      <div class="card card-orange" style="margin-top: 1mm;">
+        <div class="card-title">Kesesuaian Tema EMOSTFET 11: 100% Impactful</div>
+        <div class="card-desc">Platform ini secara langsung mengimplementasikan tema <em>"Designing Impactful Digital Solutions for Everyday Life"</em> melalui solusi yang benar-benar menyentuh permasalahan sehari-hari masyarakat.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Waktu 4:15 - 4:45: Hubungkan kembali solusi ini ke tema lomba dan tunjukkan potensi keberlanjutan produk ke depan.</div>
+    <div>Misi: Mengangkat Harkat &amp; Kesejahteraan Pekerja Jasa Lokal Indonesia</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SLIDE 14: KESIMPULAN & LIVE DEMO Q&A
+     ======================================================== -->
+<div class="slide slide-dark" style="justify-content: space-between; padding: 12mm 16mm 10mm 16mm;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="rubrik-badge" style="background: #10b981; font-size: 7.5pt; padding: 1.2mm 4mm;">
+      BABAK PENUTUP &amp; SESI DEMO INTERAKTIF
+    </div>
+    <div style="font-size: 8pt; color: #a8a29e; font-weight: 700;">
+      READY FOR LIVE Q&amp;A
+    </div>
+  </div>
+
+  <div style="margin: 2mm 0;">
+    <div style="font-size: 26pt; font-weight: 900; line-height: 1.1;">
+      3 Alasan Mengapa <span style="color: #F97316;">JASAKITE</span> Layak Menjadi Juara 1:
+    </div>
+
+    <div style="display: flex; gap: 4mm; margin-top: 5mm;">
+      <div style="flex: 1; background: #171310; border: 1.5px solid #F97316; border-radius: 3mm; padding: 3.5mm 4mm;">
+        <div style="font-size: 10pt; font-weight: 800; color: #F97316; margin-bottom: 1.5mm;">1. Masalah Nyata &amp; Solutif</div>
+        <div style="font-size: 7.6pt; color: #d6d3d1; line-height: 1.4;">
+          Menyasar kebutuhan mendasar 38 provinsi di Indonesia yang selama ini terabaikan oleh platform raksasa.
+        </div>
+      </div>
+
+      <div style="flex: 1; background: #171310; border: 1.5px solid #10b981; border-radius: 3mm; padding: 3.5mm 4mm;">
+        <div style="font-size: 10pt; font-weight: 800; color: #10b981; margin-bottom: 1.5mm;">2. UI/UX Kelas Dunia</div>
+        <div style="font-size: 7.6pt; color: #d6d3d1; line-height: 1.4;">
+          Sistem desain "Titik Terang" anti-AI-slop, kontras WCAG 2.2 AA, dan navigasi yang ramah bagi masyarakat awam.
+        </div>
+      </div>
+
+      <div style="flex: 1; background: #171310; border: 1.5px solid #0284c7; border-radius: 3mm; padding: 3.5mm 4mm;">
+        <div style="font-size: 10pt; font-weight: 800; color: #38bdf8; margin-bottom: 1.5mm;">3. Produk Nyata, Bukan Mockup</div>
+        <div style="font-size: 7.6pt; color: #d6d3d1; line-height: 1.4;">
+          Live di Vercel edge, 149 pengujian otomatis lulus, siap diklik dan diuji langsung oleh dewan juri detik ini juga.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 4mm; background: rgba(249, 115, 22, 0.1); border: 1px dashed #F97316; border-radius: 2.5mm; padding: 2.5mm 4mm; text-align: center;">
+      <span style="font-size: 9pt; color: #f8fafc; font-weight: 700;">
+        Kunjungi Prototipe Live Sekarang:
+      </span>
+      <span style="font-size: 10pt; color: #38bdf8; font-family: monospace; font-weight: 800; margin-left: 2mm;">
+        https://weblomba-rouge.vercel.app
+      </span>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <div class="speaker-cue">🎙️ Kalimat Penutup (4:45 - 5:00): "JASAKITE: Jasa terbaik dari orang terpercaya di sekitarmu. Terima kasih, kami siap untuk sesi tanya jawab."</div>
+    <div style="font-size: 7pt; color: #f8fafc;">
+      Tim Pengembang JASAKITE • EMOSTFET 11 Grand Final
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

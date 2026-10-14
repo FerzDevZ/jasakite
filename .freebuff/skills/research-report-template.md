@@ -1,0 +1,19 @@
+# Deep Research Executive Report: [Topic]
+
+## Executive Summary
+- **Primary Finding**: ...
+- **Strategic Impact**: ...
+
+## Comparative Benchmark & Findings
+| Approach / Technology | Latency / Perf | Developer Ergonomics | Production Maturity |
+|---|---|---|---|
+| Approach A | ... | ... | ... |
+| Approach B | ... | ... | ... |
+
+## Key Invariants & Risks
+1. **Risk 1**: ...
+2. **Mitigation**: ...
+
+## References & Primary Citations
+- [1] ...
+- [2] ...

@@ -1,0 +1,2 @@
+"use client"
+export default function Error({error, reset}: {error: Error & {digest?: string}, reset: () => void}) { return <div className="p-8 text-center"><h2 className="text-lg font-bold">Terjadi kesalahan</h2><p className="text-sm text-muted-foreground">{error.message}</p><button onClick={reset} className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Coba lagi</button></div> }

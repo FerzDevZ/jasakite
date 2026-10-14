@@ -1,0 +1,428 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String?
+  email        String   @unique
+  passwordHash String?
+  phone        String?
+  role         String   @default("CUSTOMER")
+  bio          String?
+  avatarUrl    String?
+  location     String?
+  city         String?
+  // Saldo dompet JASAKITE. SATU-SATUNYA jalur yang boleh mengubah nilai ini
+  // adalah operasi terkunci di lib/wallet.ts: debit kondisional
+  // `where: { id, balance: { gte: amount } }` dan kredit bersama penulisan
+  // ledger dalam satu transaksi. Jangan pernah menulis
+  // `user.update({ data: { balance: <hasil hitung JS> } })` — itu membuka
+  // race dua checkout bersamaan dan saldo bisa minus.
+  balance      Float    @default(0)
+  // Rekening tujuan penarikan (provider). Bukan rahasia — dirender kembali
+  // di UI milik pengguna itu sendiri.
+  bankName          String?
+  bankAccountNumber String?
+  bankAccountName   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  services     Service[]
+  ordersOrderCustomer Order[] @relation("OrderCustomer")
+  reviews      Review[]
+  sentMessages     Message[] @relation("MessageSender")
+  inboxMessages    Message[] @relation("MessageRecipient")
+  savedServices SavedService[]
+  addresses     Address[]
+  cartItems     CartItem[]
+  notifications Notification[]
+  redemptions   VoucherRedemption[]
+  walletTransactions WalletTransaction[]
+
+  @@index([role, city])
+}
+
+model Category {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  slug        String   @unique
+  icon        String?
+  description String?
+  services    Service[]
+}
+
+model Service {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  providerId       String   @db.ObjectId
+  provider         User     @relation(fields: [providerId], references: [id])
+  categoryId       String   @db.ObjectId
+  category         Category @relation(fields: [categoryId], references: [id])
+  title            String
+  slug             String   @unique
+  description      String
+  price            Float
+  deliveryTimeDays Int
+  imageUrl         String?
+  images           String?
+  ratingAvg        Float    @default(0)
+  totalReviews     Int      @default(0)
+  status           String   @default("DRAFT")
+  createdAt        DateTime @default(now())
+  orders           Order[]
+  packages         ServicePackage[]
+  savedBy          SavedService[]
+
+  @@index([categoryId, status])
+  @@index([providerId])
+}
+
+// Paket tier ala Fiverr (Basic/Standard/Premium) — opsional per jasa.
+// Jasa tanpa paket tetap memakai Service.price tunggal seperti sebelumnya;
+// selector di halaman detail hanya muncul bila minimal satu paket ada.
+model ServicePackage {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId        String   @db.ObjectId
+  service          Service  @relation(fields: [serviceId], references: [id])
+  name             String
+  price            Float
+  deliveryTimeDays Int
+  features         String[]
+  position         Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  @@index([serviceId])
+}
+
+model SavedService {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  serviceId String   @db.ObjectId
+  service   Service  @relation(fields: [serviceId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, serviceId])
+  @@index([serviceId])
+}
+
+model Order {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  customerId    String   @db.ObjectId
+  customer      User     @relation(fields: [customerId], references: [id], name: "OrderCustomer")
+  serviceId     String   @db.ObjectId
+  service       Service  @relation(fields: [serviceId], references: [id])
+  totalPrice    Float
+  status        String   @default("PENDING")
+  paymentMethod String?
+  orderNotes    String?
+  address       String?
+  deadline      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+
+  // ── Identitas & pelacakan ─────────────────────────────────────────────
+  // `code` adalah nomor pesanan yang bisa dibaca manusia ("JK-2F9K3").
+  // Sebelumnya pesanan hanya punya ObjectId Mongo — mustahil dibacakan lewat
+  // telepon dan tidak mungkin diingat pelanggan.
+  //
+  // TIDAK memakai `@unique`: pesanan lama tidak punya nilai ini (semuanya
+  // null), dan MongoDB menganggap null sebagai nilai biasa sehingga indeks
+  // unik langsung gagal dibangun (`E11000 dup key: { code: null }`).
+  // Keunikan ditegakkan saat penulisan oleh pembuat kode di
+  // lib/order-code.ts, yang memeriksa tabrakan sebelum menyimpan.
+  code        String?
+  // Satu checkout bisa menghasilkan beberapa pesanan (multi-item). Semua
+  // pesanan dari checkout yang sama berbagi `groupId` supaya UI bisa
+  // menampilkan "3 pesanan dari 1 pembayaran" tanpa model OrderGroup baru.
+  groupId     String?
+  // Cap waktu per tahap. Timeline TIDAK dihitung ulang dari `updatedAt`
+  // karena kolom itu berubah pada setiap mutasi, sehingga riwayatnya berbohong
+  // begitu ada perubahan lain (mis. catatan pesanan diedit).
+  acceptedAt  DateTime?
+  cancelledAt DateTime?
+
+  // ── Rincian harga (agar dapat diaudit) ────────────────────────────────
+  // `subtotal` = harga satuan × qty sebelum potongan; `totalPrice` tetap
+  // menjadi nilai akhir yang dibayar = subtotal - discountAmount.
+  //
+  // `unitPrice` dan `qty` disimpan tersendiri, bukan hanya subtotalnya:
+  // pesanan "2 × Rp150.000" dan "1 × Rp300.000" punya subtotal sama tetapi
+  // pekerjaannya berbeda — penyedia harus tahu berapa unit yang datang, dan
+  // pelanggan berhak melihat rinciannya di halaman pesanan.
+  unitPrice      Float  @default(0)
+  qty            Int    @default(1)
+  subtotal       Float  @default(0)
+  discountAmount Float  @default(0)
+  voucherCode    String?
+
+  // ── Snapshot pilihan saat memesan ─────────────────────────────────────
+  // Disimpan sebagai nilai, bukan hanya id: paket bisa diubah atau dihapus
+  // penyedia setelah pesanan dibuat, dan riwayat pesanan tidak boleh ikut
+  // berubah karenanya. `address` (teks) juga tetap menjadi snapshot alamat.
+  packageId   String? @db.ObjectId
+  packageName String?
+  addressId   String? @db.ObjectId
+
+  reviews       Review[]
+  messages      Message[]
+
+  @@index([customerId, status])
+  @@index([serviceId])
+  @@index([groupId])
+  @@index([code])
+}
+
+/// Buku alamat pelanggan.
+/// `city` WAJIB salah satu dari 7 kabupaten/kota Provinsi Kepulauan Bangka
+/// Belitung (divalidasi di API memakai REGENCY_CITIES) dan disimpan lowercase,
+/// sama seperti kolom `User.city`, supaya filter katalog tetap bisa mencocokkan
+/// secara eksak.
+model Address {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  label     String
+  recipient String
+  phone     String
+  street    String
+  city      String
+  note      String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isDefault])
+}
+
+/// Satu baris = satu jasa di keranjang pelanggan.
+/// `qty` jarang lebih dari 1 untuk jasa (pekerjaannya tunggal), tetapi tetap
+/// didukung karena paket seperti "cuci AC 4 unit" wajar dipesan dua kali.
+///
+/// Keunikan per (pengguna, jasa) — BUKAN termasuk `packageId` — karena dua
+/// alasan sekaligus: satu jasa cukup punya satu baris (memilih paket lain
+/// mengubah baris itu), dan kolom `packageId` yang nullable tidak bisa dipakai
+/// dalam kunci unik gabungan di MongoDB tanpa menabrak perilaku filter null
+/// Prisma (lihat catatan di app/api/messages/route.ts).
+model CartItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  serviceId String   @db.ObjectId
+  packageId String?  @db.ObjectId
+  qty       Int      @default(1)
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, serviceId])
+  @@index([userId])
+}
+
+/// Voucher potongan harga.
+/// Hanya dua jenis: PERCENT (persen, dengan `maxDiscount` opsional) dan FIXED
+/// (potongan tetap). Tidak ada jenis "gratis ongkir" karena jasa di sini
+/// dikerjakan di lokasi pelanggan, bukan dikirim.
+model Voucher {
+  // `@map("_id")` wajib di MongoDB: Prisma menolak model tanpa pemetaan _id.
+  code        String    @id @map("_id")
+  title       String
+  description String?
+  type        String
+  value       Float
+  minSpend    Float     @default(0)
+  maxDiscount Float?
+  /// null = tanpa batas kuota. Pengurangan dilakukan dengan satu operasi
+  /// kondisional (`usedCount < quota`) agar tidak bocor saat dua checkout
+  /// berjalan bersamaan.
+  quota       Int?
+  usedCount   Int       @default(0)
+  perUser     Int       @default(1)
+  /// null = berlaku seluruh provinsi; jika diisi, hanya untuk kota itu.
+  scopeCity   String?
+  startsAt    DateTime  @default(now())
+  endsAt      DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  redemptions VoucherRedemption[]
+
+  @@index([isActive, endsAt])
+}
+
+/// Catatan voucher yang benar-benar terpakai. Kombinasi unik
+/// (voucher, pengguna) menegakkan batas `perUser` tanpa perlu penghitungan
+/// ulang di setiap request.
+model VoucherRedemption {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  voucherCode String
+  voucher     Voucher  @relation(fields: [voucherCode], references: [code])
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  groupId     String
+  discount    Float
+  createdAt   DateTime @default(now())
+
+  @@unique([voucherCode, userId])
+  @@index([userId])
+}
+
+/// Banner kampanye di beranda.
+/// `tone` memilih token warna semantik yang sudah lolos kontras AA — bukan
+/// nilai warna bebas, supaya banner tidak pernah jadi tempat pertama kontras
+/// gagal.
+model PromoBanner {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  subtitle String?
+  href     String
+  imageUrl String?
+  tone     String    @default("primary")
+  position Int       @default(0)
+  startsAt DateTime  @default(now())
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
+
+  @@index([isActive, position])
+}
+
+/// Notifikasi tersimpan (inbox).
+/// Sebelumnya lonceng navbar menurunkan "notifikasi" langsung dari daftar
+/// pesanan dan tidak punya status dibaca sama sekali — tombol tandai-dibaca
+/// bahkan menembak endpoint yang tidak punya handler PATCH, sehingga badge
+/// selalu kembali setiap polling. Model ini memberi status baca yang nyata.
+model Notification {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  /// ORDER | MESSAGE | PROMO | SYSTEM
+  type      String
+  title     String
+  body      String?
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  // Opsional: null = pesan lepas-pesanan (chat langsung sebelum pesan).
+  orderId   String?  @db.ObjectId
+  order     Order?   @relation(fields: [orderId], references: [id])
+  senderId  String   @db.ObjectId
+  sender    User     @relation("MessageSender", fields: [senderId], references: [id])
+  // Penerima chat lepas-pesanan; null untuk pesan dalam pesanan (dua
+  // pesertanya disimpulkan dari relasi order).
+  recipientId String? @db.ObjectId
+  recipient    User?  @relation("MessageRecipient", fields: [recipientId], references: [id])
+  content   String
+  // Diiisi server saat thread dibuka oleh PENERIMA — dasar badge unread.
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+  @@index([recipientId, readAt])
+}
+
+/// Buku besar dompet (ledger). SATU baris per perubahan saldo.
+///
+/// `User.balance` hanyalah cache agregat; sumber kebenaran riwayat adalah
+/// model ini. Setiap operasi kredit/debit wajib menulis baris ledger DAN
+/// mengubah balance dalam transaksi yang sama (lihat lib/wallet.ts).
+///
+/// Siklus hidup top-up (verifikasi manual):
+///   PENDING  — user kirim nominal + bukti transfer, saldo BELUM berubah.
+///   VERIFIED — admin menyetujui: kredit saldo atomik + cap waktu.
+///   REJECTED — admin menolak dengan alasan; tidak ada perubahan saldo.
+///
+/// PAYMENT/EARNING/WITHDRAW/REFUND lahir sudah final (tidak punya tahap
+/// verifikasi manual) karena nilainya dijaga operasi atomik pada saat kejadian.
+model WalletTransaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  /// TOPUP | PAYMENT | EARNING | WITHDRAW | REFUND
+  type        String
+  /// PENDING | VERIFIED | REJECTED — hanya TOPUP yang pernah PENDING.
+  status      String   @default("VERIFIED")
+  /// Selalu positif; arah dana ditentukan `type` (kredit: TOPUP/REFUND,
+  /// debit: PAYMENT/WITHDRAW). Membuat rumus agregasi jadi satu bentuk.
+  amount      Float
+  /// Saldo user SETELAH operasi ini — jejak audit tanpa menghitung ulang.
+  balanceAfter Float
+  /// Bukti transfer (data URI hasil kompresan kanvas atau URL https) —
+  /// wajib untuk TOPUP.
+  proofImage  String?
+  /// Audit: bukti boleh diganti pemiliknya selama pengajuan masih PENDING
+  /// (PATCH /api/wallet). Waktu terakhir bukti diisi/diganti — admin melihat
+  /// badge "bukti diubah" bila ini ada; never set oleh keputusan admin.
+  proofImageUpdatedAt DateTime?
+  /// Kode unik per top-up ("JK-TOP-XXXXX"). Dicantumkan di berita transfer
+  /// supaya pencocokan mutasi rekening platform tidak menebak.
+  topupCode   String?
+  /// Alasan penolakan yang bisa dibaca user — bukan log internal.
+  rejectReason String?
+  /// Pesanan terkait (PAYMENT/REFUND). Snapshot id, tanpa relasi balik
+  /// supaya penghapusan pesanan tidak ikut menjatuhkan riwayat dompet.
+  orderId     String?  @db.ObjectId
+  /// Saldo yang masuk ke penyedia saat pesanan COMPLETED dibayar via saldo.
+  providerId  String?  @db.ObjectId
+  /// Catatan rekening tujuan saat withdraw diajukan (snapshot — rekening
+  /// user boleh berubah kemudian, pengajuan tidak boleh ikut berubah).
+  bankSnapshot String?
+  verifiedById String? @db.ObjectId
+  verifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model Review {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String   @db.ObjectId
+  order      Order    @relation(fields: [orderId], references: [id])
+  reviewerId String   @db.ObjectId
+  reviewer   User     @relation(fields: [reviewerId], references: [id])
+  rating     Int
+  comment    String?
+  // JSON array string URL foto bukti hasil kerja (opsional, maks 3 foto).
+  photos     String?
+  createdAt  DateTime @default(now())
+}
+
+/// Delta hitungan preflight foto kartu OG, satu baris per flush (maksimal sekali
+/// per menit per instance, atau segera saat ada kegagalan).
+///
+/// Kenapa ada: hitungan di `lib/og-photo-preflight.ts` HIDUP PER PROSES. Setiap
+/// redeploy mengembalikannya ke `unknown`, dan di deployment multi-instance
+/// tiap instance hanya melaporkan bagiannya sendiri. Baris-baris inilah yang
+/// membuat angkanya selamat dari restart dan bisa dijumlahkan antar-instance.
+/// Nilainya DELTA, bukan total: menjumlahkan baris dalam satu jendela waktu
+/// hanya benar kalau tiap baris melaporkan bagian yang belum pernah dilaporkan.
+model OgPhotoPreflightSnapshot {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// Identitas proses penulis — dipakai menghitung berapa instance melapor.
+  instanceId      String
+  capturedAt      DateTime @default(now())
+  attempts        Int
+  reachable       Int
+  unreachable     Int
+  failuresHttp    Int
+  failuresTimeout Int
+  failuresNetwork Int
+  servedFromCache Int
+  dedupedInFlight Int
+  alertsRaised    Int
+  alertsCleared   Int
+
+  @@index([capturedAt])
+}

@@ -1,0 +1,436 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 98%;
+    --foreground: 20 14% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 4%;
+    --primary: 25 95% 53%;
+    /* Teks di atas primary WAJIB gelap: putih di atas oranye 53% hanya 2.68:1
+       (gagal AA). Dengan foreground gelap rasionya 7.11:1. */
+    --primary-foreground: 20 14% 4%;
+    /* Oranye versi gelap KHUSUS untuk teks/ikon oranye di atas background atau
+       card. --primary sendiri hanya 2.68:1 sebagai teks, jadi tidak boleh
+       dipakai untuk text-*. Rasio primary-strong: 5.0:1 (lolos AA). */
+    --primary-strong: 22 90% 38%;
+    --secondary: 25 40% 22%;
+    --secondary-foreground: 40 33% 98%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 25 8% 40%;
+    --accent: 40 60% 94%;
+    --accent-foreground: 25 40% 20%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    /* Merah versi teks. `text-destructive` sering dipakai di atas
+       `bg-destructive/10` (banner error) — kombinasi itu hanya 4.11:1 di light
+       dan 3.34:1 di dark, keduanya gagal AA. Pakai `text-destructive-strong`
+       untuk teks; `bg-destructive` + `text-destructive-foreground` untuk isian
+       solid seperti tombol. */
+    --destructive-strong: 0 72% 44%;
+    /* Token semantik status — satu sumber kebenaran untuk badge, chart,
+       dan indikator. Nilai dipisah per tema agar kontras tetap lolos AA. */
+    /* Nilai dipilih agar teks tone-on-soft lolos AA (>= 4.5:1), bukan hanya
+       3:1 — badge status memuat teks, bukan sekadar indikator warna. */
+    --success: 158 74% 27%;
+    --success-foreground: 0 0% 100%;
+    --success-soft: 158 60% 94%;
+    --warning: 32 90% 32%;
+    --warning-foreground: 0 0% 100%;
+    --warning-soft: 38 92% 94%;
+    --info: 214 84% 40%;
+    --info-foreground: 0 0% 100%;
+    --info-soft: 214 90% 95%;
+    /* Bintang rating adalah grafis non-teks: target >= 3:1 di atas card. */
+    --rating: 35 92% 38%;
+    /* Teks di atas chip rating kuning padat (bg-rating) — coklat gelap AA. */
+    --rating-foreground: 33 80% 14%;
+    /* Kutub kedua gradien brand. Gradien selalu primary -> brand-2 supaya
+       hanya ada satu arah & satu pasangan warna di seluruh produk. */
+    --brand-2: 42 96% 52%;
+    /* --border murni dekoratif (pemisah visual): WCAG 1.4.11 tidak menuntut
+       kontras untuk ini. --input adalah batas kontrol form, jadi WAJIB >= 3:1
+       — 35 20% 84% hanya 1.37:1, praktis tak terlihat. Sekarang 3.47:1. */
+    --border: 35 20% 88%;
+    --input: 35 20% 50%;
+    /* Ring fokus juga komponen UI: 53% hanya 2.68:1, dinaikkan ke 3.31:1. */
+    --ring: 25 95% 46%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 20 14% 4%;
+    --foreground: 40 20% 96%;
+    /* Card: slightly lighter than background for depth */
+    --card: 24 10% 8%;
+    --card-foreground: 40 20% 96%;
+    --primary: 28 96% 58%;
+    --primary-foreground: 20 14% 4%;
+    /* Dark: --primary sudah 8.43:1 sebagai teks, jadi strong = primary. */
+    --primary-strong: 28 96% 58%;
+    --secondary: 28 60% 50%;
+    --secondary-foreground: 20 14% 4%;
+    --muted: 24 8% 12%;
+    /* Muted foreground: increased from 58% to 62% for better readability */
+    --muted-foreground: 30 10% 62%;
+    --accent: 24 12% 14%;
+    --accent-foreground: 40 20% 96%;
+    /* Putih di atas 0 70% 55% hanya 4.40:1 (gagal AA tipis); 48% → 5.29:1
+       dan masih 3.74:1 terhadap latar gelap sebagai indikator. */
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 100%;
+    /* Dark: merah harus LEBIH TERANG dari --destructive agar terbaca di atas
+       kartu gelap dan tint bg-destructive/10. */
+    --destructive-strong: 0 80% 65%;
+    /* Dark: luminansi warna dinaikkan agar tetap >= 4.5:1 di latar gelap;
+       *-soft dipakai sebagai latar badge (gelap pekat, bukan pastel). */
+    --success: 158 64% 52%;
+    --success-foreground: 20 14% 4%;
+    --success-soft: 158 40% 14%;
+    --warning: 38 94% 58%;
+    --warning-foreground: 20 14% 4%;
+    --warning-soft: 34 50% 14%;
+    --info: 213 92% 66%;
+    --info-foreground: 20 14% 4%;
+    --info-soft: 213 50% 15%;
+    --rating: 38 96% 58%;
+    --rating-foreground: 33 80% 14%;
+    --brand-2: 45 96% 60%;
+    /* Border: increased from 16% to 18% for better visibility */
+    --border: 24 8% 18%;
+    /* Input: increased from 40% to 45% for better contrast */
+    --input: 24 8% 45%;
+    --ring: 28 96% 58%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+  }
+
+  /* Scrollbar tipis & konsisten */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Ring fokus tunggal untuk semua elemen interaktif non-Button
+     (div/li/label/summary ber-onClick, chip filter, tab kustom).
+     Dipakai supaya WCAG 2.4.7 tidak bergantung pada default browser
+     yang hilang begitu outline:none ikut ter-reset Tailwind. */
+  .focus-ring {
+    @apply outline-none ring-offset-background transition-shadow;
+  }
+  .focus-ring:focus-visible {
+    @apply ring-2 ring-ring ring-offset-2;
+  }
+
+  /* Glass panel — lebih premium */
+  .glass {
+    @apply border bg-card/80 backdrop-blur-2xl shadow-card-lg;
+  }
+
+  /* Micro-interaction utilities */
+  .press-scale {
+    @apply transition-transform duration-fast;
+  }
+  .press-scale:active {
+    @apply scale-[0.97];
+  }
+
+  .hover-lift {
+    @apply transition-all duration-base ease-smooth;
+  }
+  .hover-lift:hover {
+    @apply -translate-y-0.5 shadow-card-lg;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-base ease-smooth;
+  }
+  .hover-glow:hover {
+    @apply shadow-glow;
+  }
+
+  /* Focus ring for dark mode */
+  .dark .focus-ring:focus-visible {
+    @apply ring-offset-card;
+  }
+
+  /* Gradien brand tunggal: dipakai logo, badge, dan aksen headline. */
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)),
+      hsl(var(--brand-2))
+    );
+  }
+
+  /* deslop-ignore 02 — gradien teks dihapus, pakai solid primary-strong untuk AA 5:1 */
+
+  /* Grid pattern latar (dark/light mengikuti tema) */
+  .bg-grid {
+    background-image: linear-gradient(
+        to right,
+        hsl(var(--foreground) / 0.04) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        hsl(var(--foreground) / 0.04) 1px,
+        transparent 1px
+      );
+    background-size: 56px 56px;
+  }
+
+  /* Noise halus via data-uri SVG — opacity diturunkan di hero ke 0.12 */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+
+  /* Rail horizontal (banner promo, kategori, "terdekat dari kamu").
+     Scrollbar disembunyikan karena rail memang digeser dengan jari/mouse;
+     tanpa ini muncul batang abu-abu yang memotong tepi kartu. Area tetap
+     bisa di-scroll dengan keyboard (fokus elemen di dalamnya) sehingga
+     WCAG 2.1.1 tidak dikorbankan. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Snap lembut: setiap kartu berhenti rata di tepi kiri, bukan di tengah. */
+  .rail-snap {
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 1rem;
+  }
+  .rail-snap > * {
+    scroll-snap-align: start;
+  }
+
+  /* Mask fade ke bawah untuk bagian bawah hero — 80% agar grid tidak cepat hilang */
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent);
+    mask-image: linear-gradient(to bottom, black 80%, transparent);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ── Animasi layar sukses checkout ─────────────────────────────────────── */
+/* Lingkaran + centang digambar via stroke-dashoffset; dipicu segera setelah
+   mount. prefers-reduced-motion mematikan semuanya lewat kill-switch global
+   di bawah, jadi tidak perlu media query terpisah di sini. */
+@keyframes check-circle-draw {
+  from {
+    stroke-dashoffset: 166;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes check-mark-draw {
+  from {
+    stroke-dashoffset: 48;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes success-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes rise-in {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-check-circle {
+  stroke-dasharray: 166;
+  animation: check-circle-draw 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.animate-check-mark {
+  stroke-dasharray: 48;
+  animation: check-mark-draw 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+}
+.animate-success-pop {
+  animation: success-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Pop hati saat jasa disimpan (SaveButton) — reuse keyframe success-pop dengan
+   durasi lebih pendek agar terasa seperti ketukan, bukan animasi penuh. */
+.animate-heart-pop {
+  animation: success-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-rise-in {
+  animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Delay bertingkat untuk stagger konten layar sukses */
+.stagger-1 { animation-delay: 0.15s; }
+.stagger-2 { animation-delay: 0.3s; }
+.stagger-3 { animation-delay: 0.45s; }
+.stagger-4 { animation-delay: 0.6s; }
+
+/* ── Skeleton-to-content crossfade ──────────────────────────────────── */
+/* Loading skeletons fade out; page content fades in. Combined effect:
+   skeleton appears → content mounts → skeleton fades, content fades up.
+   prefers-reduced-motion: instant swap (no animation). */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes skeleton-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.animate-skeleton-out {
+  animation: skeleton-out 0.3s ease-out forwards;
+}
+.animate-content-in {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* fill-mode: both mempertahankan transform keyframe terakhir selamanya —
+   juga di prefers-reduced-motion (durasi 0.01ms). Ancestor ber-transform
+   menjadi containing block untuk semua position:fixed di dalamnya, merusak
+   DragOverlay dnd-kit (posisi fixed-nya melenceng, deteksi drop antar-kolom
+   salah kolom) dan dialog fixed lain. Keyframe berakhir di translateY(0) =
+   tanpa perubahan visual, jadi transform dilepas setelah animasi selesai. */
+.animate-content-in {
+  animation-fill-mode: backwards;
+}
+
+/* ── Hero masuk via CSS, bukan GSAP fromTo ─────────────────────────────
+   GSAP fromTo menyembunyikan teks hero (termasuk h1 = elemen LCP) SETELAH
+   hydrasi, lalu mengungkapnya beberapa detik kemudian di CPU lambat —
+   Render Delay 91% dari LCP 6,2s (LH mobile 320px). Keyframe ini berakhir
+   di keadaan akhir dan fill-mode: backwards berarti SEBELUM mulai elemen
+   memakai state frame pertama HANYA setelah gaya animasi diterapkan —
+   konten terlihat seketika bila JS gagal, dan LCP tercatat dari HTML.
+   Kill-switch reduced-motion ( atas) mematikan ini juga. */
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+[data-hero-fade] {
+  animation: hero-fade-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+[data-hero-fade]:nth-child(1) { --i: 0; }
+[data-hero-fade]:nth-child(2) { --i: 1; }
+[data-hero-fade]:nth-child(3) { --i: 2; }
+[data-hero-fade]:nth-child(4) { --i: 3; }
+[data-hero-fade]:nth-child(5) { --i: 4; }
+[data-hero-fade]:nth-child(6) { --i: 5; }
+[data-hero-fade]:nth-child(7) { --i: 6; }
+[data-hero-fade]:nth-child(8) { --i: 7; }
+
+/* ── Print stylesheet ─────────────────────────────────────────────────── */
+@media print {
+  /* Sembunyikan elemen non-konten */
+  header, nav, footer, [role="dialog"], .fixed,
+  button:not([type="submit"]), .no-print,
+  [data-hero-orb], [data-hero-float] {
+    display: none !important;
+  }
+
+  /* Reset warna untuk print */
+  body, .bg-background, .bg-card {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hapus efek visual */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Pastikan konten terbaca */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  /* Break sebelum section besar */
+  section, .break-before {
+    page-break-before: avoid;
+  }
+
+  /* Hindari break di tengah kartu */
+  .rounded-2xl, .rounded-3xl, Card {
+    page-break-inside: avoid;
+  }
+}

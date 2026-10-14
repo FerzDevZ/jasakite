@@ -1,0 +1,12 @@
+-- Prisma schema untuk PostgreSQL (reference — tidak menggantikan schema.prisma)
+-- File ini hanya dokumentasi. Untuk mengaktifkan PostgreSQL,
+-- edit prisma/schema.prisma langsung (lihat MIGRASI_POSTGRESQL.md).
+
+-- datasource db {
+--   provider = "postgresql"
+--   url      = env("DATABASE_URL")
+-- }
+--
+-- generator client {
+--   provider = "prisma-client-js"
+-- }

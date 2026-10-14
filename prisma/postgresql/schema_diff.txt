@@ -1,0 +1,29 @@
+# Patch untuk prisma/schema.prisma — Ubahan dari SQLite ke PostgreSQL
+# ============================================================================
+# Terapkan perubahan ini ke prisma/schema.prisma untuk beralih ke PostgreSQL.
+# Hanya bagian `datasource` yang berubah; seluruh model tetap identik.
+# ============================================================================
+
+# --- SEBELUM (SQLite) ---
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+# --- SESUDAH (PostgreSQL) ---
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+# ============================================================================
+# PENJELASAN: Tidak ada perubahan pada model.
+# Prisma akan otomatis menerjemahkan tipe data:
+#   - String        → TEXT
+#   - Int           → INTEGER / SERIAL (jika @default(autoincrement()))
+#   - Float         → DOUBLE PRECISION
+#   - DateTime      → TIMESTAMP(3)
+#   - @unique       → UNIQUE constraint
+#   - @@index       → CREATE INDEX
+#   - @@unique      → UNIQUE constraint (composite)
+# ============================================================================
