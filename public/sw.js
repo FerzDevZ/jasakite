@@ -3,7 +3,7 @@
 // Versi cache WAJIB naik setiap kali strategi di bawah berubah: `activate`
 // hanya menghapus cache yang namanya berbeda, jadi nama yang tetap berarti
 // shell hasil strategi lama tetap dipakai oleh pengguna yang sudah pernah buka.
-const CACHE_NAME = 'jasakite-v3'
+const CACHE_NAME = 'jasakite-v4'
 // Dokumen HTML yang disimpan hanya sebagai cadangan OFFLINE. Disajikan lewat
 // jaringan lebih dulu (lihat handler fetch) — bukan dari cache lebih dulu.
 const STATIC_ASSETS = [
