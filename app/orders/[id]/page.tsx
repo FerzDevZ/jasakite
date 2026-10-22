@@ -39,6 +39,7 @@ import { MessageThread } from "@/components/orders/message-thread"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
 import { OrderTimeline } from "@/components/orders/order-timeline"
 import { ReviewForm, ReviewSubmitted } from "@/components/orders/review-form"
+import { OrderPaymentCard } from "@/components/orders/order-payment-card"
 import { OrderDetailSkeleton } from "@/components/orders/order-detail-skeleton"
 import { PageShell } from "@/components/layout/page-shell"
 import {
@@ -46,6 +47,8 @@ import {
   isOrderStatus,
   type OrderStatus,
 } from "@/lib/order-status"
+import { canProviderStart, paymentMethodLabel } from "@/lib/payments"
+import { isSuperAdminRole } from "@/lib/roles"
 
 type OrderDetail = {
   id: string | number
@@ -54,6 +57,9 @@ type OrderDetail = {
   totalPrice: number
   status: OrderStatus
   paymentMethod: string | null
+  paymentStatus: string
+  paymentProof: string | null
+  paymentRejectReason: string | null
   orderNotes: string | null
   address: string | null
   deadline: string | null
@@ -77,12 +83,6 @@ type OrderDetail = {
     category: { name: string }
   }
   reviews: { id: string | number; rating: number; comment: string | null }[]
-}
-
-const PAYMENT_LABEL: Record<string, string> = {
-  transfer: "Bank Transfer",
-  ewallet: "E-Wallet",
-  cod: "Cash on Delivery",
 }
 
 function OrderDetailContent() {
@@ -138,6 +138,7 @@ function OrderDetailContent() {
   const isCustomer = sameId(order.customer.id, userId)
   const isProvider = sameId(order.service.provider.id, userId)
   const alreadyReviewed = order.reviews.length > 0
+  const isSuperAdmin = isSuperAdminRole(session?.user?.role)
 
   const updateStatus = async (next: OrderStatus) => {
     if (!isOrderStatus(order.status) || !canTransition(order.status, next)) {
@@ -260,6 +261,18 @@ function OrderDetailContent() {
           cancelledAt={order.cancelledAt}
         />
 
+        <OrderPaymentCard
+          order={order}
+          isCustomer={isCustomer}
+          isProvider={isProvider}
+          isSuperAdmin={isSuperAdmin}
+          onUpdated={() => {
+            queryClient.invalidateQueries({ queryKey: ["order", orderId] })
+            queryClient.invalidateQueries({ queryKey: ["customer-orders"] })
+            queryClient.invalidateQueries({ queryKey: ["provider-orders"] })
+          }}
+        />
+
         {order.status === "COMPLETED" && (
           <div className="rounded-2xl border border-success/30 bg-success-soft p-6 text-center">
             <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-success/10 text-success" aria-hidden>
@@ -358,7 +371,7 @@ function OrderDetailContent() {
                 <CreditCard className="h-4 w-4" aria-hidden /> Metode pembayaran
               </span>
               <span className="font-medium">
-                {PAYMENT_LABEL[order.paymentMethod ?? ""] ?? "—"}
+                {paymentMethodLabel(order.paymentMethod)}
               </span>
             </div>
             <div className="flex items-center justify-between border-b border-border pb-3">
@@ -464,11 +477,17 @@ function OrderDetailContent() {
           <Button
             size="lg"
             className="w-full shadow-glow"
-            disabled={busy}
+            disabled={busy || !canProviderStart(order.paymentStatus)}
             onClick={() => updateStatus("IN_PROGRESS")}
           >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Package className="h-4 w-4" aria-hidden />}
-            Terima &amp; Mulai Kerjakan
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            ) : (
+              <Package className="h-4 w-4" aria-hidden />
+            )}
+            {canProviderStart(order.paymentStatus)
+              ? "Terima & Mulai Kerjakan"
+              : "Menunggu Pembayaran Diverifikasi"}
           </Button>
         )}
         {isProvider && order.status === "IN_PROGRESS" && (

@@ -16,6 +16,7 @@ import { PageHeader } from "@/components/layout/page-shell"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { toast } from "@/lib/toast-dynamic"
 import { csrfFetch } from "@/lib/csrf-fetch"
+import { isAdminRole } from "@/lib/roles"
 import {
   Users,
   UserRound,
@@ -30,7 +31,7 @@ type AdminUser = {
   id: string | number
   name: string | null
   email: string
-  role: "CUSTOMER" | "PROVIDER" | "ADMIN"
+  role: "CUSTOMER" | "PROVIDER" | "ADMIN" | "SUPER_ADMIN"
   location: string | null
   phone: string | null
   avatarUrl: string | null
@@ -42,6 +43,7 @@ const ROLE_META: Record<
   string,
   { label: string; variant: "default" | "secondary" | "outline" | "destructive" }
 > = {
+  SUPER_ADMIN: { label: "Super Admin", variant: "destructive" },
   ADMIN: { label: "Admin", variant: "destructive" },
   PROVIDER: { label: "Penyedia Jasa", variant: "default" },
   CUSTOMER: { label: "Customer", variant: "outline" },
@@ -56,7 +58,7 @@ export default function AdminUsersPage() {
   useEffect(() => {
     if (status === "loading") return
     if (!session) router.push("/login")
-    else if (session.user.role !== "ADMIN") router.push("/dashboard")
+    else if (!isAdminRole(session.user.role)) router.push("/dashboard")
   }, [session, status, router])
 
   const { data: users, isLoading } = useQuery<AdminUser[]>({
@@ -66,10 +68,10 @@ export default function AdminUsersPage() {
       if (!res.ok) throw new Error("Gagal memuat pengguna")
       return res.json()
     },
-    enabled: session?.user?.role === "ADMIN",
+    enabled: isAdminRole(session?.user?.role),
   })
 
-  if (status === "loading" || !session || session.user.role !== "ADMIN") {
+  if (status === "loading" || !session || !isAdminRole(session.user.role)) {
     return <DashboardSkeleton stats={3} />
   }
 
@@ -252,7 +254,7 @@ export default function AdminUsersPage() {
                           })}
                         </td>
                         <td className="p-3">
-                          {user.role !== "ADMIN" && (
+                          {!isAdminRole(user.role) && (
                             <Button
                               size="sm"
                               variant="outline"

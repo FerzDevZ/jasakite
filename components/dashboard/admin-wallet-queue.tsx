@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Loader2,
   RefreshCw,
+  ShieldAlert,
   XCircle,
 } from "lucide-react"
 import { toast } from "@/lib/toast-dynamic"
@@ -52,10 +53,25 @@ function hasReplacedProof(tx: Pick<PendingWalletTx, "createdAt" | "proofImageUpd
   )
 }
 
+type PendingOrderPayment = {
+  id: string
+  code: string | null
+  totalPrice: number
+  paymentMethod: string | null
+  paymentProof: string | null
+  paymentProofUpdatedAt: string | null
+  createdAt: string
+  customer: { id: string; name: string | null; email: string }
+  service: { title: string; provider: { id: string; name: string | null } }
+}
+
 type AdminWalletPayload = {
   pending: PendingWalletTx[]
+  pendingPayments: PendingOrderPayment[]
   pendingTopups: number
   pendingWithdraws: number
+  pendingOrderPayments: number
+  canVerify: boolean
 }
 
 export function AdminWalletQueue() {
@@ -69,6 +85,39 @@ export function AdminWalletQueue() {
       if (response.status === 401) throw new Error("Sesi berakhir")
       if (!response.ok) throw new Error("Gagal memuat antrean verifikasi")
       return response.json()
+    },
+  })
+
+  const decidePayment = useMutation({
+    mutationFn: async (input: {
+      orderId: string
+      action: "verify" | "reject"
+      rejectReason?: string
+    }) => {
+      const response = await csrfFetch(`/api/orders/${input.orderId}/payment`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: input.action,
+          rejectReason: input.rejectReason,
+        }),
+      })
+      const payload = await response.json().catch(() => null)
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "Gagal memproses pembayaran")
+      }
+      return payload
+    },
+    onSuccess: async (_payload, input) => {
+      toast.success(
+        input.action === "verify" ? "Pembayaran diverifikasi" : "Bukti ditolak",
+        { description: "Pelanggan dan penyedia sudah diberi notifikasi." }
+      )
+      await queryClient.invalidateQueries({ queryKey: ["admin-wallet"] })
+    },
+    onError: (error: Error) => {
+      toast.error("Keputusan gagal", { description: error.message })
+      void queryClient.invalidateQueries({ queryKey: ["admin-wallet"] })
     },
   })
 
@@ -132,11 +181,113 @@ export function AdminWalletQueue() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Verifikasi Saldo</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {data.pendingTopups} top-up dan {data.pendingWithdraws} penarikan menunggu
-          keputusan. Keputusan bersifat final — pengajuan yang sama tidak bisa
-          diputus dua kali.
+          {data.pendingTopups} top-up, {data.pendingWithdraws} penarikan, dan{" "}
+          {data.pendingOrderPayments} pembayaran pesanan menunggu keputusan.
+          Keputusan bersifat final — pengajuan yang sama tidak bisa diputus dua kali.
         </p>
+        {!data.canVerify && (
+          <p className="mt-3 flex items-start gap-2 rounded-xl bg-warning-soft px-3.5 py-3 text-sm text-warning">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            Anda masuk sebagai ADMIN. Verifikasi uang hanya bisa dilakukan
+            SUPER_ADMIN — antrean ini hanya-baca untuk Anda.
+          </p>
+        )}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Pembayaran Pesanan Menunggu ({data.pendingPayments.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {data.pendingPayments.length === 0 ? (
+            <EmptyState
+              icon={CheckCircle2}
+              title="Tidak ada pembayaran pesanan menunggu"
+              description="Semua bukti transfer QRIS sudah diputus."
+            />
+          ) : (
+            data.pendingPayments.map((payment) => (
+              <article
+                key={payment.id}
+                className="rounded-2xl border border-border bg-card p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold">
+                      {formatIDR(payment.totalPrice)}
+                      {payment.code ? (
+                        <span className="ml-2 text-xs font-medium text-muted-foreground">
+                          #{payment.code}
+                        </span>
+                      ) : null}
+                    </p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {payment.service.title} • {payment.service.provider.name ?? "Penyedia"}
+                    </p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {payment.customer.name ?? "Tanpa nama"} • {payment.customer.email}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Bukti dikirim {new Date(payment.createdAt).toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {payment.paymentProof ? (
+                      <button
+                        type="button"
+                        onClick={() => setProofUrl(payment.paymentProof)}
+                        aria-label="Lihat bukti pembayaran"
+                        title="Perbesar bukti pembayaran"
+                        className="focus-ring flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card p-1 pr-2.5 transition-colors hover:border-primary/40"
+                      >
+                        <span className="relative block h-10 w-10 overflow-hidden rounded-md bg-muted">
+                          <Image
+                            src={payment.paymentProof}
+                            alt=""
+                            fill
+                            sizes="40px"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </span>
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          Lihat bukti
+                        </span>
+                      </button>
+                    ) : null}
+                    <Button
+                      size="sm"
+                      disabled={decidePayment.isPending || !data.canVerify}
+                      onClick={() =>
+                        decidePayment.mutate({ orderId: payment.id, action: "verify" })
+                      }
+                    >
+                      {decidePayment.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <CheckCircle2 className="h-4 w-4" aria-hidden />
+                      )}
+                      Verifikasi
+                    </Button>
+                    <RejectButton
+                      disabled={decidePayment.isPending || !data.canVerify}
+                      onConfirm={(reason) =>
+                        decidePayment.mutate({
+                          orderId: payment.id,
+                          action: "reject",
+                          rejectReason: reason,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </article>
+            ))
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -211,7 +362,7 @@ export function AdminWalletQueue() {
                     )}
                     <Button
                       size="sm"
-                      disabled={decide.isPending}
+                      disabled={decide.isPending || !data.canVerify}
                       onClick={() =>
                         decide.mutate({ transactionId: tx.id, action: "verify" })
                       }
@@ -224,7 +375,7 @@ export function AdminWalletQueue() {
                       Setujui
                     </Button>
                     <RejectButton
-                      disabled={decide.isPending}
+                      disabled={decide.isPending || !data.canVerify}
                       onConfirm={(reason) =>
                         decide.mutate({
                           transactionId: tx.id,
@@ -273,7 +424,7 @@ export function AdminWalletQueue() {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
-                      disabled={decide.isPending}
+                      disabled={decide.isPending || !data.canVerify}
                       onClick={() =>
                         decide.mutate({ transactionId: tx.id, action: "verify" })
                       }
@@ -286,7 +437,7 @@ export function AdminWalletQueue() {
                       Sudah ditransfer
                     </Button>
                     <RejectButton
-                      disabled={decide.isPending}
+                      disabled={decide.isPending || !data.canVerify}
                       confirmLabel="Tolak & kembalikan saldo"
                       onConfirm={(reason) =>
                         decide.mutate({

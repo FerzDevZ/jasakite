@@ -3,15 +3,19 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { isAdminRole, isSuperAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
 /**
- * GET — antrean verifikasi dompet untuk admin.
- * Hanya pengajuan PENDING (top-up menunggu persetujuan + withdraw menunggu
- * transfer). Riwayat yang sudah diputus tidak dimuat di sini — halaman
- * keuangan admin bisa menambah tab arsip belakangan tanpa mengubah kontrak
- * antrean ini.
+ * GET — antrean verifikasi uang untuk admin.
+ *
+ * Dua kelompok ditampilkan berdampingan karena diputus di satu tempat:
+ *  - `pending`        : pengajuan dompet (top-up & penarikan) berstatus PENDING.
+ *  - `pendingPayments`: pesanan QRIS yang bukti transfernya menunggu keputusan.
+ *
+ * ADMIN boleh MELIHAT supaya bisa menjawab pertanyaan pengguna, tetapi
+ * `canVerify` false — hanya SUPER_ADMIN yang boleh memutuskan.
  */
 export async function GET(request: Request) {
   const session = await auth()
@@ -23,7 +27,7 @@ export async function GET(request: Request) {
     where: { id: prismaId(session.user.id) },
     select: { role: true },
   })
-  if (admin?.role !== "ADMIN") {
+  if (!isAdminRole(admin?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
@@ -36,11 +40,32 @@ export async function GET(request: Request) {
   if (limited) return limited
 
   try {
-    const [pending, counts] = await Promise.all([
+    const [pending, pendingPayments, counts] = await Promise.all([
       prisma.walletTransaction.findMany({
         where: { status: "PENDING", type: { in: ["TOPUP", "WITHDRAW"] } },
         include: {
           user: { select: { id: true, name: true, email: true, role: true } },
+        },
+        orderBy: { createdAt: "asc" },
+        take: 100,
+      }),
+      prisma.order.findMany({
+        where: { paymentStatus: "WAITING_VERIFICATION", status: "PENDING" },
+        select: {
+          id: true,
+          code: true,
+          totalPrice: true,
+          paymentMethod: true,
+          paymentProof: true,
+          paymentProofUpdatedAt: true,
+          createdAt: true,
+          customer: { select: { id: true, name: true, email: true } },
+          service: {
+            select: {
+              title: true,
+              provider: { select: { id: true, name: true } },
+            },
+          },
         },
         orderBy: { createdAt: "asc" },
         take: 100,
@@ -52,13 +77,19 @@ export async function GET(request: Request) {
         prisma.walletTransaction.count({
           where: { status: "PENDING", type: "WITHDRAW" },
         }),
+        prisma.order.count({
+          where: { paymentStatus: "WAITING_VERIFICATION", status: "PENDING" },
+        }),
       ]),
     ])
 
     return NextResponse.json({
       pending,
+      pendingPayments,
       pendingTopups: counts[0],
       pendingWithdraws: counts[1],
+      pendingOrderPayments: counts[2],
+      canVerify: isSuperAdminRole(admin?.role),
     })
   } catch (error) {
     console.error("[admin/wallet] GET error:", error)

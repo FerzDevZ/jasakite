@@ -97,10 +97,12 @@ export async function POST(request: Request) {
 
     // Notifikasi ke admin dilakukan SETELAH transaksi commit dan kegagalannya
     // tidak membatalkan pengajuan — pola yang sama dengan notify pesanan.
+    // Hanya SUPER_ADMIN yang bisa memutuskan penarikan; memberi tahu ADMIN
+    // biasa hanya menghasilkan notifikasi yang tidak bisa ditindaklanjuti.
     const admins = await prisma.user.findMany({
-      where: { role: "ADMIN" },
+      where: { role: "SUPER_ADMIN" },
       select: { id: true },
-      take: 5,
+      take: 10,
     })
     await Promise.all(
       admins.map((admin) =>

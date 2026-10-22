@@ -15,6 +15,7 @@ import { ServiceStatusBadge } from "@/components/orders/order-status-badge"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { ShieldCheck, Eye, CheckCircle2, Loader2 } from "lucide-react"
 import { formatIDR } from "@/lib/utils"
+import { isAdminRole } from "@/lib/roles"
 
 type DraftService = {
   id: string | number
@@ -39,7 +40,7 @@ export default function ModerasiPage() {
   useEffect(() => {
     if (status === "loading") return
     if (!session) router.push("/login")
-    else if (session.user.role !== "ADMIN") router.push("/dashboard")
+    else if (!isAdminRole(session.user.role)) router.push("/dashboard")
   }, [session, status, router])
 
   const { data: stats, isLoading } = useQuery<AdminStats>({
@@ -49,7 +50,7 @@ export default function ModerasiPage() {
       if (!res.ok) throw new Error("Gagal memuat data")
       return res.json()
     },
-    enabled: session?.user?.role === "ADMIN",
+    enabled: isAdminRole(session?.user?.role),
   })
 
   // Aktivasi lewat mutation: sebelumnya `activate()` mengabaikan hasil fetch
@@ -81,7 +82,7 @@ export default function ModerasiPage() {
     onSettled: () => setBusyId(null),
   })
 
-  if (status === "loading" || !session || session.user.role !== "ADMIN") {
+  if (status === "loading" || !session || !isAdminRole(session.user.role)) {
     return <DashboardSkeleton stats={0} panels={1} />
   }
 

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { notify } from "@/lib/notifications"
+import { isSuperAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
@@ -44,8 +45,13 @@ export async function POST(
     where: { id: adminId },
     select: { role: true },
   })
-  if (admin?.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  // Uang hanya boleh diputus SUPER_ADMIN. ADMIN mengurus operasional, bukan
+  // saldo orang lain — satu akun yang salah klik bisa mengkredit Rp10 juta.
+  if (!isSuperAdminRole(admin?.role)) {
+    return NextResponse.json(
+      { error: "Hanya SUPER_ADMIN yang dapat memverifikasi pengajuan saldo" },
+      { status: 403 }
+    )
   }
 
   const limited = enforceRateLimit(

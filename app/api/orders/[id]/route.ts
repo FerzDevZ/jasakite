@@ -13,6 +13,7 @@ import {
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { prismaId, sameId } from "@/lib/ids"
 import { notify } from "@/lib/notifications"
+import { canProviderStart, resolveOrderSplit } from "@/lib/payments"
 
 export const dynamic = "force-dynamic"
 
@@ -191,6 +192,40 @@ export async function PATCH(
       )
     }
 
+    // Jangan biarkan pelanggan membatalkan saat bukti transfer sedang
+    // diperiksa: uangnya mungkin sudah dikirim, dan pembatalan akan membuat
+    // verifikasi jatuh ke pesanan yang sudah batal (dana menggantung).
+    if (
+      isCustomer &&
+      status === "CANCELLED" &&
+      order.paymentStatus === "WAITING_VERIFICATION"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Bukti pembayaran sedang diverifikasi. Tunggu keputusan SUPER_ADMIN sebelum membatalkan.",
+        },
+        { status: 409 }
+      )
+    }
+
+    // Gerbang escrow: penyedia baru boleh mulai setelah SUPER_ADMIN
+    // memverifikasi pembayaran. Diperiksa di server, bukan hanya tombol UI —
+    // PATCH bisa dipanggil langsung tanpa melewati halaman.
+    if (
+      isProvider &&
+      status === "IN_PROGRESS" &&
+      !canProviderStart(order.paymentStatus)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Pembayaran belum terverifikasi. Tunggu SUPER_ADMIN memeriksa bukti transfer pelanggan.",
+        },
+        { status: 409 }
+      )
+    }
+
     if (!isOrderStatus(order.status)) {
       return NextResponse.json(
         { error: "Status pesanan tersimpan tidak dikenal" },
@@ -252,40 +287,57 @@ export async function PATCH(
             data: agg,
           })
 
-          // Pesanan dibayar via dompet: terbitkan EARNING ke saldo penyedia
-          // DI DALAM transaksi yang sama dengan perubahan status — pesanan
-          // selesai dan uang masuk tidak boleh bisa terpisah.
-          if (ord.paymentMethod === "saldo") {
-            const credited = await tx.user.updateMany({
-              where: { id: service.providerId },
-              data: { balance: { increment: ord.totalPrice } },
-            })
-            if (credited.count === 0) {
-              throw new Error("Penyedia tidak ditemukan saat menerbitkan earning")
-            }
-            const providerRow = await tx.user.findUnique({
-              where: { id: service.providerId },
-              select: { balance: true },
-            })
-            if (!providerRow) throw new Error("Penyedia tidak ditemukan setelah kredit")
-            await tx.walletTransaction.create({
+          // Escrow dilepas DI SINI: uang pelanggan sudah diterima platform
+          // (paymentStatus PAID) dan baru sekarang berpindah ke penyedia,
+          // dipotong komisi. Pembagian yang tersimpan di pesanan menang atas
+          // env saat ini supaya pesanan lama tidak berubah nilainya.
+          if (ord.paymentStatus === "PAID") {
+            const split = resolveOrderSplit(
+              ord.totalPrice,
+              ord.platformFee,
+              ord.providerPayout
+            )
+            await tx.order.update({
+              where: { id: ord.id },
               data: {
-                userId: service.providerId,
-                type: "EARNING",
-                status: "VERIFIED",
-                amount: ord.totalPrice,
-                balanceAfter: providerRow.balance,
-                orderId: ord.id,
-                providerId: service.providerId,
+                platformFee: split.platformFee,
+                providerPayout: split.providerPayout,
               },
             })
+            if (split.providerPayout > 0) {
+              const credited = await tx.user.updateMany({
+                where: { id: service.providerId },
+                data: { balance: { increment: split.providerPayout } },
+              })
+              if (credited.count === 0) {
+                throw new Error("Penyedia tidak ditemukan saat menerbitkan earning")
+              }
+              const providerRow = await tx.user.findUnique({
+                where: { id: service.providerId },
+                select: { balance: true },
+              })
+              if (!providerRow) throw new Error("Penyedia tidak ditemukan setelah kredit")
+              await tx.walletTransaction.create({
+                data: {
+                  userId: service.providerId,
+                  type: "EARNING",
+                  status: "VERIFIED",
+                  amount: split.providerPayout,
+                  balanceAfter: providerRow.balance,
+                  orderId: ord.id,
+                  providerId: service.providerId,
+                },
+              })
+            }
           }
         }
       }
 
-      // Pesanan dibayar via dompet lalu dibatalkan: kembalikan dana ke
-      // saldo pelanggan dalam transaksi yang sama dengan perubahan status.
-      if (status === "CANCELLED" && ord.paymentMethod === "saldo") {
+      // Pesanan yang sudah dibayar lalu dibatalkan: dana escrow — baik dari
+      // saldo maupun QRIS yang sudah diverifikasi — kembali ke saldo
+      // pelanggan. Ini keuntungan escrow: refund tidak perlu transfer manual
+      // ke rekening luar dan tidak bisa gagal karena rekening salah.
+      if (status === "CANCELLED" && ord.paymentStatus === "PAID") {
         const refunded = await tx.user.updateMany({
           where: { id: ord.customerId },
           data: { balance: { increment: ord.totalPrice } },
@@ -307,6 +359,10 @@ export async function PATCH(
             balanceAfter: customerRow.balance,
             orderId: ord.id,
           },
+        })
+        await tx.order.update({
+          where: { id: ord.id },
+          data: { paymentStatus: "REFUNDED", refundedAt: now },
         })
       }
       return ord

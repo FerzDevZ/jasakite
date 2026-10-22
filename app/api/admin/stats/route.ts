@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { isAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
     where: { id: prismaId(session.user.id) },
     select: { role: true },
   })
-  if (user?.role !== "ADMIN") {
+  if (!isAdminRole(user?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
@@ -31,6 +32,12 @@ export async function GET(request: Request) {
   if (limited) return limited
 
   const since = new Date(Date.now() - 13 * DAY_MS)
+  // Awal bulan berjalan untuk memisahkan komisi bulan ini dari total
+  // sepanjang masa. Memakai `completedAt`, bukan `createdAt`: komisi baru
+  // menjadi milik platform saat pesanan selesai, bukan saat dipesan.
+  const monthStart = new Date()
+  monthStart.setDate(1)
+  monthStart.setHours(0, 0, 0, 0)
 
   try {
   const [
@@ -42,6 +49,7 @@ export async function GET(request: Request) {
     draftServices,
     totalOrders,
     completedAgg,
+    commissionMonthAgg,
     ratingAgg,
     recentOrders,
     statusGroups,
@@ -63,7 +71,15 @@ export async function GET(request: Request) {
     prisma.order.count(),
     prisma.order.aggregate({
       where: { status: "COMPLETED" },
-      _sum: { totalPrice: true },
+      _sum: { totalPrice: true, platformFee: true },
+      _count: { _all: true },
+    }),
+    prisma.order.aggregate({
+      where: {
+        status: "COMPLETED",
+        completedAt: { gte: monthStart },
+      },
+      _sum: { platformFee: true },
     }),
     prisma.service.aggregate({
       where: { status: "ACTIVE" },
@@ -120,11 +136,12 @@ export async function GET(request: Request) {
   const completedByService = await prisma.order.groupBy({
     by: ["serviceId"],
     where: { status: "COMPLETED" },
-    _sum: { totalPrice: true },
+    _sum: { totalPrice: true, platformFee: true },
     _count: { _all: true },
   })
 
   const categoryRevenue = new Map<string, number>()
+  const categoryCommission = new Map<string, number>()
   const providerStats = new Map<
     string | number,
     { name: string; revenue: number; orders: number }
@@ -146,8 +163,13 @@ export async function GET(request: Request) {
       const svc = serviceMap.get(String(g.serviceId))
       if (!svc) continue
       const revenue = g._sum.totalPrice ?? 0
+      const commission = g._sum.platformFee ?? 0
       const cat = svc.category.name
       categoryRevenue.set(cat, (categoryRevenue.get(cat) ?? 0) + revenue)
+      categoryCommission.set(
+        cat,
+        (categoryCommission.get(cat) ?? 0) + commission
+      )
 
       const pid = svc.provider.id as unknown as string | number
       const prev = providerStats.get(pid) ?? {
@@ -179,13 +201,22 @@ export async function GET(request: Request) {
     activeServices,
     draftServices,
     totalOrders,
+    // `revenue` tetap GMV (nilai transaksi selesai) agar kompatibel dengan
+    // pemanggil lama. Komisi platform dilaporkan terpisah — inilah uang yang
+    // benar-benar menjadi pendapatan JASAKITE.
     revenue: completedAgg._sum.totalPrice ?? 0,
+    commissionRevenue: completedAgg._sum.platformFee ?? 0,
+    commissionThisMonth: commissionMonthAgg._sum.platformFee ?? 0,
+    completedOrders: completedAgg._count._all ?? 0,
     avgRating: ratingAgg._avg.ratingAvg ?? 0,
     recentOrders,
     ordersByDay,
     categoryRevenue: Array.from(categoryRevenue.entries()).map(
       ([name, value]) => ({ name, value })
     ),
+    commissionByCategory: Array.from(categoryCommission.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value),
     topProviders: Array.from(providerStats.entries())
       .map(([id, s]) => ({ id, ...s }))
       .sort((a, b) => b.revenue - a.revenue)

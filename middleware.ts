@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { isCsrfValid, generateCsrfToken } from "@/lib/csrf"
+import { isAdminRole } from "@/lib/roles"
 
 // Halaman yang boleh diakses tanpa login
 const PUBLIC_PATHS = [
@@ -110,15 +111,16 @@ export async function middleware(request: NextRequest) {
     if (
       pathname.startsWith("/dashboard/provider") &&
       role !== "PROVIDER" &&
-      role !== "ADMIN"
+      !isAdminRole(role)
     ) {
       return NextResponse.redirect(new URL("/dashboard", request.url))
     }
 
-    // /dashboard/admin hanya untuk ADMIN
+    // /dashboard/admin untuk ADMIN dan SUPER_ADMIN. Keputusan uang tetap
+    // diperiksa ulang per route (hanya SUPER_ADMIN).
     if (
       pathname.startsWith("/dashboard/admin") &&
-      role !== "ADMIN"
+      !isAdminRole(role)
     ) {
       return NextResponse.redirect(new URL("/dashboard", request.url))
     }

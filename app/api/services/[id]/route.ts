@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId, sameId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { isAdminRole } from "@/lib/roles"
 
 const statusSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
@@ -47,7 +48,7 @@ export async function PATCH(
     // halaman moderasi mengaktifkan jasa draft milik provider lain.
     const userId = prismaId(session.user.id)
     const isOwner = sameId(service.providerId, userId)
-    const isAdmin = session.user.role === "ADMIN"
+    const isAdmin = isAdminRole(session.user.role)
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json(

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
+import { isAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
@@ -10,7 +11,7 @@ export default async function DashboardHome() {
     redirect("/login")
   }
 
-  if (session.user.role === "ADMIN") redirect("/dashboard/admin")
+  if (isAdminRole(session.user.role)) redirect("/dashboard/admin")
   if (session.user.role === "PROVIDER") redirect("/dashboard/provider")
 
   redirect("/dashboard/customer")

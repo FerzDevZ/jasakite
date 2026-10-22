@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { PLATFORM_QRIS } from "@/lib/payments"
+import { notify } from "@/lib/notifications"
 import {
   buildBankSnapshot,
   getPlatformBankAccount,
@@ -77,6 +79,12 @@ export async function GET(request: Request) {
         bankAccountName: user.bankAccountName,
       },
       platformBank: getPlatformBankAccount(),
+      // Instruksi pembayaran platform. QRIS statis selalu tersedia karena
+      // gambarnya ikut bundel publik; rekening bank opsional lewat env.
+      platformPayment: {
+        qris: PLATFORM_QRIS,
+        bank: getPlatformBankAccount(),
+      },
       transactions,
     })
   } catch (error) {
@@ -155,6 +163,25 @@ export async function POST(request: Request) {
         topupCode,
       },
     })
+
+    // Beri tahu SUPER_ADMIN bahwa ada bukti yang harus dicocokkan. Kegagalan
+    // notifikasi tidak membatalkan pengajuan yang sudah tersimpan.
+    const superAdmins = await prisma.user.findMany({
+      where: { role: "SUPER_ADMIN" },
+      select: { id: true },
+      take: 10,
+    })
+    await Promise.all(
+      superAdmins.map((admin) =>
+        notify({
+          userId: admin.id,
+          type: "SYSTEM",
+          title: `Isi saldo ${topupCode} menunggu verifikasi`,
+          body: `Rp${new Intl.NumberFormat("id-ID").format(amount)} — cocokkan bukti dengan mutasi QRIS.`,
+          href: "/dashboard/admin/wallet",
+        })
+      )
+    )
 
     return NextResponse.json(topup, { status: 201 })
   } catch (error) {

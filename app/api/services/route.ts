@@ -9,6 +9,7 @@ import {
   fetchServicesPage,
 } from '@/lib/services-query'
 import { RATE_LIMITS, enforceRateLimit } from '@/lib/api-guard'
+import { isAdminRole } from '@/lib/roles'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,9 +64,12 @@ export async function POST(request: Request) {
     where: { id: session?.user?.id ?? '' },
     select: { id: true, role: true },
   })
-  if (user?.role !== 'PROVIDER' && user?.role !== 'ADMIN') {
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (user.role !== 'PROVIDER' && !isAdminRole(user.role)) {
     return NextResponse.json(
-      { error: 'Hanya role PROVIDER yang dapat membuat jasa' },
+      { error: 'Hanya PROVIDER atau admin yang dapat membuat jasa' },
       { status: 403 }
     )
   }

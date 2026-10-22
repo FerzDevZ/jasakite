@@ -130,6 +130,8 @@ export const RATE_LIMITS = {
   orderCreate: { limit: 10, windowMs: 10 * 60 * 1000 },
   /** Perubahan status pesanan. */
   orderMutate: { limit: 30, windowMs: 5 * 60 * 1000 },
+  /** Unggah/ganti bukti pembayaran pesanan (escrow QRIS). */
+  orderPayment: { limit: 10, windowMs: 60 * 60 * 1000 },
   /** Kirim ulasan. */
   review: { limit: 10, windowMs: 60 * 60 * 1000 },
   /** Chat pada pesanan. */
@@ -166,7 +168,7 @@ export const RATE_LIMITS = {
   walletRead: { limit: 60, windowMs: 60 * 1000 },
   /** Pengajuan penarikan: mahal — dana benar-benar keluar platform. */
   walletWithdraw: { limit: 5, windowMs: 60 * 60 * 1000 },
-  /** Keputusan verifikasi top-up oleh admin. */
+  /** Keputusan verifikasi uang (top-up, penarikan, pembayaran) oleh SUPER_ADMIN. */
   walletVerify: { limit: 60, windowMs: 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>
 

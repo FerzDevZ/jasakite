@@ -7,14 +7,13 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   AlertTriangle,
-  Banknote,
   CalendarDays,
   CheckCircle2,
-  Landmark,
   Loader2,
   MapPin,
   PackageCheck,
   Plus,
+  QrCode,
   Tag,
   Wallet,
 } from "lucide-react"
@@ -91,22 +90,27 @@ const STEPS = [
 ] as const
 
 const PAYMENT_METHODS = [
-  { value: "saldo", label: "Saldo JASAKITE", description: "Bayar instan dari saldo dompet", icon: Wallet },
-  { value: "transfer", label: "Bank Transfer", description: "BCA, Mandiri, BRI, Permata", icon: Landmark },
-  { value: "ewallet", label: "E-Wallet", description: "Dana • OVO • GoPay", icon: Wallet },
-  { value: "cod", label: "Bayar di Tempat", description: "Bayar saat jasa selesai", icon: Banknote },
+  {
+    value: "qris",
+    label: "QRIS / Transfer platform",
+    description: "Scan QRIS, unggah bukti, diverifikasi SUPER_ADMIN",
+    icon: QrCode,
+  },
+  {
+    value: "saldo",
+    label: "Saldo JASAKITE",
+    description: "Bayar instan dari saldo dompet",
+    icon: Wallet,
+  },
 ] as const
 
 type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"]
 
 const PAYMENT_DETAILS: Record<PaymentMethod, string> = {
+  qris:
+    "Uang ditahan platform (escrow) sampai pekerjaan selesai. Scan QRIS di halaman pesanan, unggah bukti, lalu SUPER_ADMIN memverifikasi. Penyedia baru dibayar setelah pesanan selesai.",
   saldo:
-    "Total langsung dipotong dari saldo dompet. Penyedia menerima dana saat pesanan selesai; pembatalan mengembalikan saldo penuh.",
-  transfer:
-    "Nomor virtual account muncul di halaman pesanan. Status terkonfirmasi setelah transfer diverifikasi.",
-  ewallet:
-    "Kamu diarahkan ke aplikasi dompet digital untuk menyetujui pembayaran. Pastikan saldo mencukupi.",
-  cod: "Siapkan pembayaran tunai atau QRIS saat pekerjaan selesai. Penyedia mengonfirmasi penerimaan di tempat.",
+    "Total langsung dipotong dari saldo dompet dan ditahan platform. Penyedia menerima dana setelah pesanan selesai; pembatalan mengembalikan saldo penuh.",
 }
 
 const SCHEDULE_PRESETS = [
@@ -154,7 +158,7 @@ export function CartCheckout() {
   const [voucherCode, setVoucherCode] = React.useState<string | null>(null)
   const [deadline, setDeadline] = React.useState("")
   const [notes, setNotes] = React.useState("")
-  const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethod>("transfer")
+  const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethod>("qris")
   const [error, setError] = React.useState("")
   const [created, setCreated] = React.useState<CreatedOrder[] | null>(null)
 
@@ -1124,8 +1128,8 @@ function SuccessPanel({ orders }: { orders: CreatedOrder[] }) {
         </h1>
         <p className="mt-2 text-muted-foreground">
           {grouped
-            ? "Setiap penyedia menerima pesanannya sendiri dan akan mengonfirmasi terpisah."
-            : "Penyedia akan segera mengonfirmasi. Pantau progres lewat halaman pesanan."}
+            ? "Selesaikan pembayaran setiap pesanan lewat halaman masing-masing. Penyedia mulai bekerja setelah pembayaran diverifikasi."
+            : "Selesaikan pembayaran lewat halaman pesanan. Penyedia baru mulai bekerja setelah pembayaran diverifikasi SUPER_ADMIN."}
         </p>
 
         <ul className="mt-6 space-y-2.5 text-left">

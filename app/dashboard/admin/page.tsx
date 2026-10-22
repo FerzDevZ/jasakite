@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Counter } from "@/components/landing/counter"
@@ -26,9 +27,12 @@ import {
   Download,
   Inbox,
   Trophy,
+  PlusCircle,
+  Percent,
   type LucideIcon,
 } from "lucide-react"
 import { formatIDR } from "@/lib/utils"
+import { isAdminRole } from "@/lib/roles"
 
 // Grafik dimuat terpisah: recharts ~150 kB dan tidak dibutuhkan untuk render
 // pertama. Skeleton menahan tinggi kartu agar tidak ada layout shift.
@@ -60,10 +64,14 @@ type AdminStats = {
   }[]
   totalOrders: number
   revenue: number
+  commissionRevenue: number
+  commissionThisMonth: number
+  completedOrders: number
   avgRating: number
   recentOrders: {
     id: string | number
     totalPrice: number
+    platformFee: number
     status: string
     customer: { name: string | null }
     service: {
@@ -74,6 +82,7 @@ type AdminStats = {
   }[]
   ordersByDay: { date: string; count: number }[]
   categoryRevenue: { name: string; value: number }[]
+  commissionByCategory: { name: string; value: number }[]
   topProviders: { id: string | number; name: string; revenue: number; orders: number }[]
   statusBreakdown: {
     PENDING: number
@@ -99,7 +108,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (status === "loading") return
     if (!session) router.push("/login")
-    else if (session.user.role !== "ADMIN") router.push("/dashboard")
+    else if (!isAdminRole(session.user.role)) router.push("/dashboard")
   }, [session, status, router])
 
   const { data: stats, isLoading } = useQuery<AdminStats>({
@@ -109,10 +118,10 @@ export default function AdminDashboardPage() {
       if (!res.ok) throw new Error("Gagal memuat statistik")
       return res.json()
     },
-    enabled: session?.user?.role === "ADMIN",
+    enabled: isAdminRole(session?.user?.role),
   })
 
-  if (status === "loading" || !session || session.user.role !== "ADMIN") {
+  if (status === "loading" || !session || !isAdminRole(session.user.role)) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-10 w-64" />
@@ -147,11 +156,15 @@ export default function AdminDashboardPage() {
       hint: `${stats?.statusBreakdown.PENDING ?? 0} menunggu`,
     },
     {
-      label: "Pendapatan",
-      value: formatIDR(stats?.revenue ?? 0),
-      icon: Wallet,
+      // Yang ditampilkan adalah pendapatan platform (komisi), bukan GMV.
+      // GMV tetap tersedia di rincian pesanan dan peringkat provider; menaruh
+      // GMV sebagai "Pendapatan" membuat angka besar yang bukan milik kita.
+      label: "Komisi Platform",
+      value: formatIDR(stats?.commissionRevenue ?? 0),
+      icon: Percent,
       tone: "success" as const,
       href: "/dashboard/admin",
+      hint: `Bulan ini ${formatIDR(stats?.commissionThisMonth ?? 0)} • ${stats?.completedOrders ?? 0} pesanan selesai`,
     },
     {
       label: "Jasa Aktif",
@@ -212,6 +225,32 @@ export default function AdminDashboardPage() {
           harus terlihat tanpa dicari — bukan diselipkan di antara grafik. */}
       <OgPhotoHealthStrip />
 
+      {/* Jalur cepat untuk tugas yang paling sering dilakukan admin. Tanpa
+          ini, menambah jasa platform harus lewat dashboard penyedia dan
+          verifikasi uang tersembunyi di menu. */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Tindakan Admin</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          <Button asChild size="sm" className="shadow-glow">
+            <Link href="/dashboard/provider/buka-jasa">
+              <PlusCircle className="h-4 w-4" aria-hidden /> Tambah jasa
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/admin/wallet">
+              <Wallet className="h-4 w-4" aria-hidden /> Verifikasi uang
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/admin/moderasi">
+              <ShieldCheck className="h-4 w-4" aria-hidden /> Moderasi jasa
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -228,13 +267,13 @@ export default function AdminDashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Pendapatan per Kategori</CardTitle>
+            <CardTitle className="text-base">Komisi per Kategori</CardTitle>
           </CardHeader>
           <CardContent className="h-64">
             {isLoading ? (
               <ChartFallback />
             ) : (
-              <CategoryRevenueChart data={stats?.categoryRevenue ?? []} />
+              <CategoryRevenueChart data={stats?.commissionByCategory ?? []} />
             )}
           </CardContent>
         </Card>
@@ -299,6 +338,7 @@ export default function AdminDashboardPage() {
                     <th scope="col" className="p-3 font-medium">Provider</th>
                     <th scope="col" className="p-3 font-medium">Status</th>
                     <th scope="col" className="p-3 font-medium">Nominal</th>
+                    <th scope="col" className="p-3 font-medium">Komisi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,6 +368,11 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="p-3 font-semibold tabular-nums">
                         {formatIDR(o.totalPrice)}
+                      </td>
+                      <td className="p-3 tabular-nums text-muted-foreground">
+                        {o.status === "COMPLETED"
+                          ? formatIDR(o.platformFee ?? 0)
+                          : "—"}
                       </td>
                     </tr>
                   ))}

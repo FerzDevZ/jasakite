@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { isAdminRole } from "@/lib/roles"
 import { SITE_URL as siteUrl } from "@/lib/site-url"
 import {
   breadcrumbJsonLd,
@@ -116,7 +117,7 @@ export default async function ServiceDetailPage({
   // Izinkan ADMIN preview DRAFT via moderasi (?preview=1). Publik tetap 404 untuk non-ACTIVE.
   if (service.status !== "ACTIVE") {
     const session = await auth()
-    if (session?.user?.role !== "ADMIN") notFound()
+    if (!isAdminRole(session?.user?.role)) notFound()
   }
 
   // Fakta terstruktur tentang provider untuk tab "Tentang Provider" —

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { isAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
     where: { id: prismaId(session.user.id) },
     select: { role: true },
   })
-  if (admin?.role !== "ADMIN") {
+  if (!isAdminRole(admin?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 

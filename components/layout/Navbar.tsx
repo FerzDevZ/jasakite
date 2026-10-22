@@ -12,6 +12,7 @@ import { CartBadge } from "@/components/cart/cart-badge"
 import { CategoryMenu } from "@/components/layout/category-menu"
 import prisma from "@/lib/prisma"
 import { ImpersonationBar } from "@/components/layout/impersonation-bar"
+import { isAdminRole } from "@/lib/roles"
 
 export default async function Navbar() {
   const session = await auth()
@@ -68,7 +69,7 @@ export default async function Navbar() {
                   <span className="hidden md:inline">Dashboard</span>
                 </Button>
               </Link>
-              {(session?.user.role === "PROVIDER" || session?.user.role === "ADMIN") ? (
+              {(session?.user.role === "PROVIDER" || isAdminRole(session?.user.role)) ? (
                 <Link href="/dashboard/provider/buka-jasa" className="hidden sm:block">
                   <Button size="sm" className="h-9 px-4 font-bold shadow-glow" aria-label="Buka jasa baru">
                     <PlusCircle aria-hidden="true" />

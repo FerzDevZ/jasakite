@@ -120,6 +120,28 @@ model Order {
   totalPrice    Float
   status        String   @default("PENDING")
   paymentMethod String?
+  // ── Pembayaran (escrow QRIS platform) ─────────────────────────────────
+  // UNPAID              — pesanan dibuat, pelanggan belum mengirim bukti.
+  // WAITING_VERIFICATION— bukti sudah diunggah, menunggu keputusan SUPER_ADMIN.
+  // PAID                — dana diterima platform; penyedia boleh mulai kerja.
+  // REFUNDED            — pesanan batal setelah dibayar; dana kembali ke saldo
+  //                       pelanggan (escrow ditahan platform, bukan di penyedia).
+  paymentStatus String @default("UNPAID")
+  // Bukti transfer ke rekening/QRIS platform — data URI hasil kompresan klien
+  // atau URL https. Sama seperti bukti top-up dompet.
+  paymentProof           String?
+  paymentProofUpdatedAt  DateTime?
+  paymentRejectReason    String?
+  paidAt                 DateTime?
+  paymentVerifiedById    String?  @db.ObjectId
+  paymentVerifiedAt      DateTime?
+  refundedAt             DateTime?
+  // Pembagian uang saat pesanan selesai. Disimpan sebagai nilai, bukan
+  // dihitung ulang saat render: persentase komisi bisa berubah kapan saja,
+  // dan pesanan lama tidak boleh ikut berubah karenanya.
+  // `providerPayout` = totalPrice - platformFee.
+  platformFee    Float   @default(0)
+  providerPayout Float   @default(0)
   orderNotes    String?
   address       String?
   deadline      DateTime?

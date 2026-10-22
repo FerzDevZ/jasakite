@@ -52,3 +52,8 @@ presentation_deck.html
 # Berkas kerja sementara.
 image.png
 tsconfig.tsbuildinfo
+
+# Sumber QRIS resolusi penuh untuk regenerasi aset. Runtime memakai salinan
+# teroptimasi di public/payment/qris.png, jadi berkas ini tidak perlu ikut
+# diunggah ke build Vercel.
+/payment/

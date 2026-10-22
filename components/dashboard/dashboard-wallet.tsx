@@ -64,11 +64,20 @@ type WalletPayload = {
     bankAccountNumber: string | null
     bankAccountName: string | null
   }
-  platformBank: {
-    bankName: string
-    accountNumber: string
-    accountName: string
-  } | null
+  platformPayment: {
+    qris: {
+      imagePath: string
+      merchantName: string
+      nmid: string
+      terminal: string
+      instruction: string
+    }
+    bank: {
+      bankName: string
+      accountNumber: string
+      accountName: string
+    } | null
+  }
   transactions: WalletTx[]
 }
 
@@ -178,18 +187,12 @@ export function DashboardWallet() {
             >
               <Clock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
               <span>
-                {pendingTopups.length} pengajuan isi saldo menunggu verifikasi admin
-                (kode {pendingTopups.map((tx) => tx.topupCode).join(", ")}).
+                {pendingTopups.length} pengajuan isi saldo menunggu verifikasi
+                SUPER_ADMIN (kode {pendingTopups.map((tx) => tx.topupCode).join(", ")}).
               </span>
             </div>
           )}
 
-          {!data.platformBank && (
-            <p className="text-xs text-muted-foreground">
-              Instruksi rekening platform belum disetel oleh admin
-              (variabel <code>PLATFORM_BANK_*</code>).
-            </p>
-          )}
         </CardContent>
       </Card>
 
@@ -319,7 +322,7 @@ export function DashboardWallet() {
       <TopupSheet
         open={topupOpen}
         onOpenChange={setTopupOpen}
-        platformBank={data.platformBank}
+        platformPayment={data.platformPayment}
         onSubmitted={refresh}
       />
       <WithdrawSheet
@@ -388,12 +391,12 @@ export function DashboardWallet() {
 function TopupSheet({
   open,
   onOpenChange,
-  platformBank,
+  platformPayment,
   onSubmitted,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  platformBank: WalletPayload["platformBank"]
+  platformPayment: WalletPayload["platformPayment"]
   onSubmitted: () => Promise<void>
 }) {
   const [amount, setAmount] = React.useState("")
@@ -420,7 +423,7 @@ function TopupSheet({
       }
       const topupCode: string | undefined = payload?.topupCode
       toast.success("Pengajuan terkirim", {
-        description: `Menunggu verifikasi admin. Saldo otomatis masuk setelah disetujui${topupCode ? ` (kode ${topupCode})` : ""}.`,
+        description: `Menunggu verifikasi SUPER_ADMIN. Saldo otomatis masuk setelah disetujui${topupCode ? ` (kode ${topupCode})` : ""}.`,
       })
       setAmount("")
       setProofImage("")
@@ -441,7 +444,7 @@ function TopupSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Isi saldo"
-      description="Transfer sesuai nominal, lalu unggah bukti transfer. Admin memverifikasi dalam 1×24 jam."
+      description="Scan QRIS, masukkan nominal persis, lalu unggah bukti. SUPER_ADMIN memverifikasi dalam 1×24 jam."
     >
       <form
         className="space-y-4"
@@ -450,38 +453,75 @@ function TopupSheet({
           if (valid && !submitting) void submit()
         }}
       >
-        {platformBank ? (
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4">
-            <p className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
-              Transfer ke rekening platform
-            </p>
-            <p className="text-sm font-bold">{platformBank.bankName}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-lg font-extrabold tabular-nums tracking-wide">
-                {platformBank.accountNumber}
-              </p>
-              <button
-                type="button"
-                aria-label="Salin nomor rekening"
-                onClick={() => {
-                  void navigator.clipboard.writeText(platformBank.accountNumber)
-                  toast.success("Nomor rekening disalin")
-                }}
-                className="focus-ring rounded p-1 text-muted-foreground hover:text-foreground"
-              >
-                <Copy className="h-4 w-4" aria-hidden />
-              </button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              a.n. {platformBank.accountName}
-            </p>
-          </div>
-        ) : (
-          <p className="rounded-xl bg-warning-soft px-3.5 py-3 text-sm text-warning">
-            Rekening platform belum disetel admin — hubungi kami via pesan untuk
-            instruksi transfer.
+        <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+          <p className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
+            Scan QRIS platform
           </p>
-        )}
+          <div className="grid gap-3 sm:grid-cols-[132px_1fr]">
+            <a
+              href={platformPayment.qris.imagePath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring block overflow-hidden rounded-lg border border-border bg-white"
+              aria-label="Buka QRIS ukuran penuh"
+            >
+              <Image
+                src={platformPayment.qris.imagePath}
+                alt={`QRIS ${platformPayment.qris.merchantName}`}
+                width={615}
+                height={900}
+                sizes="132px"
+                className="h-auto w-full object-contain"
+              />
+            </a>
+            <div className="space-y-1 text-sm">
+              <p className="font-bold">{platformPayment.qris.merchantName}</p>
+              <p className="text-xs text-muted-foreground">
+                NMID {platformPayment.qris.nmid} · {platformPayment.qris.terminal}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {platformPayment.qris.instruction}
+              </p>
+              {Number.isFinite(parsedAmount) && parsedAmount > 0 && (
+                <p className="pt-1 text-xs font-semibold text-warning">
+                  Masukkan nominal persis {formatIDR(parsedAmount)} — jangan
+                  dibulatkan, agar verifikasi tidak salah cocok.
+                </p>
+              )}
+            </div>
+          </div>
+          {platformPayment.bank && (
+            <div className="border-t border-border pt-3">
+              <p className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
+                Atau transfer bank
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="text-sm font-bold">
+                  {platformPayment.bank.bankName}
+                </span>
+                <span className="text-sm font-extrabold tabular-nums tracking-wide">
+                  {platformPayment.bank.accountNumber}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Salin nomor rekening"
+                  onClick={() => {
+                    const bank = platformPayment.bank
+                    if (!bank) return
+                    void navigator.clipboard.writeText(bank.accountNumber)
+                    toast.success("Nomor rekening disalin")
+                  }}
+                  className="focus-ring rounded p-1 text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                a.n. {platformPayment.bank.accountName}
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="topup-amount">Nominal</Label>
@@ -694,7 +734,7 @@ function AttachProofSheet({
         throw new Error(payload?.error ?? "Gagal menyimpan bukti transfer")
       }
       toast.success("Bukti transfer tersimpan", {
-        description: "Admin akan memverifikasi pengajuan Anda.",
+        description: "SUPER_ADMIN akan memverifikasi pengajuan Anda.",
       })
       onOpenChange(false)
       await onSaved()
@@ -791,7 +831,7 @@ function WithdrawSheet({
         throw new Error(payload?.error ?? "Gagal mengajukan penarikan")
       }
       toast.success("Penarikan diajukan", {
-        description: "Admin akan mentransfer ke rekening Anda dan saldo dibekukan.",
+        description: "SUPER_ADMIN akan mentransfer ke rekening Anda dan saldo dibekukan.",
       })
       setAmount("")
       onOpenChange(false)

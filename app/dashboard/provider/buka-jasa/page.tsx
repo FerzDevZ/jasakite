@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/layout/page-shell"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { BukaJasaForm } from "@/components/provider/buka-jasa-form"
 import { ProviderServiceList } from "@/components/provider/provider-service-list"
+import { isAdminRole } from "@/lib/roles"
 
 export default function BukaJasaPage() {
   const router = useRouter()
@@ -26,7 +27,7 @@ export default function BukaJasaPage() {
   }
 
   const canManage =
-    session.user.role === "PROVIDER" || session.user.role === "ADMIN"
+    session.user.role === "PROVIDER" || isAdminRole(session.user.role)
 
   if (!canManage) {
     router.push("/dashboard")

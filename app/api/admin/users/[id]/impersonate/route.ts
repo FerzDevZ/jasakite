@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { isAdminRole } from "@/lib/roles"
 
 export const dynamic = "force-dynamic"
 
@@ -36,7 +37,7 @@ export async function POST(
     console.error("[impersonate] DB admin lookup error:", error)
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 })
   }
-  if (admin?.role !== "ADMIN") {
+  if (!isAdminRole(admin?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
@@ -70,7 +71,7 @@ export async function POST(
   if (!target) {
     return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 })
   }
-  if (target.role === "ADMIN") {
+  if (isAdminRole(target.role)) {
     return NextResponse.json(
       { error: "Admin tidak bisa di-impersonate" },
       { status: 400 }

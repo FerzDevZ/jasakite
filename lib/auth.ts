@@ -108,7 +108,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = (token.id as string) ?? ""
         session.user.role =
-          ((token.role as "CUSTOMER" | "PROVIDER" | "ADMIN") ?? "CUSTOMER")
+          ((token.role as "CUSTOMER" | "PROVIDER" | "ADMIN" | "SUPER_ADMIN") ??
+            "CUSTOMER")
         if (token.picture) session.user.image = token.picture as string
         if (token.impersonatorId) {
           session.user.impersonatedBy = token.impersonatorId as string

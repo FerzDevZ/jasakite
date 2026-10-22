@@ -89,7 +89,7 @@ export function CategoryRevenueChart({
           }
         />
         <Tooltip
-          formatter={(v) => [formatIDR(Number(v)), "Pendapatan"]}
+          formatter={(v) => [formatIDR(Number(v)), "Komisi"]}
           contentStyle={TOOLTIP_STYLE}
         />
         <Bar dataKey="value" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />

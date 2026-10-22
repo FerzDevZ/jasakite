@@ -17,6 +17,7 @@ import {
   totalAfterDiscount,
   type VoucherType,
 } from "@/lib/vouchers"
+import { computeOrderSplit, normalizePaymentMethod } from "@/lib/payments"
 
 export const dynamic = "force-dynamic"
 
@@ -70,7 +71,9 @@ const createOrderSchema = z.object({
     .refine((d) => !d || d.getTime() > Date.now(), {
       message: "Jadwal harus di masa depan",
     }),
-  paymentMethod: z.enum(["transfer", "ewallet", "cod", "saldo"]).optional(),
+  /** `transfer` diterima sebagai alias QRIS; ewallet/cod ditolak karena tidak
+   *  punya bukti yang bisa diverifikasi super admin. */
+  paymentMethod: z.string().max(20).optional(),
   voucherCode: z.string().trim().max(32).optional().nullable(),
   /** Hapus keranjang setelah pesanan berhasil dibuat. */
   clearCart: z.boolean().optional(),
@@ -107,6 +110,18 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const validated = createOrderSchema.parse(body)
+
+    // Escrow: pembayaran hanya lewat QRIS platform (diverifikasi manual) atau
+    // saldo dompet (debit atomik di langkah 6b). Metode lain tidak punya bukti
+    // yang bisa dicocokkan, jadi ditolak di depan — bukan diperlakukan sebagai
+    // "transfer" diam-diam.
+    const paymentMethod = normalizePaymentMethod(validated.paymentMethod ?? "qris")
+    if (!paymentMethod) {
+      return NextResponse.json(
+        { error: "Metode pembayaran tidak didukung. Gunakan QRIS atau saldo." },
+        { status: 400 }
+      )
+    }
 
     // ── 1. Susun daftar item (bentuk baru atau lama) ──────────────────────
     const rawItems =
@@ -268,7 +283,7 @@ export async function POST(request: Request) {
     // FINAL tetap berupa debit atomik di langkah 6b — cek ini hanya jalur
     // cepat, bukan pengaman.
     const payableTotal = totalAfterDiscount(subtotal, discount)
-    if (validated.paymentMethod === "saldo") {
+    if (paymentMethod === "saldo") {
       const walletUser = await prisma.user.findUnique({
         where: { id: customerId },
         select: { balance: true },
@@ -289,6 +304,11 @@ export async function POST(request: Request) {
       const lineSubtotal = lineSubtotals[i]
       const lineDiscount = shares[i]
       const code = await generateOrderCode()
+      const linePayable = totalAfterDiscount(lineSubtotal, lineDiscount)
+      // Pembagian dibekukan saat pesanan dibuat supaya perubahan persentase
+      // komisi di kemudian hari tidak mengubah pesanan yang sudah ada.
+      const split = computeOrderSplit(linePayable)
+      const paidFromBalance = paymentMethod === "saldo"
 
       const order = await prisma.order.create({
         data: {
@@ -303,9 +323,13 @@ export async function POST(request: Request) {
           subtotal: lineSubtotal,
           discountAmount: lineDiscount,
           voucherCode,
-          totalPrice: totalAfterDiscount(lineSubtotal, lineDiscount),
+          totalPrice: linePayable,
           status: "PENDING",
-          paymentMethod: validated.paymentMethod ?? null,
+          paymentMethod,
+          paymentStatus: paidFromBalance ? "PAID" : "UNPAID",
+          paidAt: paidFromBalance ? new Date() : null,
+          platformFee: split.platformFee,
+          providerPayout: split.providerPayout,
           orderNotes: item.note ?? validated.orderNotes ?? null,
           address: addressText,
           addressId,
@@ -314,13 +338,18 @@ export async function POST(request: Request) {
       })
       createdOrderIds.push(order.id)
 
-      await notify({
-        userId: item.providerId,
-        type: "ORDER",
-        title: `Pesanan baru ${code}`,
-        body: `${item.serviceTitle} — menunggu konfirmasi Anda`,
-        href: `/orders/${order.id}`,
-      })
+      // Penyedia hanya diberi tahu saat uangnya sudah pasti diterima. Pesanan
+      // QRIS yang belum dibayar tetap terlihat di dashboard, tetapi bukan
+      // pekerjaan yang boleh dimulai — jadi tidak perlu notifikasi.
+      if (paidFromBalance) {
+        await notify({
+          userId: item.providerId,
+          type: "ORDER",
+          title: `Pesanan baru ${code}`,
+          body: `${item.serviceTitle} — menunggu konfirmasi Anda`,
+          href: `/orders/${order.id}`,
+        })
+      }
     }
 
     // ── 6. Klaim voucher setelah pesanan ada ──────────────────────────────
@@ -363,7 +392,7 @@ export async function POST(request: Request) {
     // checkout bersamaan tidak bisa membuat saldo minus. Bila salah satu
     // debit gagal, SELURUH penyelesaian batal dan pesanan di-rollback:
     // tidak ada pesanan terbayar sebagian.
-    if (validated.paymentMethod === "saldo") {
+    if (paymentMethod === "saldo") {
       try {
         await prisma.$transaction(async (tx) => {
           for (let i = 0; i < createdOrderIds.length; i++) {
