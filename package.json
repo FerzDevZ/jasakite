@@ -15,6 +15,7 @@
     "build:e2e": "NEXT_DIST_DIR=.next-e2e NODE_ENV=production next build",
     "start:e2e": "NEXT_DIST_DIR=.next-e2e next start",
     "postinstall": "prisma generate",
+    "prepare": "node scripts/install-git-hooks.js",
     "vercel-build": "node scripts/vercel-preflight.js && prisma generate && NODE_ENV=production next build",
     "test": "vitest run",
     "test:watch": "vitest",

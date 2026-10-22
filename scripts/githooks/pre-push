@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Freebuff Pre-Push Secret Guard
+LEAKS=0
+check_pattern() {
+  local pattern="$1"
+  local desc="$2"
+  local matches
+  # -e wajib: pola PEM diawali tanda minus, dan tanpa ini grep
+  # membacanya sebagai opsi sehingga pemindaian private key tidak berjalan.
+  matches=$(git diff origin/main..HEAD 2>/dev/null | grep -E "^\+" | grep -E -e "$pattern" || true)
+  if [ -n "$matches" ]; then
+    echo -e "\033[0;31m[CRITICAL LEAK DETECTED] $desc\033[0m"
+    LEAKS=$((LEAKS + 1))
+  fi
+}
+check_pattern "(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})" "GitHub Personal Access Token"
+check_pattern "(AKIA[0-9A-Z]{16})" "AWS Access Key ID"
+check_pattern "-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----" "Private Key / PEM Certificate"
+check_pattern "manicode-[a-zA-Z0-9]{32,}" "Freebuff / Manicode Auth Bearer Token"
+if [ "$LEAKS" -gt 0 ]; then
+  echo -e "\033[0;31m\033[1m❌ Git push dibatalkan karena terdeteksi potensi secret leak!\033[0m"
+  exit 1
+fi
+exit 0
