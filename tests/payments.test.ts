@@ -10,6 +10,7 @@ import {
   isAllowedProofImage,
   normalizePaymentMethod,
   paymentMethodLabel,
+  payoutBreakdown,
   paymentStatusLabel,
   paymentStatusTone,
   resolveOrderSplit,
@@ -70,6 +71,43 @@ describe("komisi platform", () => {
     expect(resolveOrderSplit(100_000, 0, 0)).toEqual({
       platformFee: 10_000,
       providerPayout: 90_000,
+    })
+  })
+})
+
+describe("rincian payout", () => {
+  it("menandai pembagian yang konsisten dan menjumlah tepat", () => {
+    expect(payoutBreakdown(100_000, 10_000, 90_000)).toEqual({
+      totalPrice: 100_000,
+      platformFee: 10_000,
+      providerPayout: 90_000,
+      recorded: true,
+    })
+  })
+
+  it("menerima komisi 0% sebagai pembagian yang sah", () => {
+    expect(payoutBreakdown(100_000, 0, 100_000).recorded).toBe(true)
+  })
+
+  it("tidak mengarang pembagian untuk pesanan lama 0/0", () => {
+    expect(payoutBreakdown(100_000, 0, 0)).toEqual({
+      totalPrice: 100_000,
+      platformFee: 0,
+      providerPayout: 0,
+      recorded: false,
+    })
+  })
+
+  it("menandai nilai tidak konsisten sebagai tidak tercatat", () => {
+    expect(payoutBreakdown(100_000, 10_000, 80_000).recorded).toBe(false)
+  })
+
+  it("membulatkan dan menolak nilai negatif", () => {
+    expect(payoutBreakdown(100_000.4, -1, 99_999.6)).toEqual({
+      totalPrice: 100_000,
+      platformFee: 0,
+      providerPayout: 100_000,
+      recorded: true,
     })
   })
 })

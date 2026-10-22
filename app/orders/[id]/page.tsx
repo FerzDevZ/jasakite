@@ -47,7 +47,11 @@ import {
   isOrderStatus,
   type OrderStatus,
 } from "@/lib/order-status"
-import { canProviderStart, paymentMethodLabel } from "@/lib/payments"
+import {
+  canProviderStart,
+  paymentMethodLabel,
+  payoutBreakdown,
+} from "@/lib/payments"
 import { isSuperAdminRole } from "@/lib/roles"
 
 type OrderDetail = {
@@ -60,6 +64,8 @@ type OrderDetail = {
   paymentStatus: string
   paymentProof: string | null
   paymentRejectReason: string | null
+  platformFee: number
+  providerPayout: number
   orderNotes: string | null
   address: string | null
   deadline: string | null
@@ -139,6 +145,11 @@ function OrderDetailContent() {
   const isProvider = sameId(order.service.provider.id, userId)
   const alreadyReviewed = order.reviews.length > 0
   const isSuperAdmin = isSuperAdminRole(session?.user?.role)
+  const payout = payoutBreakdown(
+    order.totalPrice,
+    order.platformFee,
+    order.providerPayout
+  )
 
   const updateStatus = async (next: OrderStatus) => {
     if (!isOrderStatus(order.status) || !canTransition(order.status, next)) {
@@ -272,6 +283,57 @@ function OrderDetailContent() {
             queryClient.invalidateQueries({ queryKey: ["provider-orders"] })
           }}
         />
+
+        {/* Rincian payout hanya untuk penyedia (dan admin yang mengaudit).
+            Pelanggan tidak perlu melihat komisi platform; yang relevan
+            baginya adalah total yang sudah dibayar di kartu di atas. */}
+        {(isProvider || isSuperAdmin) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                Rincian Pendapatan Penyedia
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">Total pesanan</span>
+                <span className="font-medium tabular-nums">
+                  {formatIDR(payout.totalPrice)}
+                </span>
+              </div>
+              {payout.recorded ? (
+                <>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted-foreground">Komisi platform</span>
+                    <span className="font-medium tabular-nums text-destructive-strong">
+                      −{formatIDR(payout.platformFee)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 border-t border-border pt-2">
+                    <span className="font-semibold">Pendapatan bersih</span>
+                    <span className="text-base font-extrabold tabular-nums text-success">
+                      {formatIDR(payout.providerPayout)}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <p className="rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+                  Pesanan ini dibuat sebelum pembagian komisi disimpan, jadi
+                  rincian potongannya tidak tersedia.
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {order.status === "COMPLETED"
+                  ? order.paymentStatus === "PAID"
+                    ? "Dana sudah dikreditkan ke saldo dompet penyedia."
+                    : "Pesanan selesai, tetapi payout menunggu pembayaran terverifikasi."
+                  : order.status === "CANCELLED"
+                    ? "Pesanan dibatalkan — tidak ada payout."
+                    : "Payout masuk ke saldo dompet setelah pesanan selesai."}
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {order.status === "COMPLETED" && (
           <div className="rounded-2xl border border-success/30 bg-success-soft p-6 text-center">

@@ -55,6 +55,14 @@ type WalletTx = {
   orderId: string | null
   bankSnapshot: string | null
   createdAt: string
+  /** Rincian pesanan untuk baris EARNING; null untuk jenis transaksi lain. */
+  earningOrder: {
+    id: string
+    code: string | null
+    totalPrice: number
+    platformFee: number
+    providerPayout: number
+  } | null
 }
 
 type WalletPayload = {
@@ -262,6 +270,28 @@ export function DashboardWallet() {
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           Ke: {tx.bankSnapshot}
                         </p>
+                      )}
+                      {tx.type === "EARNING" && tx.earningOrder && (
+                        <dl className="mt-2 max-w-xs space-y-1 rounded-lg bg-muted/60 px-3 py-2 text-xs">
+                          <div className="flex items-center justify-between gap-4">
+                            <dt className="text-muted-foreground">Total pesanan</dt>
+                            <dd className="tabular-nums">
+                              {formatIDR(tx.earningOrder.totalPrice)}
+                            </dd>
+                          </div>
+                          <div className="flex items-center justify-between gap-4">
+                            <dt className="text-muted-foreground">Komisi platform</dt>
+                            <dd className="tabular-nums text-destructive-strong">
+                              −{formatIDR(tx.earningOrder.platformFee)}
+                            </dd>
+                          </div>
+                          <div className="flex items-center justify-between gap-4 border-t border-border pt-1 font-semibold">
+                            <dt>Masuk ke saldo</dt>
+                            <dd className="tabular-nums text-success">
+                              {formatIDR(tx.amount)}
+                            </dd>
+                          </div>
+                        </dl>
                       )}
                       {tx.type === "TOPUP" && tx.proofImage && (
                         <button

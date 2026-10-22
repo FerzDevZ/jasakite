@@ -182,6 +182,37 @@ export function resolveOrderSplit(
   return computeOrderSplit(totalPrice)
 }
 
+/**
+ * Rincian payout untuk ditampilkan, bukan untuk menghitung ulang.
+ *
+ * Berbeda dari `resolveOrderSplit`, fungsi ini TIDAK mengganti nilai 0/0 dengan
+ * persentase saat ini: pesanan lama yang dibuat sebelum fitur komisi memang
+ * tidak punya pembagian tersimpan, dan menampilkan angka hasil hitung ulang
+ * akan menyesatkan. `recorded` menandai apakah nilainya layak dipercaya.
+ */
+export type PayoutBreakdown = {
+  totalPrice: number
+  platformFee: number
+  providerPayout: number
+  recorded: boolean
+}
+
+export function payoutBreakdown(
+  totalPrice: number,
+  platformFee: number | null | undefined,
+  providerPayout: number | null | undefined
+): PayoutBreakdown {
+  const total = Math.max(0, Math.round(totalPrice))
+  const fee = Math.max(0, Math.round(platformFee ?? 0))
+  const payout = Math.max(0, Math.round(providerPayout ?? 0))
+  return {
+    totalPrice: total,
+    platformFee: fee,
+    providerPayout: payout,
+    recorded: fee + payout > 0 && Math.round(fee + payout) === total,
+  }
+}
+
 // ── Bukti transfer ───────────────────────────────────────────────────────────
 
 /**

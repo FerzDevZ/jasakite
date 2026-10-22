@@ -71,6 +71,43 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 })
     }
 
+    // Riwayat EARNING perlu rincian pesanan (total, komisi, payout) agar
+    // penyedia bisa memeriksa potongan, bukan hanya angka bersih. Diambil
+    // sekali untuk semua baris EARNING — bukan satu query per baris.
+    const earningOrderIds = [
+      ...new Set(
+        transactions
+          .filter((tx) => tx.type === "EARNING" && tx.orderId)
+          .map((tx) => String(tx.orderId))
+      ),
+    ]
+    const earningOrders =
+      earningOrderIds.length > 0
+        ? await prisma.order.findMany({
+            where: { id: { in: earningOrderIds } },
+            select: {
+              id: true,
+              code: true,
+              totalPrice: true,
+              platformFee: true,
+              providerPayout: true,
+            },
+          })
+        : []
+    const earningOrderMap = new Map(
+      earningOrders.map((order) => [String(order.id), order])
+    )
+    const transactionsWithEarnings = transactions.map((tx) =>
+      tx.type === "EARNING"
+        ? {
+            ...tx,
+            earningOrder: tx.orderId
+              ? (earningOrderMap.get(String(tx.orderId)) ?? null)
+              : null,
+          }
+        : tx
+    )
+
     return NextResponse.json({
       balance: user.balance,
       bank: {
@@ -85,7 +122,7 @@ export async function GET(request: Request) {
         qris: PLATFORM_QRIS,
         bank: getPlatformBankAccount(),
       },
-      transactions,
+      transactions: transactionsWithEarnings,
     })
   } catch (error) {
     console.error("[wallet] GET error:", error)
