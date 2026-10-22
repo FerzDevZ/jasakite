@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   const admin = await prisma.user.findUnique({
     where: { id: prismaId(session.user.id) },
-    select: { role: true },
+    select: { role: true, totpEnabledAt: true },
   })
   if (!isAdminRole(admin?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -90,6 +90,10 @@ export async function GET(request: Request) {
       pendingWithdraws: counts[1],
       pendingOrderPayments: counts[2],
       canVerify: isSuperAdminRole(admin?.role),
+      // Tanpa 2FA aktif, tombol verifikasi memang ditolak server — UI perlu
+      // tahu agar bisa menampilkan ajakan mendaftarkan authenticator, bukan
+      // membiarkan admin menebak kenapa keputusannya gagal.
+      totpEnabled: Boolean(admin?.totpEnabledAt),
     })
   } catch (error) {
     console.error("[admin/wallet] GET error:", error)

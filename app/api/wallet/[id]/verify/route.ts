@@ -5,13 +5,15 @@ import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { notify } from "@/lib/notifications"
-import { isSuperAdminRole } from "@/lib/roles"
+import { requireMoneyAccess } from "@/lib/totp-guard"
 
 export const dynamic = "force-dynamic"
 
 const verifySchema = z.object({
   action: z.enum(["verify", "reject"]),
   rejectReason: z.string().trim().min(3, "Sebutkan alasan penolakan").max(300).optional(),
+  // Kode 2FA saat keputusan diambil — bukan hanya saat login.
+  totpCode: z.string().trim().min(1, "Kode 2FA wajib diisi").max(7),
 })
 
 const rupiah = new Intl.NumberFormat("id-ID")
@@ -30,6 +32,9 @@ const rupiah = new Intl.NumberFormat("id-ID")
  *                    di luar sistem.
  *  - WITHDRAW reject : kembalikan dana — kredit atomik + baris REFUND baru,
  *                    lalu pengajuan → REJECTED. User saldo utuh kembali.
+ *
+ * Gerbang akses: SUPER_ADMIN + kode TOTP yang sah dan belum pernah dipakai
+ * (`requireMoneyAccess`). ADMIN biasa tetap 403 walau menyertakan kode.
  */
 export async function POST(
   request: Request,
@@ -41,18 +46,6 @@ export async function POST(
   }
 
   const adminId = prismaId(session.user.id)
-  const admin = await prisma.user.findUnique({
-    where: { id: adminId },
-    select: { role: true },
-  })
-  // Uang hanya boleh diputus SUPER_ADMIN. ADMIN mengurus operasional, bukan
-  // saldo orang lain — satu akun yang salah klik bisa mengkredit Rp10 juta.
-  if (!isSuperAdminRole(admin?.role)) {
-    return NextResponse.json(
-      { error: "Hanya SUPER_ADMIN yang dapat memverifikasi pengajuan saldo" },
-      { status: 403 }
-    )
-  }
 
   const limited = enforceRateLimit(
     request,
@@ -62,13 +55,22 @@ export async function POST(
   )
   if (limited) return limited
 
+  // Ambang terpisah dan jauh lebih ketat untuk tebakan kode 6 digit.
+  const twoFactorLimited = enforceRateLimit(
+    request,
+    "wallet-verify-2fa",
+    RATE_LIMITS.totpVerify,
+    session.user.id
+  )
+  if (twoFactorLimited) return twoFactorLimited
+
   const { id } = await params
   if (!id || !/^[0-9a-fA-F]{24}$|^\d+$/.test(id.trim())) {
     return NextResponse.json({ error: "ID tidak valid" }, { status: 400 })
   }
 
   try {
-    const { action, rejectReason } = verifySchema.parse(await request.json())
+    const { action, rejectReason, totpCode } = verifySchema.parse(await request.json())
     if (action === "reject" && !rejectReason) {
       return NextResponse.json(
         { error: "Alasan penolakan wajib diisi" },
@@ -101,6 +103,15 @@ export async function POST(
         { status: 400 }
       )
     }
+
+    // Uang hanya boleh diputus SUPER_ADMIN, dan hanya dengan kode 2FA yang sah
+    // pada saat itu juga. ADMIN mengurus operasional, bukan saldo orang lain —
+    // satu akun yang salah klik bisa mengkredit Rp10 juta.
+    //
+    // Diletakkan SETELAH validasi di atas supaya permintaan yang pasti gagal
+    // (ID salah, pengajuan sudah diputus) tidak menghabiskan kode 2FA admin.
+    const denied = await requireMoneyAccess(session.user.id, totpCode)
+    if (denied) return denied
 
     const updated = await prisma.$transaction(async (tx) => {
       if (isTopup && action === "verify") {

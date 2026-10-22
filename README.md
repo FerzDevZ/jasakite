@@ -165,6 +165,7 @@ Berkas `.env` tidak di-commit — ia berisi rahasia. Buat sendiri berdasarkan ta
 | `npm run db:migrate` | `prisma migrate deploy`. |
 | `npm run db:seed` | Isi database dengan data contoh. |
 | `npm run db:backfill-city` | Turunkan `User.city` dari `User.location`. Idempoten; `--dry-run` untuk pratinjau. |
+| `npm run admin:reset-totp` | Hapus pendaftaran 2FA satu SUPER_ADMIN (pemulihan perangkat hilang). Butuh `--db=` + `--yes`. |
 
 ---
 
@@ -343,6 +344,7 @@ Semua route handler kecuali `[...nextauth]` dilindungi rate limit.
 | `GET` | `/api/admin/export` | Ekspor CSV. |
 | `POST` | `/api/admin/users/[id]/impersonate` | Mulai impersonasi. |
 | `POST` | `/api/auth/unimpersonate` | Kembali ke akun admin. |
+| `GET`/`POST`/`PATCH` | `/api/admin/totp` | Status 2FA, mulai pendaftaran authenticator, konfirmasi kode. Hanya SUPER_ADMIN. |
 
 ---
 
@@ -355,6 +357,15 @@ Otorisasi berlapis dua, dan keduanya diperlukan:
 **`middleware.ts`** memakai daftar-putih. Apa pun di luar `PUBLIC_PATHS` dialihkan ke `/login`, termasuk rute yang tidak ada — jadi struktur rute internal tidak terekspos. Middleware juga menegakkan peran: `/dashboard/provider` hanya untuk provider dan admin, `/dashboard/admin` hanya untuk admin.
 
 **Route handler** memeriksa ulang kepemilikan di level data. Middleware tidak tahu bahwa pesanan #42 milik pengguna tertentu; hanya handler yang bisa memastikannya. Contoh: hanya provider pemilik jasa yang boleh mengubah status pesanan, dan hanya customer pemesan yang boleh menulis ulasan.
+
+### 2FA TOTP untuk SUPER_ADMIN
+
+Keputusan uang (verifikasi top-up, penarikan, pembayaran pesanan) membutuhkan dua hal: peran SUPER_ADMIN **dan** kode TOTP 6 digit pada permintaan itu sendiri. Cookie sesi saja tidak cukup, sehingga sesi yang dibajak tidak bisa mengkredit saldo.
+
+- Pendaftaran: `/dashboard/admin/keamanan` → konfirmasi password → pindai QR → masukkan satu kode. Secret disimpan terenkripsi AES-256-GCM dengan kunci turunan `AUTH_SECRET`.
+- Login SUPER_ADMIN ber-2FA menjadi dua langkah: password dulu, lalu kode. Langkah kedua hanya muncul setelah password benar.
+- Satu kode hanya berlaku sekali (anti-replay). Kode juga ditolak bila langkah waktunya sudah dipakai untuk masuk.
+- Lupa perangkat: `npm run admin:reset-totp <email> --db=<nama-db> --yes`. Setelah reset, akun bisa masuk tanpa kode tetapi **semua keputusan uang tetap ditolak** sampai authenticator baru didaftarkan.
 
 ### Impersonasi
 

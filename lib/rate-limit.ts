@@ -170,6 +170,11 @@ export const RATE_LIMITS = {
   walletWithdraw: { limit: 5, windowMs: 60 * 60 * 1000 },
   /** Keputusan verifikasi uang (top-up, penarikan, pembayaran) oleh SUPER_ADMIN. */
   walletVerify: { limit: 60, windowMs: 60 * 1000 },
+  /** Percobaan kode 2FA pada aksi uang. Kode hanya 6 digit — tanpa ambang
+      ketat, tebakan beruntun bisa menemukan kode yang sedang berlaku. */
+  totpVerify: { limit: 8, windowMs: 5 * 60 * 1000 },
+  /** Pendaftaran / rotasi authenticator admin (mahal: bcrypt + pembuatan QR). */
+  totpSetup: { limit: 5, windowMs: 15 * 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>
 
 // Hanya untuk pengujian: kosongkan state antar test case.

@@ -6,7 +6,7 @@ import { prismaId, sameId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { notify } from "@/lib/notifications"
 import { isAllowedProofImage } from "@/lib/payments"
-import { isSuperAdminRole } from "@/lib/roles"
+import { requireMoneyAccess } from "@/lib/totp-guard"
 
 export const dynamic = "force-dynamic"
 
@@ -26,6 +26,8 @@ const decisionSchema = z.object({
     .min(3, "Sebutkan alasan penolakan")
     .max(300)
     .optional(),
+  // Kode 2FA saat keputusan diambil — bukan hanya saat login.
+  totpCode: z.string().trim().min(1, "Kode 2FA wajib diisi").max(7),
 })
 
 const rupiah = new Intl.NumberFormat("id-ID")
@@ -173,8 +175,9 @@ export async function POST(
 /**
  * PATCH — keputusan SUPER_ADMIN atas bukti pembayaran.
  *
- * Hanya SUPER_ADMIN. ADMIN biasa tidak boleh memindahkan uang, sama seperti
- * verifikasi top-up dan penarikan.
+ * Hanya SUPER_ADMIN, dan hanya dengan kode TOTP yang sah pada permintaan yang
+ * sama (`requireMoneyAccess`). ADMIN biasa tidak boleh memindahkan uang, sama
+ * seperti verifikasi top-up dan penarikan.
  */
 export async function PATCH(
   request: Request,
@@ -185,17 +188,6 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const admin = await prisma.user.findUnique({
-    where: { id: prismaId(session.user.id) },
-    select: { role: true },
-  })
-  if (!isSuperAdminRole(admin?.role)) {
-    return NextResponse.json(
-      { error: "Hanya SUPER_ADMIN yang dapat memverifikasi pembayaran" },
-      { status: 403 }
-    )
-  }
-
   const limited = enforceRateLimit(
     request,
     "order-payment-verify",
@@ -204,13 +196,24 @@ export async function PATCH(
   )
   if (limited) return limited
 
+  // Ambang terpisah dan jauh lebih ketat untuk tebakan kode 6 digit.
+  const twoFactorLimited = enforceRateLimit(
+    request,
+    "order-payment-verify-2fa",
+    RATE_LIMITS.totpVerify,
+    session.user.id
+  )
+  if (twoFactorLimited) return twoFactorLimited
+
   const { id } = await params
   if (!id || !/^[0-9a-fA-F]{24}$|^\d+$/.test(id.trim())) {
     return NextResponse.json({ error: "ID tidak valid" }, { status: 400 })
   }
 
   try {
-    const { action, rejectReason } = decisionSchema.parse(await request.json())
+    const { action, rejectReason, totpCode } = decisionSchema.parse(
+      await request.json()
+    )
     if (action === "reject" && !rejectReason) {
       return NextResponse.json(
         { error: "Alasan penolakan wajib diisi" },
@@ -246,6 +249,12 @@ export async function PATCH(
         { status: 409 }
       )
     }
+
+    // Peran + langkah-kedua. Keputusan uang tidak boleh hanya bergantung pada
+    // cookie sesi yang mungkin sudah dibajak. Diletakkan setelah pemeriksaan
+    // status agar permintaan yang pasti ditolak tidak menghabiskan kode 2FA.
+    const denied = await requireMoneyAccess(session.user.id, totpCode)
+    if (denied) return denied
 
     const now = new Date()
     const claimed = await prisma.order.updateMany({

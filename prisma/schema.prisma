@@ -30,6 +30,16 @@ model User {
   bankName          String?
   bankAccountNumber String?
   bankAccountName   String?
+  // 2FA TOTP untuk SUPER_ADMIN — satu-satunya peran yang boleh memindahkan
+  // uang. `totpSecret` disimpan TERENKRIPSI (AES-256-GCM, lihat lib/totp.ts),
+  // bukan base32 mentah: dump database tidak boleh cukup untuk meniru kode.
+  // `totpEnabledAt` null + secret terisi berarti pendaftaran belum dikonfirmasi
+  // dan kode dari secret itu belum boleh dipakai untuk transaksi.
+  totpSecret        String?
+  totpEnabledAt     DateTime?
+  // Langkah waktu terakhir yang sudah dipakai. Mencegah kode yang sama dipakai
+  // dua kali (replay) selama jendela ±30 detik masih berlaku.
+  totpLastUsedAt    DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

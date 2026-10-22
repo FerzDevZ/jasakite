@@ -1,7 +1,26 @@
-import NextAuth from "next-auth"
+import NextAuth, { CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { isSuperAdminRole } from "@/lib/roles"
+import { claimTotpStep, decideMoneyAccess } from "@/lib/totp-guard"
+import type { MoneyAccessDecision } from "@/lib/totp-guard"
+import { getTotpEncryptionKey } from "@/lib/totp"
+
+// Kode error langkah-kedua. Nilainya ikut muncul di query `?code=` halaman
+// login, jadi tidak boleh membocorkan apa pun selain tahap yang sedang gagal —
+// dan hanya terlihat setelah password benar.
+class TotpChallengeRequired extends CredentialsSignin {
+  code = "totp_required"
+}
+
+class TotpChallengeInvalid extends CredentialsSignin {
+  code = "totp_invalid"
+}
+
+class TotpChallengeUnavailable extends CredentialsSignin {
+  code = "totp_unavailable"
+}
 
 // In-memory rate limit untuk login per email: 10 attempts per 15 menit (longgar untuk demo).
 // authorize tidak punya akses ke Request, jadi tidak bisa pakai enforceRateLimit.
@@ -41,10 +60,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers: [
     Credentials({
-      name: "Credentials",
-      credentials: {
+      name: "Credentials",        credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        // Kode 6 digit dari aplikasi authenticator. Hanya diperiksa untuk
+        // SUPER_ADMIN yang sudah mengaktifkan 2FA.
+        totp: { label: "Kode 2FA", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
@@ -73,6 +94,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!isValid) {
           recordLoginAttempt(email)
           return null
+        }
+
+        if (isSuperAdminRole(user.role) && user.totpEnabledAt && user.totpSecret) {
+          const submittedCode =
+            typeof credentials.totp === "string" ? credentials.totp.trim() : ""
+          if (!submittedCode) {
+            // Password sudah benar; akun ini wajib menyelesaikan langkah kedua.
+            throw new TotpChallengeRequired()
+          }
+
+          let decision: MoneyAccessDecision
+          try {
+            decision = decideMoneyAccess({
+              account: user,
+              submittedCode,
+              encryptionKey: getTotpEncryptionKey(),
+            })
+          } catch (error) {
+            console.error("[auth] 2FA tidak dapat diverifikasi:", error)
+            throw new TotpChallengeUnavailable()
+          }
+
+          if (decision.kind !== "allow") {
+            recordLoginAttempt(email)
+            throw new TotpChallengeInvalid()
+          }
+          // Kode hanya boleh dipakai sekali; kegagalan klaim berarti replay.
+          const claimed = await claimTotpStep(user.id, decision.stepStartedAt)
+          if (!claimed) {
+            recordLoginAttempt(email)
+            throw new TotpChallengeInvalid()
+          }
         }
 
         // sukses: bersihkan hitungan

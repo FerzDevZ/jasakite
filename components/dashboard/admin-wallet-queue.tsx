@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   BadgeCheck,
@@ -18,6 +19,7 @@ import { formatIDR } from "@/lib/utils"
 import { transactionTypeLabel } from "@/lib/wallet"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet } from "@/components/ui/sheet"
@@ -72,11 +74,16 @@ type AdminWalletPayload = {
   pendingWithdraws: number
   pendingOrderPayments: number
   canVerify: boolean
+  totpEnabled: boolean
 }
 
 export function AdminWalletQueue() {
   const queryClient = useQueryClient()
   const [proofUrl, setProofUrl] = React.useState<string | null>(null)
+  // Kode 2FA langkah-kedua. Disimpan di sini (bukan per kartu) karena satu kode
+  // berlaku untuk semua keputusan dalam periode 30 detik — dan server menolak
+  // pemakaian ulang kode yang sama.
+  const [totpCode, setTotpCode] = React.useState("")
 
   const { data, isLoading } = useQuery<AdminWalletPayload>({
     queryKey: ["admin-wallet"],
@@ -100,6 +107,7 @@ export function AdminWalletQueue() {
         body: JSON.stringify({
           action: input.action,
           rejectReason: input.rejectReason,
+          totpCode: totpCode.replace(/\s/g, ""),
         }),
       })
       const payload = await response.json().catch(() => null)
@@ -109,6 +117,7 @@ export function AdminWalletQueue() {
       return payload
     },
     onSuccess: async (_payload, input) => {
+      setTotpCode("")
       toast.success(
         input.action === "verify" ? "Pembayaran diverifikasi" : "Bukti ditolak",
         { description: "Pelanggan dan penyedia sudah diberi notifikasi." }
@@ -133,6 +142,7 @@ export function AdminWalletQueue() {
         body: JSON.stringify({
           action: input.action,
           rejectReason: input.rejectReason,
+          totpCode: totpCode.replace(/\s/g, ""),
         }),
       })
       const payload = await response.json().catch(() => null)
@@ -142,6 +152,7 @@ export function AdminWalletQueue() {
       return payload
     },
     onSuccess: async (_payload, input) => {
+      setTotpCode("")
       toast.success(
         input.action === "verify" ? "Pengajuan disetujui" : "Pengajuan ditolak",
         { description: "Pengguna sudah diberi notifikasi." }
@@ -175,6 +186,10 @@ export function AdminWalletQueue() {
 
   const topups = data.pending.filter((tx) => tx.type === "TOPUP")
   const withdraws = data.pending.filter((tx) => tx.type === "WITHDRAW")
+  // Tombol keputusan hanya hidup bila server benar-benar akan menerimanya:
+  // peran cukup, 2FA aktif, dan kode 6 digit sudah diisi.
+  const totpReady = data.totpEnabled && totpCode.replace(/\s/g, "").length === 6
+  const canDecide = data.canVerify && totpReady
 
   return (
     <div className="space-y-6">
@@ -191,6 +206,43 @@ export function AdminWalletQueue() {
             Anda masuk sebagai ADMIN. Verifikasi uang hanya bisa dilakukan
             SUPER_ADMIN — antrean ini hanya-baca untuk Anda.
           </p>
+        )}
+
+        {data.canVerify && !data.totpEnabled && (
+          <p className="mt-3 flex items-start gap-2 rounded-xl bg-destructive/10 px-3.5 py-3 text-sm text-destructive-strong">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <span>
+              2FA belum aktif, jadi server menolak setiap keputusan uang dari akun
+              ini.{" "}
+              <Link
+                href="/dashboard/admin/keamanan"
+                className="font-semibold underline underline-offset-4"
+              >
+                Aktifkan 2FA sekarang
+              </Link>{" "}
+              — butuh password dan satu kode dari aplikasi authenticator.
+            </span>
+          </p>
+        )}
+
+        {data.canVerify && data.totpEnabled && (
+          <div className="mt-4 max-w-xs space-y-1.5">
+            <Label htmlFor="admin-totp-code">Kode 2FA untuk keputusan</Label>
+            <Input
+              id="admin-totp-code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9 ]{6,7}"
+              maxLength={7}
+              placeholder="123456"
+              value={totpCode}
+              onChange={(event) => setTotpCode(event.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Satu kode hanya bisa dipakai sekali; kolom dikosongkan setelah
+              keputusan berhasil.
+            </p>
+          </div>
         )}
       </div>
 
@@ -259,7 +311,7 @@ export function AdminWalletQueue() {
                     ) : null}
                     <Button
                       size="sm"
-                      disabled={decidePayment.isPending || !data.canVerify}
+                      disabled={decidePayment.isPending || !canDecide}
                       onClick={() =>
                         decidePayment.mutate({ orderId: payment.id, action: "verify" })
                       }
@@ -272,7 +324,7 @@ export function AdminWalletQueue() {
                       Verifikasi
                     </Button>
                     <RejectButton
-                      disabled={decidePayment.isPending || !data.canVerify}
+                      disabled={decidePayment.isPending || !canDecide}
                       onConfirm={(reason) =>
                         decidePayment.mutate({
                           orderId: payment.id,
@@ -362,7 +414,7 @@ export function AdminWalletQueue() {
                     )}
                     <Button
                       size="sm"
-                      disabled={decide.isPending || !data.canVerify}
+                      disabled={decide.isPending || !canDecide}
                       onClick={() =>
                         decide.mutate({ transactionId: tx.id, action: "verify" })
                       }
@@ -375,7 +427,7 @@ export function AdminWalletQueue() {
                       Setujui
                     </Button>
                     <RejectButton
-                      disabled={decide.isPending || !data.canVerify}
+                      disabled={decide.isPending || !canDecide}
                       onConfirm={(reason) =>
                         decide.mutate({
                           transactionId: tx.id,
@@ -424,7 +476,7 @@ export function AdminWalletQueue() {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
-                      disabled={decide.isPending || !data.canVerify}
+                      disabled={decide.isPending || !canDecide}
                       onClick={() =>
                         decide.mutate({ transactionId: tx.id, action: "verify" })
                       }
@@ -437,7 +489,7 @@ export function AdminWalletQueue() {
                       Sudah ditransfer
                     </Button>
                     <RejectButton
-                      disabled={decide.isPending || !data.canVerify}
+                      disabled={decide.isPending || !canDecide}
                       confirmLabel="Tolak & kembalikan saldo"
                       onConfirm={(reason) =>
                         decide.mutate({
