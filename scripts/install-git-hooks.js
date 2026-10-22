@@ -1,61 +1,91 @@
 #!/usr/bin/env node
 /**
- * Memasang hook git milik repo (scripts/githooks) ke direktori hooks Git.
+ * Pasang / periksa guard pre-push milik repo.
  *
- * Dijalankan otomatis oleh lifecycle `prepare` saat `npm install`, supaya
- * clone baru langsung memakai guard yang sama tanpa langkah manual. Hook
- * disalin, bukan disimlink, agar tetap bekerja di Windows tanpa hak symlink.
+ * Dijalankan otomatis oleh lifecycle `prepare` saat `npm install`, dan bisa
+ * dipanggil manual:
+ *
+ *   node scripts/install-git-hooks.js            # pasang atau sinkronkan
+ *   node scripts/install-git-hooks.js --check    # gagal bila hook tidak sinkron
+ *
+ * Hook disalin (bukan disimlink) agar bekerja di Windows tanpa hak symlink.
+ * Lokasi tujuan mengikuti direktori yang benar-benar dipakai git — termasuk
+ * bila `core.hooksPath` mengalihkannya — dan salinan lama di `.git/hooks`
+ * ikut disinkronkan supaya tidak ada versi basi yang terlihat seperti pengaman.
  */
-const { execFileSync } = require("node:child_process")
-const fs = require("node:fs")
 const path = require("node:path")
+const {
+  checkPrePushHook,
+  installPrePushHook,
+  isGitRepository,
+} = require("./lib/git-hooks")
 
 const projectRoot = path.resolve(__dirname, "..")
 const hookSource = path.join(__dirname, "githooks", "pre-push")
+const checkOnly = process.argv.includes("--check")
 
-function resolveHooksDirectory() {
-  const reportedPath = execFileSync("git", ["rev-parse", "--git-path", "hooks"], {
-    cwd: projectRoot,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "ignore"],
-  }).trim()
-
-  if (!reportedPath) {
-    throw new Error("git tidak melaporkan direktori hooks")
-  }
-  return path.resolve(projectRoot, reportedPath)
+const ACTION_LABELS = {
+  installed: "dipasang",
+  updated: "diperbarui",
+  "replaced-foreign": "diganti (hook lama disimpan sebagai .backup)",
+  unchanged: "sudah sinkron",
 }
 
-function installPrePushHook() {
-  if (!fs.existsSync(hookSource)) {
-    throw new Error(`hook sumber tidak ditemukan: ${hookSource}`)
+function describeHooksPath(locations) {
+  if (!locations.hooksPath) return "tidak diset (memakai .git/hooks)"
+  const origin = locations.hooksPath.origin ? ` dari ${locations.hooksPath.origin}` : ""
+  return `${locations.hooksPath.value}${origin}`
+}
+
+function run() {
+  if (!isGitRepository(projectRoot)) {
+    console.log("[git-hooks] dilewati: bukan repository git (arsip sumber / build CI)")
+    return 0
   }
 
-  const hooksDirectory = resolveHooksDirectory()
-  fs.mkdirSync(hooksDirectory, { recursive: true })
-
-  const installedHook = path.join(hooksDirectory, "pre-push")
-
-  // Jangan menimpa hook buatan pengguna tanpa jejak. Hook guard lama dari
-  // repo ini aman ditimpa; hook asing disimpan sebagai .backup lebih dulu.
-  if (fs.existsSync(installedHook)) {
-    const previousHook = fs.readFileSync(installedHook, "utf8")
-    if (!previousHook.includes("Freebuff Pre-Push Secret Guard")) {
-      fs.copyFileSync(installedHook, `${installedHook}.backup`)
-      console.log(`[git-hooks] hook lama disimpan: ${installedHook}.backup`)
+  if (checkOnly) {
+    const result = checkPrePushHook({ projectRoot, hookSource })
+    console.log(`[git-hooks] core.hooksPath: ${describeHooksPath(result.locations)}`)
+    console.log(
+      `[git-hooks] direktori hook aktif (yang dijalankan git): ${result.locations.activeHooksDirectory}`
+    )
+    for (const step of result.steps) {
+      console.log(`[git-hooks]   ${step.filePath}: ${ACTION_LABELS[step.action]}`)
     }
+    if (result.inSync) {
+      console.log("[git-hooks] OK: guard pre-push sinkron dengan scripts/githooks/pre-push")
+      return 0
+    }
+    console.error(
+      "[git-hooks] DRIFT: hook yang dijalankan git tidak sama dengan scripts/githooks/pre-push."
+    )
+    console.error("[git-hooks] Jalankan: node scripts/install-git-hooks.js")
+    return 1
   }
 
-  fs.copyFileSync(hookSource, installedHook)
-  fs.chmodSync(installedHook, 0o755)
-
-  console.log(`[git-hooks] pre-push terpasang: ${installedHook}`)
+  const result = installPrePushHook({ projectRoot, hookSource })
+  console.log(`[git-hooks] core.hooksPath: ${describeHooksPath(result.locations)}`)
+  console.log(
+    `[git-hooks] direktori hook aktif (yang dijalankan git): ${result.locations.activeHooksDirectory}`
+  )
+  for (const step of result.steps) {
+    console.log(`[git-hooks]   ${step.filePath}: ${ACTION_LABELS[step.action]}`)
+  }
+  for (const backupPath of result.backups) {
+    console.log(`[git-hooks] hook lama disimpan: ${backupPath}`)
+  }
+  if (result.changed.length === 0) {
+    console.log("[git-hooks] tidak ada perubahan")
+  }
+  return 0
 }
 
 try {
-  installPrePushHook()
+  process.exitCode = run()
 } catch (error) {
   // Arsip sumber atau build CI tanpa .git tidak punya hook untuk dipasang;
   // jangan gagalkan instalasi dependensi hanya karena itu.
   console.log(`[git-hooks] pemasangan hook dilewati: ${error.message}`)
+  // `--check` adalah gerbang eksplisit: kegagalan di sana harus terlihat.
+  process.exitCode = checkOnly ? 1 : 0
 }

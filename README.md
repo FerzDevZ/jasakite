@@ -166,6 +166,7 @@ Berkas `.env` tidak di-commit — ia berisi rahasia. Buat sendiri berdasarkan ta
 | `npm run db:seed` | Isi database dengan data contoh. |
 | `npm run db:backfill-city` | Turunkan `User.city` dari `User.location`. Idempoten; `--dry-run` untuk pratinjau. |
 | `npm run admin:reset-totp` | Hapus pendaftaran 2FA satu SUPER_ADMIN (pemulihan perangkat hilang). Butuh `--db=` + `--yes`. |
+| `npm run hooks:check` | Periksa apakah guard `pre-push` yang dijalankan git sama dengan `scripts/githooks/pre-push`. Gagal bila drift. |
 
 ---
 

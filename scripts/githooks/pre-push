@@ -1,13 +1,73 @@
 #!/usr/bin/env bash
 # Freebuff Pre-Push Secret Guard
+#
+# Memindai commit yang BENAR-BENAR dikirim, bukan `origin/main..HEAD` yang
+# mengabaikan cabang baru (tanpa origin/main, diff-nya kosong dan guard diam
+# saja) dan mengabaikan commit lain dalam rentang.
+#
+# Protokol pre-push: stdin berisi baris
+#   <local ref> SP <local sha> SP <remote ref> SP <remote sha>
+# sehingga rentang tiap ref bisa dihitung persis seperti yang dikirim git.
+#
+# Dipindai per-commit (`git log -p`), bukan selisih ujung (`git diff`): secret
+# yang ditambahkan di satu commit lalu dihapus di commit berikutnya tetap
+# tertangkap, karena commit itu sendiri ikut ter-push dan bisa diambil siapa pun.
+
+set -u
+
+# Dijalankan manual dari terminal (tanpa stdin dari git): jangan menggantung
+# menunggu input yang tidak akan datang.
+if [ -t 0 ]; then
+  echo "[pre-push] tidak ada ref di stdin — jalankan lewat 'git push' untuk memindai."
+  exit 0
+fi
+
+added_lines_file=$(mktemp "${TMPDIR:-/tmp}/pre-push-scan.XXXXXX") || {
+  echo "[pre-push] gagal membuat berkas sementara; pemindaian dilewati." >&2
+  exit 0
+}
+trap 'rm -f "$added_lines_file"' EXIT
+
+is_zero_sha() {
+  case "$1" in
+    "" | *[!0]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+append_added_lines() {
+  # `-m` ikut menampilkan diff merge terhadap tiap parent; tanpa itu, resolusi
+  # konflik pada merge commit tidak pernah dipindai.
+  git log -p -m --no-color --pretty=format: "$@" 2>/dev/null | grep -E '^\+' >>"$added_lines_file" || true
+}
+
+collect_added_lines() {
+  local local_ref local_sha remote_ref remote_sha
+  while read -r local_ref local_sha remote_ref remote_sha; do
+    [ -n "${local_sha:-}" ] || continue
+    # Ref dihapus: tidak ada isi baru yang dikirim.
+    is_zero_sha "$local_sha" && continue
+
+    if is_zero_sha "${remote_sha:-}" || ! git cat-file -e "${remote_sha}^{commit}" 2>/dev/null; then
+      # Cabang/tag baru, atau objek remote tidak ada di clone ini (clone
+      # dangkal): pindai semua commit yang belum ada di remote mana pun.
+      append_added_lines "$local_sha" --not --remotes
+    else
+      append_added_lines "${remote_sha}..${local_sha}"
+    fi
+  done
+}
+
+collect_added_lines
+
 LEAKS=0
 check_pattern() {
   local pattern="$1"
   local desc="$2"
   local matches
-  # -e wajib: pola PEM diawali tanda minus, dan tanpa ini grep
-  # membacanya sebagai opsi sehingga pemindaian private key tidak berjalan.
-  matches=$(git diff origin/main..HEAD 2>/dev/null | grep -E "^\+" | grep -E -e "$pattern" || true)
+  # -e wajib: pola PEM diawali tanda minus dan tanpa ini grep membacanya
+  # sebagai opsi, sehingga pemindaian private key tidak pernah berjalan.
+  matches=$(grep -E -e "$pattern" "$added_lines_file" || true)
   if [ -n "$matches" ]; then
     echo -e "\033[0;31m[CRITICAL LEAK DETECTED] $desc\033[0m"
     LEAKS=$((LEAKS + 1))
@@ -15,7 +75,11 @@ check_pattern() {
 }
 check_pattern "(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})" "GitHub Personal Access Token"
 check_pattern "(AKIA[0-9A-Z]{16})" "AWS Access Key ID"
-check_pattern "-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----" "Private Key / PEM Certificate"
+# Literal pola PEM dipecah menjadi dua string yang bersambung: bila ditulis
+# utuh, guard akan menandai berkas hook ini sendiri setiap kali hook diubah dan
+# di-push. Nilai yang dicocokkan tetap persis sama.
+pem_pattern="-----BEGIN (RSA|EC|OPENSSH|DSA) ""PRIVATE KEY-----"
+check_pattern "$pem_pattern" "Private Key / PEM Certificate"
 check_pattern "manicode-[a-zA-Z0-9]{32,}" "Freebuff / Manicode Auth Bearer Token"
 if [ "$LEAKS" -gt 0 ]; then
   echo -e "\033[0;31m\033[1m❌ Git push dibatalkan karena terdeteksi potensi secret leak!\033[0m"
