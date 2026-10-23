@@ -3,5 +3,6 @@
   "installCommand": "npm ci",
   "framework": "nextjs",
   "regions": ["sin1"],
-  "headers": []
+  "headers": [],
+  "ignoreCommand": "node scripts/vercel-ignore-build.js"
 }

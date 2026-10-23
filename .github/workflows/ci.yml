@@ -58,6 +58,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Harus SETELAH `npm ci`: lifecycle `prepare` yang memasang hook baru
+      # berjalan di situ. Kalau diperiksa lebih dulu, checkout bersih belum
+      # punya `.git/hooks/pre-push` dan gerbang ini gagal karena alasan yang
+      # salah — bukan karena drift yang ingin dideteksi.
+      - name: Verify git hooks
+        run: npm run hooks:check
+
       - name: Generate Prisma client
         run: npx prisma generate
 
@@ -159,6 +166,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Lihat catatan di job `verify`: pemeriksaan hook butuh hook yang sudah
+      # dipasang oleh `prepare` saat `npm ci`.
+      - name: Verify git hooks
+        run: npm run hooks:check
 
       # Cache browser Playwright: unduhannya ~130 MB, tanpa cache setiap run
       # menghabiskan menit hanya untuk mengunduh ulang.
