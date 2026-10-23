@@ -182,6 +182,11 @@ function GateCard({ gate }: { gate: VercelStatus["gate"] }) {
             deployment project ini.
           </p>
           <p>
+            Pembandingnya `VERCEL_GIT_PREVIOUS_SHA`; pada cabang baru Vercel
+            tidak mengirimkannya, jadi gerbang memakai `HEAD^` — commit terakhir
+            saja yang diperiksa, dan hasilnya tetap build bila ragu.
+          </p>
+          <p>
             Bila Project Settings → Git → Ignored Build Step diisi di dashboard,
             nilai itu yang dipakai dan perintah di atas tidak lagi berlaku —
             pastikan isinya identik.
