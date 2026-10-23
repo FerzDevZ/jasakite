@@ -1,0 +1,20 @@
+[
+  "^app/",
+  "^components/",
+  "^lib/",
+  "^types/",
+  "^prisma/",
+  "^public/",
+  "^middleware\\.ts$",
+  "^next\\.config\\.",
+  "^next-env\\.d\\.ts$",
+  "^global\\.d\\.ts$",
+  "^tailwind\\.config\\.",
+  "^postcss\\.config\\.",
+  "^package\\.json$",
+  "^package-lock\\.json$",
+  "^tsconfig\\.json$",
+  "^vercel\\.json$",
+  "^scripts/vercel-preflight\\.js$",
+  "^\\.env"
+]

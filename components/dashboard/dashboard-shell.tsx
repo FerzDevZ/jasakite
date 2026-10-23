@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Wallet,
   BadgeCheck,
+  Rocket,
   type LucideIcon,
   LogOut,
   Menu,
@@ -32,6 +33,7 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
     { href: "/dashboard/admin/wallet", label: "Verifikasi Saldo", icon: BadgeCheck },
     { href: "/dashboard/admin/users", label: "Pengguna", icon: Users },
     { href: "/dashboard/admin/moderasi", label: "Moderasi Jasa", icon: ShieldCheck },
+    { href: "/dashboard/admin/vercel", label: "Build & Deploy", icon: Rocket },
   ],
   PROVIDER: [
     { href: "/dashboard/provider", label: "Ringkasan", icon: LayoutDashboard },

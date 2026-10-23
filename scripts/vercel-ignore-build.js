@@ -19,30 +19,18 @@ const { execFileSync } = require("node:child_process")
 /**
  * Path yang mempengaruhi keluaran build.
  *
+ * Daftarnya tinggal di `lib/vercel-build-inputs.json` supaya halaman admin
+ * `/dashboard/admin/vercel` menampilkan pola yang SAMA dengan yang dipakai
+ * gerbang ini — dua salinan daftar akan menyimpang tanpa terlihat.
+ *
  * `package-lock.json` dan `package.json` wajib ikut: keduanya menentukan
  * dependency yang dibundel. `scripts/vercel-preflight.js` juga ikut karena
  * `npm run vercel-build` menjalankannya sebagai gerbang sebelum `next build`.
  */
-const BUILD_INPUT_PATTERNS = [
-  /^app\//,
-  /^components\//,
-  /^lib\//,
-  /^types\//,
-  /^prisma\//,
-  /^public\//,
-  /^middleware\.ts$/,
-  /^next\.config\./,
-  /^next-env\.d\.ts$/,
-  /^global\.d\.ts$/,
-  /^tailwind\.config\./,
-  /^postcss\.config\./,
-  /^package\.json$/,
-  /^package-lock\.json$/,
-  /^tsconfig\.json$/,
-  /^vercel\.json$/,
-  /^scripts\/vercel-preflight\.js$/,
-  /^\.env/,
-]
+const BUILD_INPUT_PATTERN_SOURCES = require("../lib/vercel-build-inputs.json")
+const BUILD_INPUT_PATTERNS = BUILD_INPUT_PATTERN_SOURCES.map(
+  (source) => new RegExp(source)
+)
 
 function requiresBuild(changedPaths) {
   return changedPaths.some((changedPath) =>
@@ -112,6 +100,7 @@ function run() {
 
 module.exports = {
   BUILD_INPUT_PATTERNS,
+  BUILD_INPUT_PATTERN_SOURCES,
   collectChangedPaths,
   matchingBuildInputs,
   requiresBuild,
