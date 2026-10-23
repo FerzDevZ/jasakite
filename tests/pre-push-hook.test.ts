@@ -102,6 +102,19 @@ const PEM_SECRET = [
 ].join("\n")
 const GITHUB_TOKEN = `ghp_${"a".repeat(36)}`
 
+// URI MongoDB berisi kredensial juga dirakit dari potongan, dengan alasan yang
+// sama seperti header PEM: berkas ini ikut dipindai saat di-push.
+const MONGODB_CREDENTIAL_URI = [
+  "mongodb",
+  "+srv",
+  "://",
+  "jasakite",
+  ":",
+  "rahasia",
+  "@",
+  "cluster0.contoh.test/jasakite",
+].join("")
+
 describe("hook pre-push memindai ref yang dikirim", () => {
   it("meloloskan push bersih", () => {
     const repositoryRoot = makeRepository()
@@ -173,6 +186,63 @@ describe("hook pre-push memindai ref yang dikirim", () => {
       `(delete) ${ZERO_SHA} refs/heads/lama ${base}\n`
     )
     expect(result.status).toBe(0)
+  })
+
+  it("memblokir URI MongoDB yang memuat user dan password", () => {
+    const repositoryRoot = makeRepository()
+    const base = commitFile(repositoryRoot, "catatan.txt", "awal\n", "c1")
+    const tip = commitFile(
+      repositoryRoot,
+      "config.txt",
+      `DATABASE_URL=${MONGODB_CREDENTIAL_URI}\n`,
+      "c2 tambah url database"
+    )
+
+    const result = runHook(
+      repositoryRoot,
+      `refs/heads/main ${tip} refs/heads/main ${base}\n`
+    )
+    expect(result.status).toBe(1)
+    expect(result.output).toMatch(/URI MongoDB dengan kredensial/)
+  })
+
+  it("memblokir berkas .env yang ikut ter-commit walau isinya tanpa token yang dikenal", () => {
+    const repositoryRoot = makeRepository()
+    const base = commitFile(repositoryRoot, "catatan.txt", "awal\n", "c1")
+    // Isi sengaja tidak cocok dengan pola token mana pun: yang dilarang adalah
+    // keberadaan berkasnya, bukan hanya nilainya.
+    const tip = commitFile(
+      repositoryRoot,
+      ".env",
+      "DATABASE_URL=mongodb://localhost/uji\nAUTH_SECRET=pendek\n",
+      "c2 tambah env"
+    )
+
+    const result = runHook(
+      repositoryRoot,
+      `refs/heads/main ${tip} refs/heads/main ${base}\n`
+    )
+    expect(result.status).toBe(1)
+    expect(result.output).toMatch(/Berkas environment ikut ter-commit/)
+    expect(result.output).toMatch(/\.env/)
+  })
+
+  it("mengizinkan berkas templat .env.example", () => {
+    const repositoryRoot = makeRepository()
+    const base = commitFile(repositoryRoot, "catatan.txt", "awal\n", "c1")
+    const tip = commitFile(
+      repositoryRoot,
+      ".env.example",
+      "DATABASE_URL=\nAUTH_SECRET=\n",
+      "c2 tambah templat env"
+    )
+
+    const result = runHook(
+      repositoryRoot,
+      `refs/heads/main ${tip} refs/heads/main ${base}\n`
+    )
+    expect(result.status).toBe(0)
+    expect(result.output).not.toMatch(/CRITICAL LEAK/)
   })
 
   it("tidak menggantung saat stdin kosong", () => {

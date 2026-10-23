@@ -22,11 +22,16 @@ if [ -t 0 ]; then
   exit 0
 fi
 
-added_lines_file=$(mktemp "${TMPDIR:-/tmp}/pre-push-scan.XXXXXX") || {
-  echo "[pre-push] gagal membuat berkas sementara; pemindaian dilewati." >&2
+work_directory=$(mktemp -d "${TMPDIR:-/tmp}/pre-push-scan.XXXXXX") || {
+  echo "[pre-push] gagal membuat direktori sementara; pemindaian dilewati." >&2
   exit 0
 }
-trap 'rm -f "$added_lines_file"' EXIT
+trap 'rm -rf "$work_directory"' EXIT
+
+added_lines_file="$work_directory/isi-ditambahkan"
+changed_paths_file="$work_directory/berkas-berubah"
+: >"$added_lines_file"
+: >"$changed_paths_file"
 
 is_zero_sha() {
   case "$1" in
@@ -41,7 +46,14 @@ append_added_lines() {
   git log -p -m --no-color --pretty=format: "$@" 2>/dev/null | grep -E '^\+' >>"$added_lines_file" || true
 }
 
-collect_added_lines() {
+append_changed_paths() {
+  # Nama berkas dipakai untuk menolak berkas environment: isinya bisa saja
+  # tidak cocok dengan pola token apa pun, tetapi keberadaannya sendiri sudah
+  # membawa `DATABASE_URL`, `AUTH_SECRET`, dan kredensial lain ke riwayat.
+  git log --name-only --pretty=format: -m "$@" 2>/dev/null | grep -E '[^[:space:]]' >>"$changed_paths_file" || true
+}
+
+collect_changes() {
   local local_ref local_sha remote_ref remote_sha
   while read -r local_ref local_sha remote_ref remote_sha; do
     [ -n "${local_sha:-}" ] || continue
@@ -52,15 +64,22 @@ collect_added_lines() {
       # Cabang/tag baru, atau objek remote tidak ada di clone ini (clone
       # dangkal): pindai semua commit yang belum ada di remote mana pun.
       append_added_lines "$local_sha" --not --remotes
+      append_changed_paths "$local_sha" --not --remotes
     else
       append_added_lines "${remote_sha}..${local_sha}"
+      append_changed_paths "${remote_sha}..${local_sha}"
     fi
   done
 }
 
-collect_added_lines
+collect_changes
 
 LEAKS=0
+report_leak() {
+  echo -e "\033[0;31m[CRITICAL LEAK DETECTED] $1\033[0m"
+  LEAKS=$((LEAKS + 1))
+}
+
 check_pattern() {
   local pattern="$1"
   local desc="$2"
@@ -69,8 +88,7 @@ check_pattern() {
   # sebagai opsi, sehingga pemindaian private key tidak pernah berjalan.
   matches=$(grep -E -e "$pattern" "$added_lines_file" || true)
   if [ -n "$matches" ]; then
-    echo -e "\033[0;31m[CRITICAL LEAK DETECTED] $desc\033[0m"
-    LEAKS=$((LEAKS + 1))
+    report_leak "$desc"
   fi
 }
 check_pattern "(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})" "GitHub Personal Access Token"
@@ -80,7 +98,24 @@ check_pattern "(AKIA[0-9A-Z]{16})" "AWS Access Key ID"
 # di-push. Nilai yang dicocokkan tetap persis sama.
 pem_pattern="-----BEGIN (RSA|EC|OPENSSH|DSA) ""PRIVATE KEY-----"
 check_pattern "$pem_pattern" "Private Key / PEM Certificate"
+# URI MongoDB berisi kredensial adalah kebocoran yang paling mungkin di repo
+# ini: `DATABASE_URL` produksi memuat user dan password Atlas. Dipecah dengan
+# cara yang sama seperti pola PEM agar berkas hook ini tidak menandai dirinya.
+mongo_pattern="mongodb([+]srv)?://""[^:@[:space:]]+:""[^@[:space:]]+@"
+check_pattern "$mongo_pattern" "URI MongoDB dengan kredensial"
 check_pattern "manicode-[a-zA-Z0-9]{32,}" "Freebuff / Manicode Auth Bearer Token"
+
+# Berkas environment tidak boleh ikut ter-commit meskipun `git add -f` dipakai
+# untuk melewati `.gitignore`. Templat (`.env.example`) tetap diizinkan: berkas
+# itu memang berisi nama variabel tanpa nilai rahasia.
+env_file_pattern='(^|/)\.env($|\.)'
+env_template_pattern='\.env\.(example|sample|template)$'
+env_files=$(grep -E -e "$env_file_pattern" "$changed_paths_file" | grep -v -E -e "$env_template_pattern" || true)
+if [ -n "$env_files" ]; then
+  report_leak "Berkas environment ikut ter-commit"
+  echo "$env_files" | sed 's/^/    /'
+fi
+
 if [ "$LEAKS" -gt 0 ]; then
   echo -e "\033[0;31m\033[1m❌ Git push dibatalkan karena terdeteksi potensi secret leak!\033[0m"
   exit 1
