@@ -20,12 +20,19 @@ import {
   ShieldCheck,
   TriangleAlert,
 } from "lucide-react"
-import type { DeploymentSummary, VercelTarget } from "@/lib/vercel-deployments"
+import type {
+  DeploymentSummary,
+  IgnoredBuildStepResolution,
+  VercelTarget,
+} from "@/lib/vercel-deployments"
 
 type VercelStatus = {
   gate: {
     ignoreCommand: string | null
     buildInputPatterns: string[]
+    resolution: IgnoredBuildStepResolution
+    dashboardChecked: boolean
+    dashboardError: string | null
   }
   vercel: {
     configured: boolean
@@ -140,6 +147,75 @@ function DeploymentRow({ deployment }: { deployment: DeploymentSummary }) {
   )
 }
 
+/** Perintah mana yang menang: dashboard menimpa `vercel.json`. */
+function SourceOfTruth({ gate }: { gate: VercelStatus["gate"] }) {
+  const { resolution, dashboardChecked, dashboardError } = gate
+
+  return (
+    <div className="space-y-2 rounded-xl border border-border p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        Sumber aturan
+      </p>
+      <dl className="space-y-1.5 text-xs">
+        <div className="flex gap-2">
+          <dt className="w-24 shrink-0 text-muted-foreground">vercel.json</dt>
+          <dd className="min-w-0 flex-1 break-words">
+            {resolution.repositoryCommand ? (
+              <code className="font-mono">{resolution.repositoryCommand}</code>
+            ) : (
+              <span className="text-muted-foreground">tidak diset</span>
+            )}
+          </dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="w-24 shrink-0 text-muted-foreground">Dashboard</dt>
+          <dd className="min-w-0 flex-1 break-words">
+            {!dashboardChecked ? (
+              <span className="text-muted-foreground">
+                {dashboardError
+                  ? `gagal dibaca: ${dashboardError}`
+                  : "belum diperiksa — butuh VERCEL_TOKEN"}
+              </span>
+            ) : resolution.dashboardCommand ? (
+              <code className="font-mono">{resolution.dashboardCommand}</code>
+            ) : (
+              <span className="text-muted-foreground">kosong — tidak menimpa</span>
+            )}
+          </dd>
+        </div>
+        <div className="flex gap-2 border-t border-border pt-1.5">
+          <dt className="w-24 shrink-0 font-medium text-foreground">Berlaku</dt>
+          <dd className="min-w-0 flex-1 break-words text-foreground">
+            {resolution.effectiveCommand === null ? (
+              <span className="text-muted-foreground">
+                tidak ada perintah — Vercel selalu membangun
+              </span>
+            ) : (
+              <code className="font-mono">{resolution.effectiveCommand}</code>
+            )}
+          </dd>
+        </div>
+      </dl>
+
+      {resolution.overridden ? (
+        <p
+          role="status"
+          className="rounded-lg border border-warning/30 bg-warning-soft px-2.5 py-2 text-xs text-warning"
+        >
+          Dashboard menimpa `vercel.json`. Perubahan di repo tidak akan
+          mengubah perilaku build sampai isian di Project Settings → Git →
+          Ignored Build Step dikosongkan atau disamakan.
+        </p>
+      ) : dashboardChecked ? (
+        <p role="status" className="text-xs text-muted-foreground">
+          Produksi dan preview memakai perintah yang sama dari{" "}
+          {resolution.source === "vercel.json" ? "vercel.json" : "dashboard"}.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 function GateCard({ gate }: { gate: VercelStatus["gate"] }) {
   return (
     <Card>
@@ -175,21 +251,17 @@ function GateCard({ gate }: { gate: VercelStatus["gate"] }) {
           </ul>
         </div>
 
+        <SourceOfTruth gate={gate} />
+
         <div className="space-y-2 border-t border-border pt-3 text-xs text-muted-foreground">
           <p>
-            Berlaku untuk <strong className="font-semibold text-foreground">produksi dan preview</strong>{" "}
-            sekaligus: Vercel menjalankan perintah yang sama untuk setiap
-            deployment project ini.
+            Setelan ini berlaku untuk <strong className="font-semibold text-foreground">produksi dan preview</strong>{" "}
+            sekaligus: Vercel menyimpannya per project, bukan per environment.
           </p>
           <p>
             Pembandingnya `VERCEL_GIT_PREVIOUS_SHA`; pada cabang baru Vercel
             tidak mengirimkannya, jadi gerbang memakai `HEAD^` — commit terakhir
             saja yang diperiksa, dan hasilnya tetap build bila ragu.
-          </p>
-          <p>
-            Bila Project Settings → Git → Ignored Build Step diisi di dashboard,
-            nilai itu yang dipakai dan perintah di atas tidak lagi berlaku —
-            pastikan isinya identik.
           </p>
         </div>
       </CardContent>

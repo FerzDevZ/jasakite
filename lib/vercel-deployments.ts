@@ -71,6 +71,59 @@ const deploymentListSchema = z
   })
   .passthrough()
 
+/** Sumber perintah "Ignored Build Step" yang benar-benar dipakai Vercel. */
+export type IgnoredBuildStepSource = "dashboard" | "vercel.json" | "none"
+
+export type IgnoredBuildStepResolution = {
+  repositoryCommand: string | null
+  dashboardCommand: string | null
+  effectiveCommand: string | null
+  source: IgnoredBuildStepSource
+  /** Dashboard diset DAN berbeda dari `vercel.json` — repo tidak lagi jadi acuan. */
+  overridden: boolean
+}
+
+function normalizeCommand(command: string | null | undefined): string | null {
+  if (typeof command !== "string") return null
+  const normalized = command.trim().replace(/\s+/g, " ")
+  return normalized.length > 0 ? normalized : null
+}
+
+/**
+ * Menentukan perintah mana yang menang.
+ *
+ * Aturan Vercel: isian di Project Settings → Git → Ignored Build Step
+ * menimpa `ignoreCommand` di `vercel.json`, dan berlaku untuk SEMUA environment
+ * (produksi maupun preview) karena setelan itu per project, bukan per
+ * environment. Karena itu halaman admin perlu menyebut sumbernya, bukan hanya
+ * menampilkan `vercel.json` yang mungkin sudah tidak dipakai.
+ */
+export function resolveIgnoredBuildStep(input: {
+  repositoryCommand: string | null
+  dashboardCommand: string | null
+}): IgnoredBuildStepResolution {
+  const repositoryCommand = normalizeCommand(input.repositoryCommand)
+  const dashboardCommand = normalizeCommand(input.dashboardCommand)
+
+  if (dashboardCommand !== null) {
+    return {
+      repositoryCommand,
+      dashboardCommand,
+      effectiveCommand: dashboardCommand,
+      source: "dashboard",
+      overridden: dashboardCommand !== repositoryCommand,
+    }
+  }
+
+  return {
+    repositoryCommand,
+    dashboardCommand: null,
+    effectiveCommand: repositoryCommand,
+    source: repositoryCommand === null ? "none" : "vercel.json",
+    overridden: false,
+  }
+}
+
 function readTrimmedEnv(
   environment: Record<string, string | undefined>,
   name: string
@@ -164,6 +217,44 @@ function describeFailure(status: number, body: unknown): string {
   const apiMessage = parsedBody.success ? parsedBody.data.error?.message : undefined
   if (apiMessage) return `Vercel API menolak (${status}): ${apiMessage}`
   return `Vercel API menolak permintaan (HTTP ${status}).`
+}
+
+const projectSettingsSchema = z
+  .object({
+    commandForIgnoringBuildStep: z.string().nullish(),
+  })
+  .passthrough()
+
+/**
+ * Membaca isian Ignored Build Step milik project (setelan dashboard).
+ * Mengembalikan `null` bila kosong — artinya `vercel.json` yang dipakai.
+ */
+export async function fetchVercelProjectIgnoredBuildStep(input: {
+  token: string
+  projectId: string
+  teamId?: string | null
+  fetchImpl?: typeof fetch
+}): Promise<string | null> {
+  const requestUrl = new URL(
+    `${VERCEL_API_BASE}/v9/projects/${encodeURIComponent(input.projectId)}`
+  )
+  if (input.teamId) requestUrl.searchParams.set("teamId", input.teamId)
+
+  const send = input.fetchImpl ?? fetch
+  const response = await send(requestUrl, {
+    headers: { Authorization: `Bearer ${input.token}` },
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    const body: unknown = await response.json().catch(() => null)
+    throw new Error(describeFailure(response.status, body))
+  }
+
+  const payload: unknown = await response.json().catch(() => null)
+  const parsed = projectSettingsSchema.safeParse(payload)
+  if (!parsed.success) return null
+  return normalizeCommand(parsed.data.commandForIgnoringBuildStep)
 }
 
 export async function fetchVercelDeployments(input: {

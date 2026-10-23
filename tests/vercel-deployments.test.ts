@@ -2,6 +2,8 @@ import { createRequire } from "node:module"
 import { describe, expect, it, vi } from "vitest"
 import {
   fetchVercelDeployments,
+  fetchVercelProjectIgnoredBuildStep,
+  resolveIgnoredBuildStep,
   resolveVercelCredentials,
   summarizeDeployment,
   summarizeDeployments,
@@ -200,6 +202,108 @@ describe("permintaan ke Vercel API", () => {
     expect(deployments[0]?.commitSha).toBe(
       "9e0234f9c8ddf0b9af760a76924aa58736da84c0"
     )
+  })
+})
+
+describe("sumber perintah Ignored Build Step", () => {
+  it("memakai vercel.json saat dashboard kosong", () => {
+    const resolution = resolveIgnoredBuildStep({
+      repositoryCommand: "node scripts/vercel-ignore-build.js",
+      dashboardCommand: null,
+    })
+
+    expect(resolution.source).toBe("vercel.json")
+    expect(resolution.effectiveCommand).toBe("node scripts/vercel-ignore-build.js")
+    expect(resolution.overridden).toBe(false)
+  })
+
+  it("tidak menganggap override bila isinya sama meski spasinya berbeda", () => {
+    const resolution = resolveIgnoredBuildStep({
+      repositoryCommand: "node scripts/vercel-ignore-build.js",
+      dashboardCommand: "  node   scripts/vercel-ignore-build.js\n",
+    })
+
+    expect(resolution.source).toBe("dashboard")
+    expect(resolution.overridden).toBe(false)
+    expect(resolution.effectiveCommand).toBe("node scripts/vercel-ignore-build.js")
+  })
+
+  it("menandai override saat dashboard berbeda dari repo", () => {
+    const resolution = resolveIgnoredBuildStep({
+      repositoryCommand: "node scripts/vercel-ignore-build.js",
+      dashboardCommand: "exit 0",
+    })
+
+    expect(resolution.source).toBe("dashboard")
+    expect(resolution.overridden).toBe(true)
+    expect(resolution.effectiveCommand).toBe("exit 0")
+  })
+
+  it("melaporkan tidak ada perintah sama sekali bila keduanya kosong", () => {
+    const resolution = resolveIgnoredBuildStep({
+      repositoryCommand: null,
+      dashboardCommand: "   ",
+    })
+
+    expect(resolution.source).toBe("none")
+    expect(resolution.effectiveCommand).toBeNull()
+  })
+})
+
+describe("pembacaan setelan project Vercel", () => {
+  it("membaca commandForIgnoringBuildStep dan mengembalikan null saat kosong", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      const requestedUrl = String(input)
+      return new Response(
+        JSON.stringify(
+          requestedUrl.includes("proyek-kosong")
+            ? { commandForIgnoringBuildStep: "   " }
+            : { commandForIgnoringBuildStep: "node scripts/vercel-ignore-build.js" }
+        ),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    })
+
+    const dashboardCommand = await fetchVercelProjectIgnoredBuildStep({
+      token: TOKEN,
+      projectId: "prj_123",
+      teamId: "team_abc",
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    })
+    const emptyCommand = await fetchVercelProjectIgnoredBuildStep({
+      token: TOKEN,
+      projectId: "proyek-kosong",
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    })
+
+    expect(dashboardCommand).toBe("node scripts/vercel-ignore-build.js")
+    expect(emptyCommand).toBeNull()
+
+    const [requestedUrl, requestedInit] = fetchMock.mock.calls[0] ?? []
+    expect(String(requestedUrl)).toContain("/v9/projects/prj_123")
+    expect(String(requestedUrl)).toContain("teamId=team_abc")
+    expect(new Headers(requestedInit?.headers).get("Authorization")).toBe(
+      `Bearer ${TOKEN}`
+    )
+  })
+
+  it("tidak membocorkan token saat setelan project ditolak", async () => {
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, _init?: RequestInit) =>
+        new Response(JSON.stringify({ error: { message: "Not authorized" } }), {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        })
+    )
+
+    const failureMessage = await fetchVercelProjectIgnoredBuildStep({
+      token: TOKEN,
+      projectId: "prj_123",
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    }).catch((error: Error) => error.message)
+
+    expect(failureMessage).toMatch(/Not authorized/)
+    expect(failureMessage).not.toContain(TOKEN)
   })
 })
 
