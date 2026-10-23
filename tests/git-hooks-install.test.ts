@@ -20,12 +20,20 @@ const { GUARD_MARKER, checkPrePushHook, installPrePushHook } = requireCommonJs(
   "../scripts/lib/git-hooks.js"
 ) as {
   GUARD_MARKER: string
-  checkPrePushHook: (input: { projectRoot: string; hookSource: string }) => {
+  checkPrePushHook: (input: {
+    projectRoot: string
+    hookSource: string
+    syncAllCopies?: boolean
+  }) => {
     inSync: boolean
     locations: { hooksPath: { value: string } | null; activeHooksDirectory: string }
     steps: { action: string; filePath: string }[]
   }
-  installPrePushHook: (input: { projectRoot: string; hookSource: string }) => {
+  installPrePushHook: (input: {
+    projectRoot: string
+    hookSource: string
+    syncAllCopies?: boolean
+  }) => {
     locations: { hooksPath: { value: string } | null; activeHooksDirectory: string }
     steps: { action: string; filePath: string }[]
     changed: { action: string }[]
@@ -130,6 +138,63 @@ describe("installPrePushHook", () => {
     expect(checkPrePushHook({ projectRoot: repositoryRoot, hookSource: HOOK_SOURCE }).inSync).toBe(
       true
     )
+  })
+
+  it("menyinkronkan semua salinan saat diminta, termasuk .git/hooks yang belum ada", () => {
+    const repositoryRoot = makeRepository()
+    const customDirectory = path.join(repositoryRoot, "templates")
+    runGit(repositoryRoot, ["config", "core.hooksPath", customDirectory])
+
+    const result = installPrePushHook({
+      projectRoot: repositoryRoot,
+      hookSource: HOOK_SOURCE,
+      syncAllCopies: true,
+    })
+
+    // Dua salinan, keduanya identik: yang dijalankan git dan yang konvensional.
+    expect(readHook(path.join(customDirectory, "pre-push"))).toBe(SOURCE_CONTENT)
+    expect(readHook(path.join(repositoryRoot, ".git", "hooks", "pre-push"))).toBe(
+      SOURCE_CONTENT
+    )
+    expect(result.steps).toHaveLength(2)
+    expect(result.steps.map((step) => step.action)).toEqual(["installed", "installed"])
+    expect(
+      checkPrePushHook({ projectRoot: repositoryRoot, hookSource: HOOK_SOURCE }).inSync
+    ).toBe(true)
+  })
+
+  it("memulihkan semua salinan yang tertimpa, bukan hanya yang dijalankan git", () => {
+    const repositoryRoot = makeRepository()
+    const customDirectory = path.join(repositoryRoot, "templates")
+    runGit(repositoryRoot, ["config", "core.hooksPath", customDirectory])
+
+    // Skenario nyata: checkout lain menimpa hook bersama dengan versi lama,
+    // sementara salinan lokal tertinggal di versi lain lagi.
+    const activeHook = path.join(customDirectory, "pre-push")
+    const conventionalHook = path.join(repositoryRoot, ".git", "hooks", "pre-push")
+    mkdirSync(customDirectory, { recursive: true })
+    mkdirSync(path.dirname(conventionalHook), { recursive: true })
+    writeFileSync(activeHook, `${GUARD_MARKER}\n# versi lama\n`, { mode: 0o755 })
+    writeFileSync(conventionalHook, `${GUARD_MARKER}\n# versi lebih lama\n`, {
+      mode: 0o755,
+    })
+
+    const result = installPrePushHook({
+      projectRoot: repositoryRoot,
+      hookSource: HOOK_SOURCE,
+      syncAllCopies: true,
+    })
+
+    expect(readHook(activeHook)).toBe(SOURCE_CONTENT)
+    expect(readHook(conventionalHook)).toBe(SOURCE_CONTENT)
+    expect(result.steps.map((step) => step.action)).toEqual(["updated", "updated"])
+    expect(
+      checkPrePushHook({
+        projectRoot: repositoryRoot,
+        hookSource: HOOK_SOURCE,
+        syncAllCopies: true,
+      }).inSync
+    ).toBe(true)
   })
 
   it("menyimpan hook asing sebagai .backup sebelum menggantinya", () => {

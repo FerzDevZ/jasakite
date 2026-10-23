@@ -5,8 +5,9 @@
  * Dijalankan otomatis oleh lifecycle `prepare` saat `npm install`, dan bisa
  * dipanggil manual:
  *
- *   node scripts/install-git-hooks.js            # pasang atau sinkronkan
- *   node scripts/install-git-hooks.js --check    # gagal bila hook tidak sinkron
+ *   node scripts/install-git-hooks.js              # pasang atau sinkronkan
+ *   node scripts/install-git-hooks.js --all-copies # sinkronkan SEMUA salinan
+ *   node scripts/install-git-hooks.js --check      # gagal bila hook tidak sinkron
  *
  * Hook disalin (bukan disimlink) agar bekerja di Windows tanpa hak symlink.
  * Lokasi tujuan mengikuti direktori yang benar-benar dipakai git — termasuk
@@ -23,6 +24,11 @@ const {
 const projectRoot = path.resolve(__dirname, "..")
 const hookSource = path.join(__dirname, "githooks", "pre-push")
 const checkOnly = process.argv.includes("--check")
+// `npm run hooks:install`: menulis salinan di direktori hook aktif DAN di
+// `.git/hooks` konvensional, meski `core.hooksPath` mengalihkan yang aktif.
+// Dipakai untuk memulihkan repo setelah hook tertimpa checkout lain yang
+// berbagi `core.hooksPath` global.
+const syncAllCopies = process.argv.includes("--all-copies")
 
 const ACTION_LABELS = {
   installed: "dipasang",
@@ -44,7 +50,7 @@ function run() {
   }
 
   if (checkOnly) {
-    const result = checkPrePushHook({ projectRoot, hookSource })
+    const result = checkPrePushHook({ projectRoot, hookSource, syncAllCopies })
     console.log(`[git-hooks] core.hooksPath: ${describeHooksPath(result.locations)}`)
     console.log(
       `[git-hooks] direktori hook aktif (yang dijalankan git): ${result.locations.activeHooksDirectory}`
@@ -63,7 +69,7 @@ function run() {
     return 1
   }
 
-  const result = installPrePushHook({ projectRoot, hookSource })
+  const result = installPrePushHook({ projectRoot, hookSource, syncAllCopies })
   console.log(`[git-hooks] core.hooksPath: ${describeHooksPath(result.locations)}`)
   console.log(
     `[git-hooks] direktori hook aktif (yang dijalankan git): ${result.locations.activeHooksDirectory}`
@@ -77,6 +83,23 @@ function run() {
   if (result.changed.length === 0) {
     console.log("[git-hooks] tidak ada perubahan")
   }
+
+  // Pemaksaan harus dibuktikan, bukan diasumsikan: rencanakan ulang setelah
+  // menulis dan laporkan bila masih ada salinan yang menyimpang.
+  const verification = checkPrePushHook({ projectRoot, hookSource, syncAllCopies })
+  if (!verification.inSync) {
+    console.error(
+      "[git-hooks] GAGAL: masih ada salinan yang belum sama dengan scripts/githooks/pre-push."
+    )
+    for (const step of verification.drifted) {
+      console.error(`[git-hooks]   ${step.filePath}: ${ACTION_LABELS[step.action]}`)
+    }
+    return 1
+  }
+
+  console.log(
+    `[git-hooks] OK: ${verification.steps.length} salinan sinkron dengan scripts/githooks/pre-push`
+  )
   return 0
 }
 

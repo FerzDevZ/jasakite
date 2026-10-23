@@ -108,7 +108,7 @@ function readHookSource(hookSource) {
  *    akan mendapat salinan kedua yang tidak pernah dijalankan git — persis
  *    sumber kebingungan yang ingin dihilangkan.
  */
-function planPrePushInstall({ projectRoot, hookSource }) {
+function planPrePushInstall({ projectRoot, hookSource, syncAllCopies = false }) {
   const sourceContent = readHookSource(hookSource)
   const locations = resolveHookLocations(projectRoot)
 
@@ -122,10 +122,14 @@ function planPrePushInstall({ projectRoot, hookSource }) {
     path.resolve(locations.activeHooksDirectory) ===
     path.resolve(locations.conventionalHooksDirectory)
 
+  // `syncAllCopies` (dipakai `npm run hooks:install`) ikut menulis salinan
+  // konvensional meski belum ada, sehingga setiap lokasi yang mungkin dipakai
+  // git berisi versi yang sama. Tanpa opsi ini, salinan baru hanya dibuat bila
+  // di sana sudah ada guard kita.
   if (
     !activeIsConventional &&
-    conventionalContent !== null &&
-    conventionalContent.includes(GUARD_MARKER)
+    (syncAllCopies ||
+      (conventionalContent !== null && conventionalContent.includes(GUARD_MARKER)))
   ) {
     targetDirectories.push(locations.conventionalHooksDirectory)
   }
@@ -162,8 +166,8 @@ function writeHook(step, sourceContent) {
   fs.chmodSync(step.filePath, 0o755)
 }
 
-function installPrePushHook({ projectRoot, hookSource }) {
-  const plan = planPrePushInstall({ projectRoot, hookSource })
+function installPrePushHook({ projectRoot, hookSource, syncAllCopies = false }) {
+  const plan = planPrePushInstall({ projectRoot, hookSource, syncAllCopies })
   for (const step of plan.steps) {
     if (step.action === "unchanged") continue
     writeHook(step, plan.sourceContent)
@@ -179,8 +183,8 @@ function installPrePushHook({ projectRoot, hookSource }) {
 }
 
 /** Drift = hook aktif hilang/berbeda, atau salinan guard lama tertinggal. */
-function checkPrePushHook({ projectRoot, hookSource }) {
-  const plan = planPrePushInstall({ projectRoot, hookSource })
+function checkPrePushHook({ projectRoot, hookSource, syncAllCopies = false }) {
+  const plan = planPrePushInstall({ projectRoot, hookSource, syncAllCopies })
   const drifted = plan.steps.filter((step) => step.action !== "unchanged")
   const activeStep = plan.steps.find((step) => step.isActive)
   return {

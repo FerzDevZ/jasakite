@@ -166,6 +166,7 @@ Berkas `.env` tidak di-commit — ia berisi rahasia. Buat sendiri berdasarkan ta
 | `npm run db:seed` | Isi database dengan data contoh. |
 | `npm run db:backfill-city` | Turunkan `User.city` dari `User.location`. Idempoten; `--dry-run` untuk pratinjau. |
 | `npm run admin:reset-totp` | Hapus pendaftaran 2FA satu SUPER_ADMIN (pemulihan perangkat hilang). Butuh `--db=` + `--yes`. |
+| `npm run hooks:install` | Paksa sinkronkan guard `pre-push` ke **semua** salinan: direktori hook aktif (mengikuti `core.hooksPath`) dan `.git/hooks`, lalu keluar bukan nol bila masih ada yang berbeda. |
 | `npm run hooks:check` | Periksa apakah guard `pre-push` yang dijalankan git sama dengan `scripts/githooks/pre-push`. Gagal bila drift. |
 
 Guard `pre-push` dipasang otomatis oleh lifecycle `prepare` saat `npm install`, lalu memindai setiap commit yang benar-benar dikirim. Yang ditolak: GitHub PAT, AWS access key, private key PEM, URI MongoDB yang memuat user dan password (bentuk `DATABASE_URL` produksi), token Freebuff, serta **berkas `.env` yang ikut ter-commit** — `.env.example` dan templat serupa tetap diizinkan. Yang terakhir itu berbasis nama berkas, bukan isi, karena `git add -f` bisa melewati `.gitignore` dan isi `.env` yang “aman” tetap membawa `DATABASE_URL` serta `AUTH_SECRET`.
