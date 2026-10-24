@@ -197,7 +197,7 @@ li { margin-bottom: 2pt; }
   <div class="step"><div class="step-n">2</div><div class="step-body"><p>Halaman <strong>Daftar Akun JASAKITE</strong> terbuka. Isi <strong>Nama Lengkap</strong>, <strong>Email</strong> (satu email = satu akun), <strong>No. HP (opsional)</strong>, dan <strong>Password</strong> — <strong>minimal 8 karakter, wajib mengandung huruf kecil dan angka</strong>. Indikator Lemah/Sedang/Kuat/Sangat Kuat membantu memilih yang baik.</p></div></div>
   <div class="step"><div class="step-n">3</div><div class="step-body"><p>Field <strong>Kabupaten / Kota Layanan</strong> (contoh isian: <em>Pangkal Pinang</em>) hanya muncul bila Anda mendaftar sebagai <strong>Provider</strong> — pilih salah satu dari 7 kabupaten/kota Babel.</p></div></div>
   <div class="step"><div class="step-n">4</div><div class="step-body"><p>Pada bagian <strong>Daftar sebagai</strong>, pilih <strong>Customer</strong> ("Saya ingin memesan jasa") atau <strong>Provider</strong> ("Saya ingin membuka jasa" — perlu langganan, lihat Bagian C). Peran tidak bisa diubah sendiri setelah daftar; hubungi Admin.</p></div></div>
-  <div class="step"><div class="step-n">5</div><div class="step-body"><p>Klik <strong>Daftar Sekarang</strong>. Anda <strong>tidak langsung masuk</strong> — halaman berpindah ke halaman Masuk. Ketik email dan password yang barusan dibuat, lalu klik <strong>Masuk</strong>.</p></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p>Klik <strong>Daftar Sekarang</strong>. Anda <strong>tidak langsung masuk</strong> — halaman berpindah ke halaman Masuk dengan pita hijau <em>"Pendaftaran berhasil"</em>. Ketik email dan password yang barusan dibuat, lalu klik <strong>Masuk</strong>.</p></div></div>
   <div class="box-info"><div class="box-label">Batas aman</div><p>Pendaftaran dibatasi 5 akun per jam dari satu jaringan. Bila terlampaui, muncul pesan "Terlalu banyak permintaan" — bukan gangguan, tunggu sebentar.</p></div>
 
   <h3>A.3 Masuk (login)</h3>
@@ -256,8 +256,7 @@ li { margin-bottom: 2pt; }
   </ul>
 
   <h3>B.3 Memesan — dua jalur</h3>
-  <div class="card"><div class="card-title">Jalur 1 · Pesan langsung</div><p>Klik <strong>Pesan Sekarang</strong> → halaman checkout ber-stepper <strong>1 Detail Jasa → 2 Alamat &amp; Bayar</strong>. Isi catatan, alamat (wajib memuat nama kabupaten/kota — ada chip contoh alamat), jadwal, pilih metode, klik <strong>Konfirmasi Pesanan</strong>.</p></div>
-  <div class="box-warn"><div class="box-label">Penting — metode pembayaran</div><p>Halaman checkout ini menampilkan empat pilihan (Bank Transfer, Saldo JASAKITE, E-Wallet, Bayar di Tempat), tetapi yang <strong>diterima server hanya QRIS/Transfer dan Saldo</strong> — E-Wallet dan Bayar di Tempat ditolak saat konfirmasi. Gunakan <strong>QRIS</strong> atau <strong>Saldo</strong>.</p></div>
+  <div class="card"><div class="card-title">Jalur 1 · Pesan langsung</div><p>Klik <strong>Pesan Sekarang</strong> → halaman checkout ber-stepper <strong>1 Detail Jasa → 2 Alamat &amp; Bayar</strong>. Isi catatan, alamat (wajib memuat nama kabupaten/kota — ada chip contoh alamat), jadwal, pilih metode — <strong>QRIS / Transfer platform</strong> atau <strong>Saldo JASAKITE</strong> — lalu klik <strong>Konfirmasi Pesanan</strong>.</p></div>
   <div class="card"><div class="card-title">Jalur 2 · Keranjang (beberapa jasa sekaligus)</div>
     <div class="step"><div class="step-n">1</div><div class="step-body"><p>Masukkan jasa ke <strong>keranjang</strong> dari halaman detailnya.</p></div></div>
     <div class="step"><div class="step-n">2</div><div class="step-body"><p>Buka halaman <strong>Keranjang</strong> (ikon keranjang). Atur tiap baris: <strong>jumlah</strong> (maks 20), <strong>+ Tambah catatan</strong> (contoh: <em>2 dus sembako, belanja di pasar pagi, antar ke Jl. Merdeka</em>, maks 300 karakter), tombol tempat sampah untuk hapus, atau <strong>Kosongkan</strong>. Baris berlabel merah <em>"Jasa ini sudah tidak tayang"</em> memblokir checkout — hapus dulu.</p></div></div>
@@ -349,7 +348,7 @@ li { margin-bottom: 2pt; }
   <div class="step"><div class="step-n">1</div><div class="step-body"><p>Klik <strong>Buka Jasa</strong> di bar atas, atau tombol <strong>Tambah Layanan</strong> di dashboard provider.</p></div></div>
   <div class="step"><div class="step-n">2</div><div class="step-body"><p>Isi formulir — kartu <strong>Pratinjau Kartu</strong> di sisi kanan berubah langsung saat mengetik: <strong>Judul Jasa</strong> (contoh: <em>Antar Paket Dokumen Pangkal Pinang</em>) · <strong>Kategori</strong> · <strong>Estimasi Pengerjaan (hari)</strong> 1–90 · <strong>Harga (Rp)</strong> minimal 10.000 kelipatan 5.000 (hint "Tampil sebagai Rp X") · <strong>Deskripsi Jasa</strong> 20–500 karakter · <strong>Gambar Cover (opsional — URL atau upload device, auto sesuaikan)</strong>.</p></div></div>
   <div class="step"><div class="step-n">3</div><div class="step-body"><p>Klik <strong>Publikasikan Jasa</strong> — jasa langsung berstatus tayang (bila langganan aktif).</p></div></div>
-  <div class="box-warn"><div class="box-label">Kendala gambar yang diketahui</div><p>Tombol <strong>Ambil dari Device</strong> tersedia, namun saat ini server hanya menerima <strong>URL gambar</strong> dari host tertentu (mis. images.unsplash.com). Sampai diperbaiki, gunakan kolom URL. Lihat Bagian F.</p></div>
+  <div class="box-info"><div class="box-label">Foto dari perangkat</div><p>Otomatis dikompres (maks sisi 1280px, hasil ≤300KB) sebelum dikirim. Bisa juga seret-lepas, atau tempel URL gambar dari host yang diizinkan (mis. images.unsplash.com). Foto melebihi batas setelah kompresi? Pilih yang lebih sederhana atau pakai URL.</p></div>
   <p class="small">Paket bertingkat (Basic/Standard/Premium) tampil di halaman detail jasa, tetapi formulir pembuatannya belum tersedia di UI — harga tunggal sudah cukup untuk tayang.</p>
 
   <h3>C.4 Mengelola jasa yang tayang</h3>
@@ -427,14 +426,13 @@ li { margin-bottom: 2pt; }
 </div>
 
 <div class="page-break section">
-  <div class="chap-head"><div class="chap-num">F</div><div><h2>Masalah Umum &amp; Solusinya</h2><div class="chap-sub">Empat belas gejala yang paling sering dialami, beserta penyebab dan jalan keluarnya</div></div></div>
+  <div class="chap-head"><div class="chap-num">F</div><div><h2>Masalah Umum &amp; Solusinya</h2><div class="chap-sub">Tiga belas gejala yang paling sering dialami, beserta penyebab dan jalan keluarnya</div></div></div>
   <table>
     <tr><th style="width:34%">Gejala</th><th style="width:28%">Penyebab</th><th>Solusi</th></tr>
     <tr><td>Jasa saya tidak muncul di katalog</td><td>Langganan tidak aktif</td><td>Dashboard → Langganan → <strong>Isi saldo</strong> → <strong>Perpanjang Rp 10.000</strong></td></tr>
     <tr><td>Tautan jasa saya jadi 404 saat dibuka orang</td><td>Sama — jasa non-aktif otomatis 404</td><td>Perpanjang langganan; tautan hidup lagi tanpa buat ulang</td></tr>
     <tr><td>Tidak bisa membuat jasa (ditolak)</td><td>Langganan belum aktif</td><td>Aktifkan langganan dulu, baru <strong>Publikasikan Jasa</strong></td></tr>
-    <tr><td>Gambar dari perangkat ditolak saat buat jasa</td><td>Server hanya menerima URL gambar dari host yang diizinkan</td><td>Gunakan kolom URL gambar (mis. images.unsplash.com)</td></tr>
-    <tr><td>Checkout E-Wallet / Bayar di Tempat gagal</td><td>Server hanya menerima QRIS(Transfer) dan Saldo</td><td>Pilih <strong>QRIS / Transfer platform</strong> atau <strong>Saldo JASAKITE</strong></td></tr>
+    <tr><td>Foto jasa ditolak (&gt;300KB)</td><td>Foto terlalu padat bahkan setelah kompresi otomatis 1280px</td><td>Pilih foto lebih sederhana, atau pakai URL gambar (mis. images.unsplash.com)</td></tr>
     <tr><td>"Terima &amp; Kerjakan" saya ditolak server</td><td>Pembayaran pesanan belum diverifikasi</td><td>Tunggu customer unggah bukti &amp; Super Admin memverifikasi</td></tr>
     <tr><td>Tidak bisa membatalkan pesanan</td><td>Pembayaran menunggu verifikasi, atau pesanan sudah dikerjakan</td><td>Tunggu keputusan verifikasi; setelah dikerjakan koordinasi lewat obrolan</td></tr>
     <tr><td>Password baru ditolak saat daftar</td><td>Server minta minimal 8 karakter + huruf + angka</td><td>Pakai ≥8 karakter dengan huruf kecil dan angka</td></tr>

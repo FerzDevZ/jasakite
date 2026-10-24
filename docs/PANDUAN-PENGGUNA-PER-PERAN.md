@@ -44,8 +44,8 @@ Buka browser (Chrome/Firefox/Safari, di HP maupun laptop) dan tuju
    - **Email** — satu email hanya untuk satu akun.
    - **No. HP (opsional)**
    - **Password** — **minimal 8 karakter, wajib mengandung huruf kecil dan
-     angka** (indikator Lemah/Sedang/Kuat/Sangat Kuat membantu). Form bisa
-     terlihat menerima 6 karakter, tetapi server menolak yang kurang dari 8.
+     angka** (indikator Lemah/Sedang/Kuat/Sangat Kuat membantu; form menolak
+     lebih awal bila syarat belum terpenuhi).
    - **Kabupaten / Kota Layanan** — contoh isian: `Pangkal Pinang`. Field ini
      **hanya muncul bila Anda mendaftar sebagai Provider**.
 3. Pada bagian **Daftar sebagai**, pilih:
@@ -54,8 +54,8 @@ Buka browser (Chrome/Firefox/Safari, di HP maupun laptop) dan tuju
    
    Peran tidak bisa diubah sendiri setelah mendaftar — hubungi Admin.
 4. Klik **Daftar Sekarang**. Anda **tidak langsung masuk**: halaman berpindah
-   ke halaman Masuk — ketik email dan password yang baru dibuat, lalu klik
-   **Masuk**.
+   ke halaman Masuk dengan pita hijau *"Pendaftaran berhasil"* — ketik email
+   dan password yang baru dibuat, lalu klik **Masuk**.
 
 > **Batas aman:** pendaftaran dibatasi 5 akun per jam dari satu jaringan
 > (pesan "Terlalu banyak permintaan" bila terlampaui).
@@ -159,13 +159,8 @@ pesanan selesai, anggota sejak). Tombol yang tersedia:
 Sekarang** di halaman detail. Halaman checkout menampilkan stepper **1 Detail
 Jasa → 2 Alamat & Bayar**. Isi catatan, alamat (wajib memuat nama
 kabupaten/kota — ada chip contoh alamat untuk mempermudah), jadwal, lalu pilih
-metode pembayaran dan klik **Konfirmasi Pesanan**.
-
-> **Penting soal metode pembayaran:** halaman ini menampilkan empat pilihan
-> (Bank Transfer, Saldo JASAKITE, E-Wallet, Bayar di Tempat), tetapi yang
-> **diterima server hanya QRIS/Transfer dan Saldo**. Memilih E-Wallet atau
-> Bayar di Tempat akan ditolak saat konfirmasi. Gunakan **QRIS** (Transfer)
-> atau **Saldo**.
+metode pembayaran — **QRIS / Transfer platform** atau **Saldo JASAKITE** — dan
+klik **Konfirmasi Pesanan**.
 
 **Jalur 2 — Keranjang (beberapa jasa sekaligus):**
 
@@ -351,10 +346,10 @@ lengkap — buka 'Rekening saya' dulu."*
 3. Klik **Publikasikan Jasa**. Jasa langsung berstatus tayang (bila
    langganan aktif).
 
-> **Kendala gambar yang diketahui:** tombol **Ambil dari Device** tersedia,
-> namun saat ini server hanya menerima **URL gambar** dari host tertentu
-> (mis. `images.unsplash.com`). Sampai diperbaiki, gunakan kolom URL. Lihat
-> Bagian F.
+> **Foto dari perangkat** otomatis dikompres (maks sisi 1280px, hasil ≤300KB)
+> sebelum dikirim. Bisa juga seret-lepas, atau tempel URL gambar dari host
+> yang diizinkan (mis. `images.unsplash.com`). Foto melebihi batas setelah
+> kompresi? Pilih yang lebih sederhana atau pakai URL.
 
 Paket bertingkat (Basic/Standard/Premium) ada di data dan tampil di halaman
 detail jasa, tetapi formulir pembuatannya belum tersedia di UI — harga tunggal
@@ -522,8 +517,7 @@ masuk lagi** agar sesinya membawa peran baru.
 | Jasa saya tidak muncul di katalog | Langganan tidak aktif | Dashboard → Langganan → **Isi saldo** → **Perpanjang Rp 10.000** |
 | Tautan jasa saya jadi 404 saat dibuka orang | Sama — jasa non-aktif otomatis 404 | Perpanjang langganan; tautan hidup lagi tanpa buat ulang |
 | Tidak bisa membuat jasa (ditolak) | Langganan belum aktif | Aktifkan langganan dulu, baru klik **Publikasikan Jasa** |
-| Gambar dari perangkat ditolak saat buat jasa | Server saat ini hanya menerima URL gambar dari host yang diizinkan | Gunakan kolom URL gambar (mis. dari `images.unsplash.com`) |
-| Checkout E-Wallet / Bayar di Tempat gagal | Server hanya menerima QRIS(Transfer) dan Saldo | Pilih **QRIS / Transfer platform** atau **Saldo JASAKITE** |
+| Foto jasa ditolak (>300KB) | Foto terlalu padat bahkan setelah kompresi otomatis 1280px | Pilih foto lebih sederhana, atau pakai URL gambar (mis. `images.unsplash.com`) |
 | "Tombol Terima & Kerjakan" saya ditolak server | Pembayaran pesanan belum diverifikasi | Tunggu customer unggah bukti & Super Admin memverifikasi |
 | Tidak bisa membatalkan pesanan | Pembayaran sedang *Menunggu verifikasi*, atau pesanan sudah *Sedang dikerjakan* | Tunggu keputusan verifikasi; setelah dikerjakan, koordinasi lewat obrolan |
 | Password baru ditolak saat daftar | Server minta minimal 8 karakter + huruf + angka | Pakai ≥8 karakter dengan huruf kecil dan angka |
