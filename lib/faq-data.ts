@@ -98,7 +98,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
     items: [
       {
         q: "Apa itu JASAKITE?",
-        a: "JASAKITE adalah marketplace jasa lokal yang menghubungkan pelanggan dengan penyedia jasa profesional di sekitar mereka. Dari perbaikan AC, kebersihan, instalasi listrik, hingga pindahan — semua dalam satu platform.",
+        a: "JASAKITE adalah marketplace jasa lokal yang menghubungkan pelanggan dengan penyedia jasa profesional di sekitar mereka. Dari antar barang, belanja harian, bayar tagihan, hingga titip paket — semua dalam satu platform.",
       },
       {
         q: "Di daerah mana saja JASAKITE tersedia?",

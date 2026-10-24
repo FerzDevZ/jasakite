@@ -60,7 +60,7 @@ export interface ServicesOgViewModel {
 export const MAX_LISTING_CATEGORY_CHIPS = 3
 
 const PLACEHOLDER_NOTE =
-  "Perbaikan, kebersihan, instalasi, dan kategori lain di seluruh wilayah."
+  "Jasa antar barang, belanja harian, bayar tagihan, dan titip paket di seluruh wilayah."
 
 /**
  * Susun kartu daftar dari angka yang sudah dihitung route.

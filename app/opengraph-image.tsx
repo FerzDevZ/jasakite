@@ -79,7 +79,7 @@ export default function OpengraphImage() {
             }}
           >
             <div style={{ display: "flex" }}>
-              Perbaikan, kebersihan, instalasi.
+              Antar barang, belanja, bayar tagihan.
             </div>
             <div style={{ display: "flex" }}>
               Dipesan dalam hitungan menit.

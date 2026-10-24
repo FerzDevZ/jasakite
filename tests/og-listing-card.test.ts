@@ -123,12 +123,20 @@ describe("kartu OG halaman daftar jasa", () => {
 
     // Angka dihitung dari count/groupBy, bukan dari daftar yang dibatasi `take`
     // di halamannya.
+    // Saringan langganan ikut dihitung: angka di kartu harus sama dengan isi
+    // halaman yang dibagikan, dan jasa penyedia kedaluwarsa tidak tayang.
     expect(fakePrisma.service.count).toHaveBeenCalledWith({
-      where: { status: "ACTIVE" },
+      where: {
+        status: "ACTIVE",
+        provider: { subscriptionUntil: { gt: expect.any(Date) } },
+      },
     })
     expect(fakePrisma.service.groupBy).toHaveBeenCalledWith({
       by: ["categoryId"],
-      where: { status: "ACTIVE" },
+      where: {
+        status: "ACTIVE",
+        provider: { subscriptionUntil: { gt: expect.any(Date) } },
+      },
       _count: { _all: true },
     })
   })

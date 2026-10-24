@@ -52,16 +52,16 @@ export const metadata: Metadata = {
     template: "%s | JASAKITE",
   },
   description:
-    "Temukan penyedia jasa terpercaya di sekitar Anda: perbaikan, kebersihan, instalasi, dan lainnya.",
+    "Temukan penyedia jasa terpercaya di sekitar Anda: jasa antar, jasa belanja, jasa pembayaran, dan jasa titip.",
   applicationName: "JASAKITE",
   keywords: [
     "jasa lokal",
     "marketplace jasa",
-    "tukang",
-    "service AC",
-    "jasa kebersihan",
-    "jasa instalasi",
-    "penyedia jasa Indonesia",
+    "jasa antar barang",
+    "jasa belanja",
+    "jasa pembayaran",
+    "jasa titip",
+    "penyedia jasa Bangka Belitung",
   ],
   authors: [{ name: "JASAKITE" }],
   openGraph: {
@@ -70,14 +70,14 @@ export const metadata: Metadata = {
     siteName: "JASAKITE",
     title: "JASAKITE — Marketplace Jasa Lokal",
     description:
-      "Temukan penyedia jasa terpercaya di sekitar Anda: perbaikan, kebersihan, instalasi, dan lainnya.",
+      "Temukan penyedia jasa terpercaya di sekitar Anda: jasa antar, jasa belanja, jasa pembayaran, dan jasa titip.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
     title: "JASAKITE — Marketplace Jasa Lokal",
     description:
-      "Temukan penyedia jasa terpercaya di sekitar Anda: perbaikan, kebersihan, instalasi, dan lainnya.",
+      "Temukan penyedia jasa terpercaya di sekitar Anda: jasa antar, jasa belanja, jasa pembayaran, dan jasa titip.",
   },
   robots: {
     index: true,
@@ -242,8 +242,8 @@ export default function RootLayout({
                     </div>
                     <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
                       Marketplace jasa lokal terpercaya. Temukan penyedia jasa
-                      profesional di sekitar Anda — dari perbaikan, kebersihan,
-                      hingga instalasi.
+                      profesional di sekitar Anda — dari antar barang, belanja
+                      harian, sampai bayar tagihan.
                     </p>
                     <div className="mt-5 flex gap-3">
                       <a

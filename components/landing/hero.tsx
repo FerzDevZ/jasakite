@@ -169,9 +169,8 @@ Provinsi Kepulauan Bangka Belitung • 7 kabupaten/kota
             data-hero-fade
             className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
           >
-            Dari perbaikan AC, kebersihan, instalasi listrik, sampai pindahan —
-            bandingkan harga, lihat rating asli, dan pesan langsung dengan
-            penyedia jasa profesional.
+            Bandingkan harga, lihat rating asli, dan pesan langsung ke penyedia
+            jasa di sekitar Anda — tanpa perlu menelepon satu per satu.
           </p>
 
           {/* Search — command palette style */}

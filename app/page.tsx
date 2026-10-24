@@ -21,16 +21,42 @@ import { VoucherRail } from "@/components/landing/voucher-rail";
 import { ActiveOrderStrip } from "@/components/landing/active-order-strip";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "JASAKITE — Cari Jasa Lokal Terpercaya di Sekitar Anda",
-  description:
-    "Bandingkan harga, rating, dan ulasan penyedia jasa lokal: service AC, kebersihan rumah, instalasi listrik, hingga pindahan. Pesan langsung, bayar setelah selesai.",
-  alternates: { canonical: "/" },
-};
-
 export const revalidate = 60;
 
+/**
+ * Deskripsi beranda mengikuti kategori yang benar-benar ada di database.
+ *
+ * Sebelumnya teksnya hardcode "service AC, kebersihan rumah, instalasi
+ * listrik, hingga pindahan" dan tetap tampil di hasil pencarian Google
+ * berbulan-bulan setelah kategori itu dihapus — janji di snippet yang tidak
+ * bisa dipenuhi katalog. Query di sini memakai kategori yang sama dengan
+ * hero, jadi teks tidak bisa lagi menyimpang dari isi katalog.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const categoryNames = (
+    await prisma.category.findMany({ take: 4, select: { name: true } })
+  ).map((category) => category.name);
+
+  const description =
+    categoryNames.length > 0
+      ? `Bandingkan harga, rating, dan ulasan penyedia ${categoryNames.join(
+          ", "
+        )} di Kepulauan Bangka Belitung. Pesan langsung, bayar setelah selesai.`
+      : "Bandingkan harga, rating, dan ulasan penyedia jasa lokal di Kepulauan Bangka Belitung. Pesan langsung, bayar setelah selesai.";
+
+  return {
+    title: "JASAKITE — Cari Jasa Lokal Terpercaya di Sekitar Anda",
+    description,
+    alternates: { canonical: "/" },
+  };
+}
+
 export default async function HomePage() {
+  // Satu acuan waktu untuk seluruh halaman: penyedia dianggap tayang bila
+  // masa aktif langganannya masih di depan. Memakai satu `new Date()`
+  // menghindari daftar jasa dan angka statistik berbeda pendapat di tengah
+  // render yang berjalan beberapa ratus milidetik.
+  const subscriptionNow = new Date()
   const [
     categories,
     services,
@@ -49,10 +75,24 @@ export default async function HomePage() {
     // (10 kategori saat ini — 6 awal + Jasa Titip/Antar/Pembayaran/Belanja).
     prisma.category.findMany({
       take: 12,
-      include: { _count: { select: { services: true } } },
+      include: {
+        _count: {
+          select: {
+            services: {
+              where: {
+                status: "ACTIVE",
+                provider: { subscriptionUntil: { gt: subscriptionNow } },
+              },
+            },
+          },
+        },
+      },
     }),
     prisma.service.findMany({
-      where: { status: "ACTIVE" },
+      where: {
+        status: "ACTIVE",
+        provider: { subscriptionUntil: { gt: subscriptionNow } },
+      },
       include: {
         provider: { select: { name: true, avatarUrl: true, city: true } },
         category: true,
@@ -65,7 +105,10 @@ export default async function HomePage() {
     // label Terlaris yang tidak bisa diverifikasi. _count ikut disertakan
     // agar kartu menampilkan angka pesanannya.
     prisma.service.findMany({
-      where: { status: "ACTIVE" },
+      where: {
+        status: "ACTIVE",
+        provider: { subscriptionUntil: { gt: subscriptionNow } },
+      },
       include: {
         provider: { select: { name: true, avatarUrl: true, city: true } },
         category: true,
@@ -79,12 +122,19 @@ export default async function HomePage() {
     // kosong (sisa seed lama, pendaftar yang belum mengisi jasa) ikut terhitung
     // sebagai penyedia yang melayani.
     prisma.user.count({
-      where: { role: "PROVIDER", services: { some: { status: "ACTIVE" } } },
+      where: {
+        role: "PROVIDER",
+        subscriptionUntil: { gt: subscriptionNow },
+        services: { some: { status: "ACTIVE" } },
+      },
     }),
     prisma.order.count({ where: { status: "COMPLETED" } }),
     prisma.service
       .aggregate({
-        where: { status: "ACTIVE" },
+        where: {
+          status: "ACTIVE",
+          provider: { subscriptionUntil: { gt: subscriptionNow } },
+        },
         _avg: { ratingAvg: true },
       })
       .then((r) => r._avg.ratingAvg ?? 0),
@@ -95,7 +145,11 @@ export default async function HomePage() {
     // dilayani, jadi hasilnya paling banyak 7.
     prisma.user
       .findMany({
-        where: { role: "PROVIDER", services: { some: { status: "ACTIVE" } } },
+        where: {
+          role: "PROVIDER",
+          subscriptionUntil: { gt: subscriptionNow },
+          services: { some: { status: "ACTIVE" } },
+        },
         select: { city: true },
         distinct: ["city"],
       })
@@ -103,7 +157,11 @@ export default async function HomePage() {
     // Penyedia untuk bukti sosial di hero — nama + foto asli dari DB, bukan
     // avatar stok. Hanya yang punya jasa aktif agar tidak memajang akun kosong.
     prisma.user.findMany({
-      where: { role: "PROVIDER", services: { some: { status: "ACTIVE" } } },
+      where: {
+        role: "PROVIDER",
+        subscriptionUntil: { gt: subscriptionNow },
+        services: { some: { status: "ACTIVE" } },
+      },
       select: { name: true, location: true, avatarUrl: true },
       orderBy: { createdAt: "asc" },
       take: 5,

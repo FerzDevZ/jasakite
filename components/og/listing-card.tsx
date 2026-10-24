@@ -100,6 +100,11 @@ function NoteTile({ note }: { note: string }) {
 export function ListingCard({ content }: { content: ServicesOgViewModel }) {
   const qrMatrix = buildQrMatrix(content.qrValue)
   const [leadChip, secondChip, thirdChip] = content.chips
+  // Katalog masih kosong: satu petak catatan besar, bukan tiga salinan
+  // kalimat yang sama. Versi sebelumnya menaruh `placeholderNote` di setiap
+  // petak yang kosong, sehingga kartu yang dibagikan ke grup WhatsApp berisi
+  // kalimat identik terpotong tiga kali — terbaca seperti render rusak.
+  const hasCategoryChips = content.chips.length > 0
 
   return (
     <div
@@ -238,8 +243,8 @@ export function ListingCard({ content }: { content: ServicesOgViewModel }) {
 
       {/* Kolom kanan: petak kategori dengan bobot berbeda + QR. */}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 16 }}>
-        <div style={{ display: "flex", flexGrow: 1.5, flexBasis: 0 }}>
-          {leadChip ? (
+        {hasCategoryChips ? (
+          <div style={{ display: "flex", flexGrow: 1.5, flexBasis: 0 }}>
             <div style={{ display: "flex", flex: 1 }}>
               <CategoryTile
                 name={leadChip.label}
@@ -247,37 +252,31 @@ export function ListingCard({ content }: { content: ServicesOgViewModel }) {
                 emphasis="lead"
               />
             </div>
-          ) : (
-            <div style={{ display: "flex", flex: 1 }}>
-              <NoteTile note={content.placeholderNote} />
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexGrow: 2.5, flexBasis: 0 }}>
+            <NoteTile note={content.placeholderNote} />
+          </div>
+        )}
 
-        <div style={{ display: "flex", flexGrow: 1, flexBasis: 0, gap: 16 }}>
-          <div style={{ display: "flex", flex: 1.35 }}>
-            {secondChip ? (
+        {hasCategoryChips ? (
+          <div style={{ display: "flex", flexGrow: 1, flexBasis: 0, gap: 16 }}>
+            <div style={{ display: "flex", flex: 1.35 }}>
               <CategoryTile
                 name={secondChip.label}
                 countLabel={secondChip.countLabel}
                 emphasis="quiet"
               />
-            ) : (
-              <NoteTile note={content.placeholderNote} />
-            )}
-          </div>
-          <div style={{ display: "flex", flex: 1 }}>
-            {thirdChip ? (
+            </div>
+            <div style={{ display: "flex", flex: 1 }}>
               <CategoryTile
                 name={thirdChip.label}
                 countLabel={thirdChip.countLabel}
                 emphasis="quiet"
               />
-            ) : (
-              <NoteTile note={content.moreLabel ?? content.placeholderNote} />
-            )}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div style={{ display: "flex", height: QR_ROW_HEIGHT, gap: 16 }}>
           {qrMatrix ? (
