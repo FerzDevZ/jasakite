@@ -12,19 +12,29 @@ import { expect, test, type Page } from "@playwright/test"
  * punya AREA sentuh ≥44px — dicapai lewat padding, bukan diperbesar.
  */
 
-type Target = { name: string; locator: string }
+type Target = { name: string; locator: string; mobileOnly?: boolean }
 
 /** Halaman tempat tiap target bisa ditemukan. */
 const CASES: { path: string; targets: Target[] }[] = [
   {
     path: "/",
     targets: [
-      // Bottom-nav: 5 tab adalah navigasi utama di mobile.
-      { name: "tab Beranda (bottom-nav)", locator: 'nav[aria-label="Navigasi utama"] a:has-text("Beranda")' },
-      { name: "tab Kategori (bottom-nav)", locator: 'nav[aria-label="Navigasi utama"] a:has-text("Kategori")' },
+      // Bottom-nav: 5 tab adalah navigasi utama di mobile. Komponennya memakai
+      // `lg:hidden` (components/layout/bottom-nav.tsx), jadi di proyek chromium
+      // desktop (1280px) target ini memang tidak dirender.
+      {
+        name: "tab Beranda (bottom-nav)",
+        locator: 'nav[aria-label="Navigasi utama"] a:has-text("Beranda")',
+        mobileOnly: true,
+      },
+      {
+        name: "tab Kategori (bottom-nav)",
+        locator: 'nav[aria-label="Navigasi utama"] a:has-text("Kategori")',
+        mobileOnly: true,
+      },
       // Ikon lingkaran kategori ala GoFood.
-      { name: "kategori Perbaikan Rumah", locator: 'a[href*="category="]:has-text("Perbaikan Rumah")' },
-      { name: "kategori Kebersihan", locator: 'a[href*="category="]:has-text("Kebersihan")' },
+      { name: "kategori Jasa Antar", locator: 'a[href*="category="]:has-text("Jasa Antar")' },
+      { name: "kategori Jasa Belanja", locator: 'a[href*="category="]:has-text("Jasa Belanja")' },
     ],
   },
 ]
@@ -63,8 +73,11 @@ test.describe("touch-target komponen baru (>=44px)", () => {
         await page.goto(path)
       })
 
-      for (const { name, locator } of targets) {
+      for (const { name, locator, mobileOnly } of targets) {
         test(name, async ({ page }) => {
+          if (mobileOnly && (page.viewportSize()?.width ?? 0) >= 1024) {
+            test.skip(true, "bottom-nav hanya dirender di bawah breakpoint lg")
+          }
           await assertMinBox(page, locator, name)
         })
       }

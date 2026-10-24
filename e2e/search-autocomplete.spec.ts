@@ -25,7 +25,7 @@ test.describe("search autocomplete", () => {
     }
   })
 
-  test("2 char 'AC' → listbox muncul dengan saran", async ({ page }) => {
+  test("2 char 'antar' → listbox muncul dengan saran", async ({ page }) => {
     await page.goto("/")
     const input = page.getByRole("combobox", { name: /Cari jasa/i }).first()
     if (!(await input.isVisible().catch(() => false))) {
@@ -33,7 +33,7 @@ test.describe("search autocomplete", () => {
     }
     const target = page.getByRole("combobox", { name: /Cari jasa/i }).first()
     await target.click()
-    await target.fill("AC")
+    await target.fill("antar")
     // tunggu debounce 250ms + fetch
     const listbox = page.getByRole("listbox").first()
     await expect(listbox).toBeVisible({ timeout: 15_000 })
@@ -51,7 +51,7 @@ test.describe("search autocomplete", () => {
     }
     const target = page.getByRole("combobox", { name: /Cari jasa/i }).first()
     await target.click()
-    await target.fill("AC")
+    await target.fill("antar")
     const listbox = page.getByRole("listbox").first()
     await expect(listbox).toBeVisible({ timeout: 15_000 })
     await expect(listbox.getByRole("option").first()).toBeVisible({ timeout: 10_000 })
@@ -68,7 +68,7 @@ test.describe("search autocomplete", () => {
 
   test("dedup — judul sama hanya muncul sekali (case-insensitive)", async ({ page, request }) => {
     // cek via API langsung agar tidak bergantung UI
-    const res = await request.get("/api/search-suggestions?q=AC")
+    const res = await request.get("/api/search-suggestions?q=antar")
     expect(res.ok()).toBeTruthy()
     const { suggestions } = (await res.json()) as { suggestions: { title: string; slug: string }[] }
     const keys = suggestions.map((s) => s.title.trim().toLowerCase())
@@ -81,7 +81,7 @@ test.describe("search autocomplete", () => {
     }
     const target = page.getByRole("combobox", { name: /Cari jasa/i }).first()
     await target.click()
-    await target.fill("AC")
+    await target.fill("antar")
     const listbox = page.getByRole("listbox").first()
     await expect(listbox).toBeVisible({ timeout: 15_000 })
     const texts = await listbox.getByRole("option").allTextContents()

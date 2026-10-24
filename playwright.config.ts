@@ -1,4 +1,18 @@
+import { existsSync } from "node:fs"
+import { loadEnvFile } from "node:process"
 import { defineConfig, devices } from "@playwright/test"
+
+/**
+ * Muat `.env` untuk PROSES TES, bukan hanya server.
+ *
+ * `next start` memuat `.env` sendiri, tetapi runner Playwright tidak. Fixture
+ * pesanan (lihat `markOrderPaid` di e2e/helpers/api.ts) perlu `DATABASE_URL`
+ * untuk menandai pembayaran sudah diverifikasi. Nilai yang sudah ada di
+ * environment tidak ditimpa, jadi CI tetap bisa menyuntikkan database sendiri.
+ */
+if (!process.env.DATABASE_URL && existsSync(".env")) {
+  loadEnvFile(".env")
+}
 
 /**
  * Konfigurasi E2E.

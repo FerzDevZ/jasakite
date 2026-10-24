@@ -5,7 +5,7 @@ import { apiGet, csrfHeaders, postJson, serviceNotOwnedBy } from "./helpers/api"
 /**
  * Keranjang → checkout tiga langkah.
  *
- * Alur ini tidak bisa diuji lewat unit test: nilainya ada pada perpindahan
+ * Alur ini tidak bisa diuji lewat unit test: nilainya ada pada transisi
  * antar langkah, harga yang dibaca ulang dari server, dan satu pesanan yang
  * benar-benar lahir di database. Yang diperiksa di sini adalah janji UI-nya —
  * bahwa tombol "Lanjut" tidak membawa pengguna ke langkah yang tidak siap, dan

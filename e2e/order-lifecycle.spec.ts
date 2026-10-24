@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { ACCOUNTS, login } from "./helpers/auth"
+import { markOrderPaid } from "./helpers/api"
 
 /**
  * Alur pesanan end-to-end: customer memesan → provider menerima → provider
@@ -97,13 +98,20 @@ test.describe("siklus hidup pesanan", () => {
     // Number("507f1f77...") bernilai NaN — perbandingan NaN > 0 selalu gagal,
     // jadi tesnya menolak id yang sebenarnya sah.
     expect(orderId).toMatch(/^[0-9a-f]{24}$|^\d+$/)
+
+    // Checkout menyimpan pesanan sebagai UNPAID (QRIS statis menunggu
+    // verifikasi SUPER_ADMIN ber-TOTP). Fixture menandainya sudah dibayar agar
+    // langkah berikutnya menguji transisi PENDING → IN_PROGRESS, bukan gerbang
+    // pembayaran yang sudah diuji unit di tests/payments.test.ts.
+    await markOrderPaid(orderId)
   })
 
   test("pesanan baru muncul sebagai PENDING di dashboard customer", async ({
     page,
   }) => {
-    await login(page, "customer")
-    await page.goto("/dashboard/customer")
+    // callbackUrl langsung ke halaman tujuan: page.goto() sesudah login bisa
+    // ditabrak redirect klien yang masih berjalan.
+    await login(page, "customer", "/dashboard/customer")
 
     await expect(
       page.getByRole("heading", { level: 1, name: /Pesanan Saya/i })
@@ -116,8 +124,7 @@ test.describe("siklus hidup pesanan", () => {
   test("customer tidak bisa memajukan status pesanannya sendiri", async ({
     page,
   }) => {
-    await login(page, "customer")
-    await page.goto(`/orders/${orderId}`)
+    await login(page, "customer", `/orders/${orderId}`)
 
     await expect(
       page.getByRole("heading", { level: 1, name: new RegExp(`Pesanan #${orderId}`) })
@@ -130,8 +137,11 @@ test.describe("siklus hidup pesanan", () => {
   })
 
   test("provider menerima pesanan dari kanban", async ({ page }) => {
-    await login(page, "provider")
-    await page.goto("/dashboard/provider")
+    // `login` dengan callbackUrl sudah mendaratkan kita di dashboard provider.
+    // Memanggil page.goto() ke URL yang sama setelahnya bisa bertabrakan dengan
+    // redirect middleware/klien yang masih berjalan ("navigation is
+    // interrupted by another navigation").
+    await login(page, "provider", "/dashboard/provider")
 
     // Kanban ini sebelumnya ada di komponen yang tidak pernah diimpor —
     // keberadaannya di halaman adalah bagian dari yang diuji.
@@ -156,8 +166,7 @@ test.describe("siklus hidup pesanan", () => {
   })
 
   test("provider menandai pesanan selesai", async ({ page }) => {
-    await login(page, "provider")
-    await page.goto("/dashboard/provider")
+    await login(page, "provider", "/dashboard/provider")
 
     const card = page
       .locator("article")
@@ -176,8 +185,7 @@ test.describe("siklus hidup pesanan", () => {
   })
 
   test("customer memberi ulasan setelah pesanan selesai", async ({ page }) => {
-    await login(page, "customer")
-    await page.goto(`/orders/${orderId}`)
+    await login(page, "customer", `/orders/${orderId}`)
 
     // Form ulasan hanya muncul pada status COMPLETED — kalau langkah provider
     // gagal, test ini gagal di sini, bukan lolos diam-diam.

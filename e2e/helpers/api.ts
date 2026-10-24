@@ -1,4 +1,5 @@
 import { expect, type APIResponse, type Page } from "@playwright/test"
+import { PrismaClient } from "@prisma/client"
 
 /**
  * Pembantu pengambilan data uji lewat API.
@@ -180,6 +181,33 @@ export async function ensureOrderWithProvider(
   return String(((await res.json()) as { id: string }).id)
 }
 
+let fixtureDb: PrismaClient | null = null
+
+function db(): PrismaClient {
+  fixtureDb ??= new PrismaClient()
+  return fixtureDb
+}
+
+/**
+ * Tandai pembayaran pesanan uji sudah diverifikasi SUPER_ADMIN.
+ *
+ * Penyedia hanya boleh memulai kerja setelah `paymentStatus = PAID`
+ * (`canProviderStart` di lib/payments.ts), dan satu-satunya jalur aplikasi ke
+ * status itu adalah unggah bukti QRIS + verifikasi admin ber-TOTP. Aturan itu
+ * sudah diuji unit di tests/payments.test.ts, jadi spec E2E yang subjeknya
+ * mesin status pesanan (kanban, notifikasi, siklus hidup) tidak perlu memutar
+ * ulang alur verifikasi manual; mereka mulai dari keadaan "sudah dibayar".
+ *
+ * Ini fixture data, bukan jalan pintas produksi: tidak ada kode aplikasi yang
+ * menulis `PAID` tanpa verifikasi.
+ */
+export async function markOrderPaid(orderId: string): Promise<void> {
+  await db().order.update({
+    where: { id: orderId },
+    data: { paymentStatus: "PAID" },
+  })
+}
+
 /**
  * Selalu MEMBUAT pesanan baru (bukan memakai yang ada) — untuk tes yang butuh
  * status awal PENDING yang pasti.
@@ -195,7 +223,9 @@ export async function createOrderWithProvider(
     orderNotes: "Pesanan uji kanban",
   })
   if (!res.ok()) return null
-  return String(((await res.json()) as { id: string }).id)
+  const orderId = String(((await res.json()) as { id: string }).id)
+  await markOrderPaid(orderId)
+  return orderId
 }
 
 /** Slug jasa yang disimpan user yang sedang login. */

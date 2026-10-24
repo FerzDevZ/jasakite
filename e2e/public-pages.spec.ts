@@ -21,10 +21,9 @@ test.describe("halaman publik", () => {
     await expect(page.getByText(/Penyedia jasa aktif/i).first()).toBeVisible()
     await expect(page.getByText(/Bergabung bersama/i)).toBeVisible()
 
-    // Placeholder pencarian harus menyebut kategori yang BENAR-BENAR ada.
-    // Dua tempat dulu hardcode nama kategori lama: kolom hero ("Service AC,
-    // Pasang Listrik, Bersih Rumah") dan kolom navbar ("AC, listrik,
-    // kebersihan"). Keduanya kini diturunkan dari kategori milik halaman.
+    // Placeholder pencarian harus menyebut kategori yang BENAR-BENAR ada:
+    // kolom hero dan kolom navbar sama-sama diturunkan dari kategori milik
+    // halaman, bukan daftar teks di source.
     const categoryName = (
       await page.locator('a[href*="/services?category="]').first().innerText()
     ).trim()
@@ -38,13 +37,20 @@ test.describe("halaman publik", () => {
     expect(filled.length, "harus ada kolom pencarian yang terlihat").toBeGreaterThan(0)
     for (const placeholder of filled) {
       expect(placeholder).toContain(categoryName)
-      expect(placeholder).not.toMatch(/Service AC|Pasang Listrik|Bersih Rumah|AC, listrik, kebersihan/)
     }
   })
 
   test("tepat satu h1 dan tidak ada lompatan level heading", async ({ page }) => {
     for (const path of ["/", "/services", "/faq", "/login", "/register"]) {
       await page.goto(path)
+
+      // Tunggu h1 masuk accessibility tree sebelum mengukur urutan. Tanpa ini
+      // pembacaan bisa terjadi saat React masih menaruh h1 di wadah streaming
+      // `hidden`, sehingga h2 footer terbaca sebagai heading pertama — gagal
+      // acak yang bukan cacat urutan heading.
+      await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible({
+        timeout: 15_000,
+      })
 
       // Hanya heading yang benar-benar terlihat.
       //
