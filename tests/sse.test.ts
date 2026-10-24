@@ -149,3 +149,46 @@ describe("walletDecision — keputusan dompet", () => {
     expect(parseSseBuffer(buffer).events).toEqual([decisionEvent])
   })
 })
+
+describe("notifications — daftar lonceng menumpang stream", () => {
+  const feedEvent: MessageStreamEvent = {
+    type: "notifications",
+    unreadCount: 2,
+    items: [
+      {
+        id: "notif-1",
+        type: "ORDER",
+        title: "Pesanan baru",
+        body: "Budi memesan jasa Anda",
+        href: "/orders/abc",
+        read: false,
+        createdAt: "2026-10-24T02:00:00.000Z",
+        time: "5 menit lalu",
+      },
+    ],
+  }
+
+  it("format wire memuat blok event + data JSON utuh", () => {
+    const wire = formatSseEvent(feedEvent)
+    expect(wire).toContain("event: notifications\n")
+    expect(JSON.parse(wire.split("data: ")[1]!.trim())).toEqual(feedEvent)
+  })
+
+  it("ter-parse utuh di antara heartbeat dan event lain", () => {
+    const buffer =
+      ": ping\n\n" +
+      formatSseEvent({ type: "unread", count: 4 }) +
+      formatSseEvent(feedEvent)
+    const { events, rest } = parseSseBuffer(buffer)
+    expect(events).toEqual([{ type: "unread", count: 4 }, feedEvent])
+    expect(rest).toBe("")
+  })
+
+  it("payload tanpa unreadCount/items dibuang — lonceng tidak menampilkan angka karangan", () => {
+    const buffer =
+      'event: notifications\ndata: {"type":"notifications"}\n\n' +
+      'event: notifications\ndata: {"type":"notifications","unreadCount":3}\n\n' +
+      formatSseEvent(feedEvent)
+    expect(parseSseBuffer(buffer).events).toEqual([feedEvent])
+  })
+})

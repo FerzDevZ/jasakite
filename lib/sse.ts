@@ -7,9 +7,21 @@
  * dengan lib/cart.ts dan lib/optimistic.ts.
  */
 
+import type { NotificationFeedItem } from "@/lib/notifications-feed"
+
 /** Event yang dikirim server ke klien melalui stream pesan realtime. */
 export type MessageStreamEvent =
   | { type: "unread"; count: number }
+  /**
+   * Daftar notifikasi lonceng. Dulu lonceng memutar polling 60 detik sendiri;
+   * sekarang menumpang stream yang sama, sehingga satu koneksi per tab
+   * melayani badge pesan sekaligus notifikasi.
+   */
+  | {
+      type: "notifications"
+      unreadCount: number
+      items: NotificationFeedItem[]
+    }
   | {
       type: "thread"
       threadId: string
@@ -87,6 +99,9 @@ export function parseSseBuffer(buffer: string): {
           parsed.type === "thread" ||
           parsed.type === "hello" ||
           parsed.type === "typing" ||
+          (parsed.type === "notifications" &&
+            typeof parsed.unreadCount === "number" &&
+            Array.isArray(parsed.items)) ||
           (parsed.type === "walletDecision" &&
             typeof parsed.transactionId === "string" &&
             typeof parsed.amount === "number"))

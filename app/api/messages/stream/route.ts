@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { prismaId, sameId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
+import { BELL_ITEM_LIMIT, loadNotificationFeed } from "@/lib/notifications-feed"
 import { combineUnread, formatSseEvent } from "@/lib/sse"
 import { getTypingForViewer } from "@/lib/typing"
 import { roundToRupiah } from "@/lib/wallet"
@@ -22,6 +23,10 @@ const THREAD_WINDOW_MS = 5 * 60 * 1000
 // menerima keputusan yang terjadi beberapa detik sebelumnya — tab kedua yang
 // login user yang sama tidak pernah melewatkan pengumuman.
 const WALLET_DECISION_WINDOW_MS = 90_000
+// Notifikasi lonceng: dulu klien memutar polling 60 detik sendiri. Sekarang
+// menumpang stream ini, dan siklusnya lebih rapat (20 dtk) tanpa menambah
+// koneksi maupun permintaan HTTP per klien.
+const NOTIFICATION_INTERVAL_MS = 20_000
 
 /**
  * GET — stream Server-Sent Events untuk pengguna yang sedang login.
@@ -34,6 +39,9 @@ const WALLET_DECISION_WINDOW_MS = 90_000
  *               5 menit — pemicu invalidate ["messages", threadKey] di klien.
  * - `walletDecision` : top-up/penarikan saya baru diputus admin (30s
  *               terakhir) — pemicu toast + invalidate ["wallet"] di klien.
+ * - `notifications` : daftar lonceng (6 terbaru + jumlah belum dibaca).
+ *               Hanya dikirim saat isinya berubah, atau sekali per menit
+ *               supaya label waktu relatif ("3 menit lalu") tetap akurat.
  * - `: ping`  : heartbeat komentar tiap 15s — menjaga proxy menjaga koneksi
  *               tetap terbuka.
  *
@@ -49,7 +57,7 @@ export async function GET(request: Request) {
     return new Response("Unauthorized", { status: 401 })
   }
 
-  const limited = enforceRateLimit(request, "sse", RATE_LIMITS.sse, session.user.id)
+  const limited = await enforceRateLimit(request, "sse", RATE_LIMITS.sse, session.user.id)
   if (limited) return limited
 
   const me = prismaId(session.user.id)
@@ -181,6 +189,39 @@ export async function GET(request: Request) {
         }
       }, WALLET_DECISION_INTERVAL_MS)
       timers.push(walletTimer)
+
+      // ── notifications: sumber daftar lonceng ────────────────────────
+      let lastNotificationSignature = ""
+      const runNotificationCycle = async () => {
+        if (closed) return
+        try {
+          const feed = await loadNotificationFeed(String(me), { limit: BELL_ITEM_LIMIT })
+          // Label waktu relatif berubah sendiri tanpa perubahan data, jadi
+          // menit berjalan ikut masuk tanda tangan — tanpa itu lonceng bisa
+          // menampilkan "baru saja" untuk notifikasi berumur setengah jam.
+          const minuteBucket = Math.floor(Date.now() / 60_000)
+          const signature = `${feed.unreadCount}|${minuteBucket}|${feed.items
+            .map((item) => `${item.id}:${item.read ? 1 : 0}`)
+            .join(",")}`
+          if (signature === lastNotificationSignature) return
+          lastNotificationSignature = signature
+          send(
+            formatSseEvent({
+              type: "notifications",
+              unreadCount: feed.unreadCount,
+              items: feed.items,
+            })
+          )
+        } catch {
+          // Kegagalan DB sesaat — siklus berikutnya mencoba lagi.
+        }
+      }
+      // Kirim segera: lonceng tidak perlu fetch awal saat stream sudah hidup.
+      void runNotificationCycle()
+      const notificationTimer = setInterval(() => {
+        void runNotificationCycle()
+      }, NOTIFICATION_INTERVAL_MS)
+      timers.push(notificationTimer)
 
       // ── thread + typing: pemicu invalidate & indikator di klien ───────
       const runThreadCycle = async () => {

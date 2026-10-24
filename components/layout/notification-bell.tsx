@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { Bell, ClipboardList, MessageSquare, Sparkles, Tag } from "lucide-react"
 import { csrfFetch } from "@/lib/csrf-fetch"
+import { useMessageStream } from "@/hooks/use-message-stream"
 import { cn } from "@/lib/utils"
 
 type NotificationItem = {
@@ -35,6 +36,11 @@ const TYPE_ICON = {
  *
  * Dropdown ini hanya jendela cepat; arsip lengkapnya ada di /notifications,
  * karena notifikasi yang tidak bisa dibaca ulang sama saja dengan toast.
+ *
+ * Sumber pembaruannya adalah stream SSE yang sudah dipakai badge pesan —
+ * satu koneksi per tab, bukan polling 60 detik milik komponen ini sendiri.
+ * Fetch langsung tetap dipakai untuk tampilan pertama dan saat tab kembali
+ * aktif; interval 60 detik hanya dihidupkan kalau stream benar-benar gagal.
  */
 export function NotificationBell() {
   const { data: session } = useSession()
@@ -67,22 +73,37 @@ export function NotificationBell() {
     }
   }, [session, count])
 
+  const { status, subscribe } = useMessageStream(Boolean(session?.user))
+
+  // Nilai pertama + penyegaran saat tab kembali aktif.
   React.useEffect(() => {
     load()
-    // Polling ringan setiap 60 detik, jeda saat tab hidden (P1 perf)
-    const interval = setInterval(() => {
-      if (document.hidden) return
-      load()
-    }, 60_000)
     const onVis = () => {
       if (!document.hidden) load()
     }
     document.addEventListener("visibilitychange", onVis)
-    return () => {
-      clearInterval(interval)
-      document.removeEventListener("visibilitychange", onVis)
-    }
+    return () => document.removeEventListener("visibilitychange", onVis)
   }, [load])
+
+  // Realtime: server mengirim daftar lonceng lewat stream yang sama dengan
+  // badge pesan, dan hanya saat isinya berubah.
+  React.useEffect(() => {
+    return subscribe((event) => {
+      if (event.type !== "notifications") return
+      setCount(event.unreadCount)
+      setItems(event.items)
+    })
+  }, [subscribe])
+
+  // Hanya bila stream gagal total (proxy tanpa streaming): kembali ke polling.
+  // Fitur turun satu tingkat, tidak hilang.
+  React.useEffect(() => {
+    if (status !== "failed") return
+    const interval = setInterval(() => {
+      if (!document.hidden) load()
+    }, 60_000)
+    return () => clearInterval(interval)
+  }, [status, load])
 
   // Escape menutup dropdown — prasyarat dialog non-modal yang bisa
   // didismiss keyboard (WCAG 2.1.2). Tanpa ini, pengguna keyboard harus
