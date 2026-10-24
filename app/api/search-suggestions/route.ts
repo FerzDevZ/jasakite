@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
         provider: { subscriptionUntil: { gt: new Date() } },
         AND: tokens.map((token) => ({
           OR: [
-            { title: { contains: token } },
-            { description: { contains: token } },
+            { title: { contains: token, mode: "insensitive" } },
+            { description: { contains: token, mode: "insensitive" } },
           ],
         })),
       },

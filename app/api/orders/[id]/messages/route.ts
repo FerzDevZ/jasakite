@@ -64,7 +64,10 @@ export async function GET(
     const messages = await prisma.message.findMany({
       where: { orderId },
       include: { sender: { select: { id: true, name: true } } },
-      orderBy: { createdAt: "asc" },
+      // Ambil 200 TERBARU lalu balik urutan — dulu asc+200 mengambil 200
+      // TERPUCUK, sehingga begitu thread melewati 200 pesan, pesan baru
+      // tidak pernah sampai ke UI (tidak ada parameter "muat lebih lama").
+      orderBy: { createdAt: "desc" },
       take: 200,
     })
 
@@ -94,7 +97,8 @@ export async function GET(
       // sengaja diabaikan — baca pesan lebih penting daripada badge
     }
 
-    return NextResponse.json(messages)
+    // Klien merender terlama→terbaru; kembalikan dalam urutan itu.
+    return NextResponse.json(messages.reverse())
   } catch (error) {
     console.error("[messages] GET error:", error)
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 })

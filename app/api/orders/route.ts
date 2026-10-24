@@ -430,7 +430,14 @@ export async function POST(request: Request) {
           (settlementError as unknown as { code?: string })?.code === "INSUFFICIENT"
         ) {
           await rollback(createdOrderIds)
-          if (claimedVoucherCode) await releaseVoucherClaim(claimedVoucherCode)
+          if (claimedVoucherCode) {
+            // Redemption yatim membuat voucher "hangus" untuk pengguna ini
+            // selamanya (unique voucherCode+userId) padahal pesanannya batal.
+            await prisma.voucherRedemption
+              .deleteMany({ where: { voucherCode: claimedVoucherCode, userId: customerId } })
+              .catch(() => {})
+            await releaseVoucherClaim(claimedVoucherCode)
+          }
           return NextResponse.json(
             { error: "Saldo tidak mencukupi — isi saldo lalu coba lagi" },
             { status: 409 }
@@ -479,7 +486,12 @@ export async function POST(request: Request) {
     // membersihkan pesanan yang sudah terlanjur dibuat, supaya pengguna tidak
     // mendapat pesanan "hantu" tanpa pembayaran.
     if (createdOrderIds.length > 0) await rollback(createdOrderIds)
-    if (claimedVoucherCode) await releaseVoucherClaim(claimedVoucherCode)
+    if (claimedVoucherCode) {
+      await prisma.voucherRedemption
+        .deleteMany({ where: { voucherCode: claimedVoucherCode, userId: customerId } })
+        .catch(() => {})
+      await releaseVoucherClaim(claimedVoucherCode)
+    }
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

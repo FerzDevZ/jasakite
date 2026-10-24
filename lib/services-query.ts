@@ -105,9 +105,12 @@ export function buildServicesWhere(q: ServicesQuery): Prisma.ServiceWhereInput {
     if (tokens.length > 0) {
       where.AND = tokens.map((token) => ({
         OR: [
-          { title: { contains: token } },
-          { description: { contains: token } },
-          { provider: { name: { contains: token } } },
+          // mode insensitive WAJIB: tanpa ini "kurir" gagal mencocokkan
+          // "Kurir Motor" — judul seed ber-Title Case, ketikan pengguna
+          // lowercase. (Terbukti di db: 0 vs 1 hasil.)
+          { title: { contains: token, mode: "insensitive" } },
+          { description: { contains: token, mode: "insensitive" } },
+          { provider: { name: { contains: token, mode: "insensitive" } } },
         ],
       }))
     }

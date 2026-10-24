@@ -79,7 +79,10 @@ export async function GET(request: Request) {
         ],
       },
       include: { sender: { select: { id: true, name: true } } },
-      orderBy: { createdAt: "asc" },
+      // Ambil 200 TERBARU lalu balik urutan — dulu asc+200 mengambil 200
+      // TERPUCUK, sehingga begitu thread melewati 200 pesan, pesan baru
+      // tidak pernah sampai ke UI (tidak ada parameter "muat lebih lama").
+      orderBy: { createdAt: "desc" },
       take: 200,
     })
 
@@ -109,7 +112,8 @@ export async function GET(request: Request) {
       // polling badge berikutnya akan menghitung ulang
     }
 
-    return NextResponse.json({ peer, messages })
+    // Klien merender terlama→terbaru; kembalikan dalam urutan itu.
+    return NextResponse.json({ peer, messages: messages.reverse() })
   } catch (error) {
     console.error("[messages-direct] GET error:", error)
     return NextResponse.json(
