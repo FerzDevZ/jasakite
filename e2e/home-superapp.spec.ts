@@ -102,4 +102,36 @@ test.describe("beranda super-app", () => {
     await expect(menu.getByRole("link", { name: "Keranjang" })).toBeVisible()
     await expect(menu.getByRole("link", { name: "Notifikasi" })).toBeVisible()
   })
+
+  test("drawer menu menutup layar penuh, tidak terkurung navbar", async ({ page }) => {
+    if ((page.viewportSize()?.width ?? 1280) >= 768) {
+      test.skip(true, "menu hamburger hanya untuk layar sempit")
+      return
+    }
+
+    await page.goto("/")
+    await page.getByRole("button", { name: "Buka menu" }).click()
+    const menu = page.getByRole("dialog", { name: "Menu navigasi" })
+    await expect(menu).toBeVisible()
+
+    // Regresi yang dijaga: panel `fixed inset-0` sempat dirender DI DALAM
+    // <header> yang memakai `backdrop-blur-xl`. `backdrop-filter` menjadikan
+    // header containing block untuk `fixed`, jadi panel `h-full` hanya setinggi
+    // navbar (64px) dan isinya tumpah menutupi teks halaman — terlihat persis
+    // seperti itu di Android/Chromium. Tinggi panel adalah buktinya, bukan
+    // sekadar "dialog terlihat".
+    const viewport = page.viewportSize()!
+    const panel = await menu.boundingBox()
+    expect(panel, "panel harus punya kotak").not.toBeNull()
+    expect(panel!.height).toBeGreaterThanOrEqual(viewport.height * 0.9)
+
+    // Portal: panel harus berada langsung di body, bukan diturunkan dari header.
+    expect(await menu.evaluate((node) => node.closest("header") !== null)).toBe(false)
+
+    // Isi panel ikut di dalam panel, bukan melayang di luar batasnya.
+    const firstLink = await menu.getByRole("link", { name: "Jelajahi Jasa" }).boundingBox()
+    expect(firstLink).not.toBeNull()
+    expect(firstLink!.x).toBeGreaterThanOrEqual(panel!.x - 1)
+    expect(firstLink!.x + firstLink!.width).toBeLessThanOrEqual(panel!.x + panel!.width + 1)
+  })
 })
