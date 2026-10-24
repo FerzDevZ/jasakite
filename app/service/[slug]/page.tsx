@@ -1,3 +1,4 @@
+import { cache } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -13,42 +14,73 @@ import ServiceDetailClient from "./service-detail-client"
 
 export const dynamic = "force-dynamic"
 
+/**
+ * Satu pembacaan jasa per permintaan, dipakai bersama oleh metadata dan halaman.
+ *
+ * Aturan visibilitas ada di SATU tempat: jasa yang tidak ada, atau yang
+ * statusnya bukan ACTIVE dan penontonnya bukan admin, diperlakukan sama
+ * (null). Kalau metadata dan halaman memakai aturan berbeda, keduanya bisa
+ * tidak sepakat — metadata mengirim 404 untuk halaman yang sebenarnya
+ * merender konten, atau sebaliknya.
+ *
+ * `cache()` dari React mendedupe panggilan dalam satu permintaan, jadi
+ * pembacaan di generateMetadata dan di komponen halaman tidak menjadi dua
+ * kueri database.
+ */
+const getServiceForView = cache(async (slug: string) => {
+  const service = await prisma.service.findUnique({
+    where: { slug },
+    include: {
+      provider: {
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+          city: true,
+          createdAt: true,
+        },
+      },
+      category: { select: { id: true, name: true, slug: true } },
+      // Paket tier untuk selector harga di client — tanpa include ini
+      // kotak "Pilih paket" tidak pernah dirender (client hanya menerima
+      // data yang di-serial halaman ini, bukan panggilan /api/services).
+      packages: { orderBy: { position: "asc" as const } },
+    },
+  })
+
+  if (!service) return null
+
+  // Izinkan ADMIN preview DRAFT via moderasi (?preview=1). Publik tidak
+  // melihat jasa non-ACTIVE sama sekali.
+  if (service.status !== "ACTIVE") {
+    const session = await auth()
+    if (!isAdminRole(session?.user?.role)) return null
+  }
+
+  return service
+})
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const service = await prisma.service.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      description: true,
-      price: true,
-      ratingAvg: true,
-      totalReviews: true,
-      category: { select: { name: true } },
-    },
-  })
+  // Status 404 SUNGGUHAN diputuskan middleware.ts, bukan di sini.
+  //
+  // Diukur di build produksi: `notFound()` di fungsi ini TIDAK menyetel status
+  // (tetap 200), karena root layout membaca sesi sehingga rute dirender dinamis
+  // dan shell-nya sudah terkirim sebelum metadata dievaluasi. Middleware
+  // berjalan lebih dulu dan me-rewrite slug yang tidak layak ke path yang tidak
+  // ada, sehingga Next sendiri yang menjawab 404.
+  //
+  // notFound() di bawah tetap dipertahankan sebagai lapisan kedua: permintaan
+  // RSC (navigasi/prefetch klien) sengaja dilewatkan gerbang middleware, dan
+  // jasa bisa berubah status di antara pemeriksaan middleware dan render.
+  const service = await getServiceForView(slug)
+  if (!service) notFound()
 
   const url = `${siteUrl}/service/${slug}`
-
-  if (!service) {
-    return {
-      title: "Jasa tidak ditemukan",
-      description: "Jasa yang Anda cari tidak tersedia atau telah dihapus.",
-      alternates: { canonical: url },
-      // Halaman ini merender UI not-found tapi status HTTP-nya tetap 200:
-      // <Navbar /> adalah async server component di root layout, sehingga
-      // respons sudah di-stream (header terkirim) sebelum notFound() di bawah
-      // dievaluasi. Next.js tidak bisa mengubah status setelah itu.
-      //
-      // Tanpa noindex, crawler memperlakukannya sebagai soft 404 dan bisa
-      // mengindeks halaman kosong untuk setiap slug ngawur yang pernah
-      // ditautkan. noindex menutup celah itu tanpa merombak layout.
-      robots: { index: false, follow: false },
-    }
-  }
 
   const description =
     service.description.length > 155
@@ -93,32 +125,12 @@ export default async function ServiceDetailPage({
 }) {
   const { slug } = await params
 
-  const service = await prisma.service.findUnique({
-    where: { slug },
-    include: {
-      provider: {
-        select: {
-          id: true,
-          name: true,
-          avatarUrl: true,
-          city: true,
-          createdAt: true,
-        },
-      },
-      category: { select: { id: true, name: true, slug: true } },
-      // Paket tier untuk selector harga di client — tanpa include ini
-      // kotak "Pilih paket" tidak pernah dirender (client hanya menerima
-      // data yang di-serial halaman ini, bukan panggilan /api/services).
-      packages: { orderBy: { position: "asc" as const } },
-    },
-  })
-
+  // null berarti tidak ada ATAU tidak boleh dilihat — keduanya 404. Gerbang
+  // middleware memakai aturan yang sama (middleware.ts + serviceDetailGate),
+  // tapi pengecekan ini tetap diperlukan: navigasi RSC dilewatkan gerbang, dan
+  // status jasa bisa berubah di antara pemeriksaan middleware dan render.
+  const service = await getServiceForView(slug)
   if (!service) notFound()
-  // Izinkan ADMIN preview DRAFT via moderasi (?preview=1). Publik tetap 404 untuk non-ACTIVE.
-  if (service.status !== "ACTIVE") {
-    const session = await auth()
-    if (!isAdminRole(session?.user?.role)) notFound()
-  }
 
   // Fakta terstruktur tentang provider untuk tab "Tentang Provider" —
   // menggantikan bio auto-generated yang sebelumnya filler copy.

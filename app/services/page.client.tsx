@@ -486,6 +486,13 @@ function CatalogContent({
             </div>
           )}
 
+          {/* Penanda wilayah hasil. Wajib ada: judul tiap kartu adalah <h3>,
+              jadi tanpa heading level 2 di antaranya urutannya melompat
+              h1 → h3 — dilaporkan sebagai lompatan level oleh pembaca layar
+              dan oleh e2e/public-pages.spec.ts. Tidak perlu terlihat: h1 plus
+              baris "N jasa ditemukan" sudah menjadi judul visualnya. */}
+          <h2 className="sr-only">Hasil pencarian jasa</h2>
+
           {/* Hasil katalog dalam wrapper yang memudar saat refetch (keepPreviousData)
               — bukan skeleton blink penuh. */}
           <div className={isFetching && !isLoading ? "opacity-60 transition-opacity" : undefined}>

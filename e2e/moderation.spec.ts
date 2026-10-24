@@ -68,7 +68,7 @@ test.describe("moderasi — DRAFT → ACTIVE", () => {
     expect(html).not.toMatch(/<meta[^>]*name="robots"[^>]*noindex/i)
   })
 
-  test("DRAFT tanpa preview tetap 404 (soft 404 noindex) untuk publik", async ({ page }) => {
+  test("DRAFT tanpa preview menjawab 404 untuk publik", async ({ page }) => {
     await login(page, "admin", "/dashboard/admin/moderasi")
 
     // cari draft yang masih ada (jika sudah diaktifkan di test sebelumnya, mungkin 0)
@@ -80,13 +80,12 @@ test.describe("moderasi — DRAFT → ACTIVE", () => {
 
     await page.context().clearCookies()
     const res = await apiGet(page, `/service/${draft.slug}`)
-    // karena Navbar async streaming, status 200 tapi UI not-found + noindex:
-    // sebelum aktif, publik tidak boleh melihat konten
+
+    // Dulu 200 + UI not-found + noindex. Sekarang gerbang middleware
+    // memutuskan sebelum render, jadi statusnya benar-benar 404.
+    expect(res.status()).toBe(404)
     const html = await res.text()
-    if (html.includes(draft.title) && !html.includes("tidak ditemukan")) {
-      test.skip(true, "draft sudah aktif, skip 404 check")
-      return
-    }
-    expect(html).toMatch(/tidak ditemukan|noindex/i)
+    expect(html).toMatch(/tidak ditemukan/i)
+    expect(html).not.toContain(draft.title)
   })
 })

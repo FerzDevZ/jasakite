@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test"
+import { listServices } from "./helpers/api"
 
 /**
  * Smoke test halaman publik.
@@ -25,8 +26,16 @@ test.describe("halaman publik", () => {
     for (const path of ["/", "/services", "/faq", "/login", "/register"]) {
       await page.goto(path)
 
+      // Hanya heading yang benar-benar terlihat.
+      //
+      // Setelah `goto`, Next sudah mengirim HTML stream; React menaruh bagian
+      // yang belum selesai di wadah hidden dan memindahkannya saat hidrasi.
+      // Kalau elemen di wadah itu ikut dihitung, tes sesekali melihat DUA h1
+      // (satu masih di wadah streaming) atau footer sebelum konten — gagal
+      // acak yang tidak ada hubungannya dengan urutan heading yang dibaca
+      // pembaca layar, karena isi hidden tidak masuk accessibility tree.
       const levels = await page.$$eval("h1,h2,h3,h4,h5,h6", (nodes) =>
-        nodes.map((n) => Number(n.tagName.slice(1)))
+        nodes.filter((n) => n.checkVisibility()).map((n) => Number(n.tagName.slice(1)))
       )
 
       expect(levels.filter((l) => l === 1), `${path}: jumlah h1`).toHaveLength(1)
@@ -49,36 +58,41 @@ test.describe("halaman publik", () => {
     await expect(page.getByText(/\d+ jasa ditemukan/)).toBeVisible()
   })
 
-  test("slug yang tidak ada menampilkan not-found dan noindex", async ({
+  test("slug yang tidak ada menjawab 404 sungguhan, bukan soft 404", async ({
     page,
   }) => {
     const response = await page.goto("/service/slug-yang-tidak-pernah-ada")
 
-    // Status di sini 200, BUKAN 404 — dan itu bukan kelalaian test.
-    // <Navbar /> adalah async server component di root layout, sehingga Next.js
-    // sudah mulai men-stream respons (header terkirim) sebelum notFound() di
-    // page.tsx dievaluasi. Status HTTP tidak bisa diubah setelah itu.
-    //
-    // Yang bisa dan harus dijamin: UI not-found tampil, dan halaman diberi
-    // noindex supaya crawler tidak mengindeks soft 404 untuk slug ngawur.
-    expect(response?.status()).toBe(200)
-    await expect(page.getByText(/tidak ditemukan/i).first()).toBeVisible()
+    // Status ini dulu 200 dengan UI not-found. Root layout membaca sesi,
+    // sehingga rute dirender dinamis dan header sudah terkirim sebelum
+    // notFound() dievaluasi — noindex hanya menambal gejalanya. Sekarang
+    // middleware memutuskan sebelum render dan me-rewrite ke path yang tidak
+    // ada, sehingga Next sendiri menjawab 404.
+    expect(response?.status()).toBe(404)
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("404")
+    await expect(page.getByText(/Halaman tidak ditemukan/i)).toBeVisible()
   })
 
-  test("slug tidak ada dikirim dengan meta robots noindex", async ({
-    request,
-  }) => {
-    // Diperiksa pada HTML mentah, bukan DOM: not-found boundary React menukar
-    // isi <head> setelah hydration, sehingga tag yang dilihat crawler (yang
-    // tidak menjalankan JS) hanya terlihat di respons server.
-    const response = await request.get("/service/slug-yang-tidak-pernah-ada")
-    const html = await response.text()
+  test("jasa yang ada tetap 200 dan memuat judulnya", async ({ page }) => {
+    const [service] = await listServices(page)
+    expect(service, "butuh minimal satu jasa aktif di database").toBeTruthy()
 
-    const robotsTags = html.match(/<meta name="robots" content="[^"]*"/g) ?? []
-    expect(robotsTags.length).toBeGreaterThan(0)
-    for (const tag of robotsTags) {
-      expect(tag).toMatch(/noindex/)
-    }
+    const response = await page.context().request.get(`/service/${service.slug}`)
+    expect(response.status()).toBe(200)
+
+    // Isi diperiksa dari HTML server, bukan DOM: gerbang yang salah bisa
+    // mengembalikan 200 berisi halaman not-found.
+    expect(await response.text()).toContain(service.title)
+  })
+
+  test("kartu OG jasa yang tidak ada tetap 200 image/png", async ({ request }) => {
+    // Gerbang sengaja tidak menyentuh segmen kedua: tautan yang dibagikan ke
+    // WhatsApp harus tetap punya preview walau jasanya sudah dihapus.
+    const response = await request.get(
+      "/service/slug-yang-tidak-pernah-ada/opengraph-image"
+    )
+    expect(response.status()).toBe(200)
+    expect(response.headers()["content-type"]).toContain("image/png")
   })
 
   test("rute tak terdaftar menampilkan 404 (hijack fix)", async ({ page }) => {
