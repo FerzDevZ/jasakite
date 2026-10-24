@@ -196,7 +196,10 @@ export default function AdminUsersPage() {
                 <tbody>
                   {filtered.map((user) => {
                     const meta = ROLE_META[user.role] ?? ROLE_META.CUSTOMER
-                    const isSelf = user.id === Number(session.user.id)
+                    // Bandingkan sebagai string: id adalah ObjectId Mongo — Number() menghasilkan
+// NaN dan perbandingan selalu salah, sehingga penanda "(Anda)" tak pernah
+// tampil sejak migrasi dari id angka era SQLite.
+const isSelf = String(user.id) === String(session.user.id)
                     return (
                       <tr
                         key={user.id}

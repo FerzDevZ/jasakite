@@ -130,7 +130,11 @@ export function BukaJasaForm({ onCreated }: { onCreated: (id: string | number) =
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: payload.title,
-          categoryId: Number(payload.categoryId),
+          // WAJIB string apa adanya: id kategori adalah ObjectId Mongo; Number()
+          // mengubahnya menjadi NaN, dan JSON.stringify(NaN) menjadi null —
+          // server menolaknya dengan "Expected string, received null". Number()
+          // hanyalah warisan era SQLite saat id memang angka.
+          categoryId: String(payload.categoryId),
           price: Number(payload.price),
           deliveryTimeDays: Number(payload.deliveryTimeDays),
           description: payload.description,
