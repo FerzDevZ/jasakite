@@ -86,6 +86,20 @@ export function WelcomeModal({
         { icon: MessageSquare, label: "Ekspor Data", desc: "Unduh data platform untuk analisis", href: "/dashboard/admin" },
       ],
     },
+    // Tanpa ini SUPER_ADMIN jatuh ke copy CUSTOMER (fallback ?? roleConfig
+    // .CUSTOMER) — sambutannya menawarkan "Jelajahi Jasa" padahal tugas
+    // khasnya adalah verifikasi uang dan pengaturan langganan.
+    SUPER_ADMIN: {
+      title: `Selamat datang, Super Admin! 🛡️`,
+      description:
+        "Anda memegang kunci kas platform: semua akses Admin plus keputusan uang.",
+      steps: [
+        { icon: Store, label: "Ringkasan Platform", desc: "Lihat statistik dan KPI platform", href: "/dashboard/admin" },
+        { icon: Package, label: "Verifikasi Saldo", desc: "Putuskan antrean pembayaran, top-up, dan penarikan", href: "/dashboard/admin/wallet" },
+        { icon: Star, label: "Keamanan 2FA", desc: "Aktifkan authenticator untuk membuka keputusan uang", href: "/dashboard/admin/keamanan" },
+        { icon: MessageSquare, label: "Langganan Penyedia", desc: "Atur harga dan tagih langganan bulanan", href: "/dashboard/admin/langganan" },
+      ],
+    },
   }
 
   const config = roleConfig[role as keyof typeof roleConfig] ?? roleConfig.CUSTOMER
