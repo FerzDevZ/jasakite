@@ -94,7 +94,14 @@ export default async function ProviderProfilePage({
       },
     }),
     prisma.service.findMany({
-      where: { providerId, status: "ACTIVE" },
+      where: {
+        providerId,
+        status: "ACTIVE",
+        // Profil penyedia adalah pintu masuk katalog: jasa milik penyedia
+        // yang langganannya berakhir tidak boleh tayang di sini walau
+        // slug-nya sudah tidak bisa dibuka.
+        provider: { subscriptionUntil: { gt: new Date() } },
+      },
       include: {
         category: true,
         // ServiceTile menampilkan nama provider di kartu — tanpa relasi ini
@@ -126,7 +133,13 @@ export default async function ProviderProfilePage({
   // aggregateRating) wajib mencerminkan seluruh ulasan.
   const [serviceCount, completedOrders, reviewCount, reviewAggregate] =
     await Promise.all([
-      prisma.service.count({ where: { providerId, status: "ACTIVE" } }),
+      prisma.service.count({
+        where: {
+          providerId,
+          status: "ACTIVE",
+          provider: { subscriptionUntil: { gt: new Date() } },
+        },
+      }),
       prisma.order.count({
         where: { status: "COMPLETED", service: { providerId } },
       }),

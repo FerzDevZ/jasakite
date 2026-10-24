@@ -10,6 +10,7 @@ import {
 } from '@/lib/services-query'
 import { RATE_LIMITS, enforceRateLimit } from '@/lib/api-guard'
 import { isAdminRole } from '@/lib/roles'
+import { isSubscriptionActive } from '@/lib/subscription'
 
 export const dynamic = 'force-dynamic'
 
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.findUnique({
     where: { id: session?.user?.id ?? '' },
-    select: { id: true, role: true },
+    select: { id: true, role: true, subscriptionUntil: true },
   })
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -71,6 +72,24 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: 'Hanya PROVIDER atau admin yang dapat membuat jasa' },
       { status: 403 }
+    )
+  }
+
+  // Gerbang langganan: menayangkan jasa adalah layanan berbayar Rp10.000/bulan
+  // (harga diatur SUPER_ADMIN). Diperiksa di server, bukan hanya di tombol UI —
+  // POST bisa dipanggil langsung tanpa melewati halaman. Admin dikecualikan
+  // karena akun admin tidak berlangganan.
+  if (
+    user.role === 'PROVIDER' &&
+    !isSubscriptionActive(user.subscriptionUntil)
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          'Langganan penyedia belum aktif. Aktifkan dulu di Dashboard → Langganan untuk dapat menayangkan jasa.',
+        code: 'SUBSCRIPTION_REQUIRED',
+      },
+      { status: 402 }
     )
   }
 

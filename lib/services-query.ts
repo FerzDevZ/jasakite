@@ -79,7 +79,14 @@ export function buildServicesWhere(q: ServicesQuery): Prisma.ServiceWhereInput {
   // Bertipe, bukan `any`: `any` di sini mematikan pemeriksaan untuk SELURUH
   // klausa filter, sehingga salah ketik nama kolom (mis. `raingAvg`) baru
   // ketahuan dari hasil query yang kosong di produksi.
-  const where: Prisma.ServiceWhereInput = { status: 'ACTIVE' }
+  //
+  // Saringan langganan ikut di sini — bukan di route — supaya API dan SSR
+  // memakai aturan yang sama: jasa penyedia yang masa aktifnya lewat TIDAK
+  // pernah muncul di katalog, tanpa perlu cron yang menyembunyikannya.
+  const where: Prisma.ServiceWhereInput = {
+    status: 'ACTIVE',
+    provider: { subscriptionUntil: { gt: new Date() } },
+  }
 
   if (q.slug) {
     where.slug = q.slug
@@ -128,8 +135,12 @@ export function buildServicesWhere(q: ServicesQuery): Prisma.ServiceWhereInput {
     // kabupaten diam-diam menampilkan empat.
     const loc = resolveLocation(q.location)
     if (loc) {
+      // Gabungkan dengan saringan langganan di atas, bukan menimpanya —
+      // `where.provider = { city }` akan menghapus `subscriptionUntil`.
       where.provider =
-        loc.mode === "exact" ? { city: loc.value } : { city: { contains: loc.value } }
+        loc.mode === "exact"
+          ? { city: loc.value, subscriptionUntil: { gt: new Date() } }
+          : { city: { contains: loc.value }, subscriptionUntil: { gt: new Date() } }
     }
   }
   return where
@@ -168,7 +179,14 @@ export async function fetchCatalogCategories() {
     orderBy: { name: "asc" },
     include: {
       _count: {
-        select: { services: { where: { status: "ACTIVE" } } },
+        select: {
+          services: {
+            where: {
+              status: "ACTIVE",
+              provider: { subscriptionUntil: { gt: new Date() } },
+            },
+          },
+        },
       },
     },
   })

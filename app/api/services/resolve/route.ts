@@ -43,11 +43,25 @@ export async function GET(request: Request) {
   try {
     const service = await prisma.service.findUnique({
       where: { slug },
-      select: { status: true },
+      select: {
+        status: true,
+        provider: { select: { subscriptionUntil: true } },
+      },
     })
 
     if (!service) return respond("missing")
-    return respond(service.status === "ACTIVE" ? "active" : "inactive")
+
+    // Jasa penyedia yang langganannya berakhir diperlakukan sama seperti jasa
+    // non-aktif: middleware me-rewrite ke 404, bukan 200 berisi halaman jasa
+    // yang tidak boleh dipesan. Tanpa ini, tautan lama tetap "hidup" di
+    // Google dan grup WhatsApp padahal katalog sudah tidak menampilkannya.
+    const providerActive =
+      service.provider.subscriptionUntil !== null &&
+      service.provider.subscriptionUntil.getTime() > Date.now()
+
+    return respond(
+      service.status === "ACTIVE" && providerActive ? "active" : "inactive"
+    )
   } catch (error) {
     console.error("[service-resolve] gagal membaca status jasa:", error)
     // 500, bukan "missing": middleware memperlakukan galat sebagai izin lewat

@@ -177,6 +177,8 @@ export const RATE_LIMITS = {
   impersonate: { limit: 10, windowMs: 60 * 60 * 1000 },
   /** Pengajuan top-up: menulis baris ledger + bukti transfer. */
   walletTopup: { limit: 10, windowMs: 60 * 60 * 1000 },
+  /** Penagihan langganan penyedia secara manual (memotong saldo sungguhan). */
+  subscriptionCharge: { limit: 6, windowMs: 60 * 60 * 1000 },
   /** Baca saldo & riwayat dompet. */
   walletRead: { limit: 60, windowMs: 60 * 1000 },
   /** Pengajuan penarikan: mahal — dana benar-benar keluar platform. */

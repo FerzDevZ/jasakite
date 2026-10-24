@@ -7,13 +7,25 @@ export const revalidate = 3600
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE_URL
 
+  // Slug jasa yang tidak boleh dibuka publik (langganan penyedia berakhir)
+  // tidak boleh dikirim ke Google: middleware menjawabnya 404, dan sitemap
+  // yang memuat URL 404 memperburuk kualitas indeks.
+  const subscribedFrom = new Date()
+
   const services = await prisma.service.findMany({
-    where: { status: "ACTIVE" },
+    where: {
+      status: "ACTIVE",
+      provider: { subscriptionUntil: { gt: subscribedFrom } },
+    },
     select: { slug: true, createdAt: true, ratingAvg: true },
   })
 
   const providers = await prisma.user.findMany({
-    where: { role: "PROVIDER", services: { some: { status: "ACTIVE" } } },
+    where: {
+      role: "PROVIDER",
+      subscriptionUntil: { gt: subscribedFrom },
+      services: { some: { status: "ACTIVE" } },
+    },
     select: { id: true },
   })
 

@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Wallet,
   BadgeCheck,
+  CreditCard,
   Rocket,
   type LucideIcon,
   LogOut,
@@ -31,6 +32,7 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
   ADMIN: [
     { href: "/dashboard/admin", label: "Ringkasan", icon: LayoutDashboard },
     { href: "/dashboard/admin/wallet", label: "Verifikasi Saldo", icon: BadgeCheck },
+    { href: "/dashboard/admin/langganan", label: "Langganan", icon: CreditCard },
     { href: "/dashboard/admin/users", label: "Pengguna", icon: Users },
     { href: "/dashboard/admin/moderasi", label: "Moderasi Jasa", icon: ShieldCheck },
     { href: "/dashboard/admin/vercel", label: "Build & Deploy", icon: Rocket },
@@ -38,6 +40,7 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
   PROVIDER: [
     { href: "/dashboard/provider", label: "Ringkasan", icon: LayoutDashboard },
     { href: "/dashboard/provider/buka-jasa", label: "Kelola Jasa", icon: Store },
+    { href: "/dashboard/provider/langganan", label: "Langganan", icon: CreditCard },
     { href: "/dashboard/wallet", label: "Dompet", icon: Wallet },
   ],
   CUSTOMER: [
@@ -145,7 +148,14 @@ export function DashboardShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const items = NAV_BY_ROLE[role] ?? NAV_BY_ROLE.CUSTOMER
+  // SUPER_ADMIN mewarisi seluruh menu ADMIN (lihat lib/roles.ts). Tanpa
+  // pemetaan ini, akun SUPER_ADMIN jatuh ke menu CUSTOMER dan tidak bisa
+  // menemukan halaman admin — termasuk pengaturan langganan yang hanya boleh
+  // diubah oleh mereka.
+  const navKey = role === "SUPER_ADMIN" ? "ADMIN" : role
+  const items = NAV_BY_ROLE[navKey] ?? NAV_BY_ROLE.CUSTOMER
+  const roleLabel =
+    role === "SUPER_ADMIN" ? "Super Admin" : (ROLE_LABEL[role] ?? role)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const panelRef = React.useRef<HTMLElement>(null)
   const previousFocus = React.useRef<HTMLElement | null>(null)
@@ -200,7 +210,7 @@ export function DashboardShell({
       <aside className="hidden h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col border-r border-border bg-card md:flex sticky top-16 self-start">
         <nav aria-label="Navigasi dashboard" className="flex-1 space-y-1 overflow-y-auto p-3 [scrollbar-gutter:stable]">
           <p className="px-4 pb-2 pt-3 text-2xs font-bold uppercase tracking-widest text-muted-foreground">
-            {ROLE_LABEL[role] ?? role}
+            {roleLabel}
           </p>
           <NavLinks items={items} pathname={pathname} />
         </nav>
@@ -213,7 +223,7 @@ export function DashboardShell({
             karena scroll container sudah di bawah navbar (h-[calc(100vh-4rem)]). */}
         <div className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-4 backdrop-blur-xl md:hidden">
           <span className="truncate text-sm font-semibold text-muted-foreground">
-            {ROLE_LABEL[role] ?? role}
+            {roleLabel}
           </span>
           <button
             type="button"
@@ -244,7 +254,7 @@ export function DashboardShell({
             >
               <div className="flex h-16 items-center justify-between border-b border-border px-5">
                 <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                  {ROLE_LABEL[role] ?? role}
+                  {roleLabel}
                 </span>
                 <button
                   type="button"

@@ -13,7 +13,14 @@ export async function GET(request: Request) {
       orderBy: { name: "asc" },
       include: {
         _count: {
-          select: { services: { where: { status: "ACTIVE" } } },
+          select: {
+            services: {
+              where: {
+                status: "ACTIVE",
+                provider: { subscriptionUntil: { gt: new Date() } },
+              },
+            },
+          },
         },
       },
     })

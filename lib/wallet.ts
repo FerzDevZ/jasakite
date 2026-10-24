@@ -47,6 +47,7 @@ export const WALLET_TRANSACTION_TYPES = [
   "EARNING",
   "WITHDRAW",
   "REFUND",
+  "SUBSCRIPTION",
 ] as const
 export type WalletTransactionType = (typeof WALLET_TRANSACTION_TYPES)[number]
 
@@ -61,6 +62,7 @@ const TYPE_LABELS: Record<WalletTransactionType, string> = {
   EARNING: "Pendapatan pesanan",
   WITHDRAW: "Tarik saldo",
   REFUND: "Pengembalian dana",
+  SUBSCRIPTION: "Langganan penyedia",
 }
 
 export function transactionTypeLabel(type: string): string {

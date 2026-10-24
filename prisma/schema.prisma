@@ -40,10 +40,17 @@ model User {
   // Langkah waktu terakhir yang sudah dipakai. Mencegah kode yang sama dipakai
   // dua kali (replay) selama jendela ±30 detik masih berlaku.
   totpLastUsedAt    DateTime?
+  // Masa aktif langganan penyedia. `null` = belum pernah berlangganan.
+  // Penyedia hanya boleh menayangkan jasa selama tanggal ini di masa depan;
+  // katalog menyaring lewat `subscriptionUntil`, bukan lewat flag terpisah,
+  // supaya status tidak bisa melenceng dari tanggalnya (tidak perlu cron
+  // untuk "menyembunyikan" — kedaluwarsa terjadi tepat saat tanggal lewat).
+  subscriptionUntil DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   services     Service[]
+  subscriptions ProviderSubscription[]
   ordersOrderCustomer Order[] @relation("OrderCustomer")
   reviews      Review[]
   sentMessages     Message[] @relation("MessageSender")
@@ -416,6 +423,43 @@ model WalletTransaction {
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
+}
+
+// ── Langganan penyedia ──────────────────────────────────────────────────────
+// Setiap penyedia membayar langganan bulanan (bawaan Rp10.000, diatur
+// SUPER_ADMIN) untuk menayangkan jasa. Tagihan dipotong otomatis dari saldo
+// dompet — tidak ada gateway pembayaran yang perlu diintegrasikan.
+model ProviderSubscription {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  providerId  String   @db.ObjectId
+  provider    User     @relation(fields: [providerId], references: [id])
+  /// Nominal yang benar-benar dipotong saat transaksi ini (snapshot — harga
+  /// bulanan boleh berubah kemudian, riwayat tidak boleh ikut berubah).
+  amount      Float
+  periodStart DateTime
+  periodEnd   DateTime
+  /// ACTIVE | EXPIRED — EXPIRED diisi saat periode lewat, bukan saat jasa
+  /// disembunyikan (penyembunyian dihitung dari tanggal, bukan dari status).
+  status      String   @default("ACTIVE")
+  /// AUTO_DEBIT | ADMIN_GRANT — grant dipakai SUPER_ADMIN untuk masa aktif
+  /// gratis (mis. kompensasi); tidak memotong saldo.
+  source      String   @default("AUTO_DEBIT")
+  /// Ledger dompet yang mendebit saldo (null untuk ADMIN_GRANT).
+  walletTransactionId String? @db.ObjectId
+  createdById String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  @@index([providerId, createdAt])
+  @@index([status, periodEnd])
+}
+
+/// Pengaturan platform yang bisa diubah SUPER_ADMIN tanpa deploy.
+/// `value` disimpan sebagai string JSON agar satu tabel cukup untuk semua kunci.
+model PlatformSetting {
+  key       String   @id @map("_id")
+  value     String
+  updatedAt DateTime @updatedAt
+  updatedById String? @db.ObjectId
 }
 
 model Review {

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { prismaId, sameId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { isAdminRole } from "@/lib/roles"
+import { isSubscriptionActive } from "@/lib/subscription"
 
 const statusSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
@@ -55,6 +56,29 @@ export async function PATCH(
         { error: "Forbidden: bukan pemilik jasa" },
         { status: 403 }
       )
+    }
+
+    // Mengaktifkan jasa = menayangkannya di katalog, dan itu butuh langganan
+    // aktif. Tanpa gerbang ini, jasa bisa ditayangkan lewat PATCH walau
+    // pembuatan barunya sudah diblokir. Menonaktifkan selalu boleh.
+    if (status === "ACTIVE" && isOwner && !isAdmin) {
+      const owner = await prisma.user.findUnique({
+        where: { id: prismaId(String(service.providerId)) },
+        select: { role: true, subscriptionUntil: true },
+      })
+      if (
+        owner?.role === "PROVIDER" &&
+        !isSubscriptionActive(owner.subscriptionUntil)
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Langganan penyedia belum aktif. Jasa tidak bisa ditayangkan sampai langganan diperpanjang.",
+            code: "SUBSCRIPTION_REQUIRED",
+          },
+          { status: 402 }
+        )
+      }
     }
 
     const updated = await prisma.service.update({

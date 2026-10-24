@@ -59,10 +59,21 @@ export default async function ServicesOpengraphImage() {
   let viewModel: ServicesOgViewModel
   try {
     const [activeServiceCount, categoryGroups] = await Promise.all([
-      prisma.service.count({ where: { status: "ACTIVE" } }),
+      // Hanya jasa dari penyedia yang langganannya masih aktif: kartu ini
+      // adalah wajah halaman daftar, dan angka yang lebih besar dari isi
+      // halaman akan terbaca seperti data palsu.
+      prisma.service.count({
+        where: {
+          status: "ACTIVE",
+          provider: { subscriptionUntil: { gt: new Date() } },
+        },
+      }),
       prisma.service.groupBy({
         by: ["categoryId"],
-        where: { status: "ACTIVE" },
+        where: {
+          status: "ACTIVE",
+          provider: { subscriptionUntil: { gt: new Date() } },
+        },
         _count: { _all: true },
       }),
     ])

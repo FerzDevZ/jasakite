@@ -1,8 +1,10 @@
 # JASAKITE
 
-Marketplace jasa lokal untuk pasar Indonesia — pertemukan pelanggan dengan penyedia jasa di sekitarnya: servis AC, kebersihan rumah, instalasi listrik, pengecatan, pindahan, dan tukang.
+Marketplace jasa lokal untuk pasar Indonesia — pertemukan pelanggan dengan penyedia jasa di sekitarnya: jasa antar barang, jasa belanja, jasa pembayaran, dan jasa titip.
 
-Dibangun dengan Next.js 15 App Router, React 19, Prisma, dan Tailwind CSS. Mencakup tiga peran (customer, provider, admin) dengan alur pesanan penuh dari pemesanan hingga ulasan.
+Dibangun dengan Next.js 15 App Router, React 19, Prisma, dan Tailwind CSS. Mencakup empat peran (customer, provider, admin, super admin) dengan alur pesanan penuh dari pemesanan hingga ulasan, escrow pembayaran QRIS, dompet saldo, dan **langganan penyedia Rp10.000/bulan** yang dipotong otomatis dari saldo.
+
+> Panduan penggunaan lengkap (akun, seluruh alur, langganan, operasional, skenario demo 5 menit): **[docs/PANDUAN-LENGKAP.md](docs/PANDUAN-LENGKAP.md)** · versi PDF: `docs/PANDUAN-LENGKAP.pdf`
 
 ```
 Katalog  →  Checkout  →  Provider terima  →  Dikerjakan  →  Selesai  →  Ulasan
@@ -53,6 +55,7 @@ Katalog  →  Checkout  →  Provider terima  →  Dikerjakan  →  Selesai  →
 
 - **Kanban pesanan** — tiga kolom (Menunggu → Dikerjakan → Selesai) dengan tombol kontekstual per kartu, tanpa perlu membuka halaman detail.
 - **Kelola jasa** — buat jasa baru dengan pratinjau kartu langsung, tayangkan atau sembunyikan kapan saja.
+- **Langganan penyedia** — Rp10.000 per 30 hari (harga diatur SUPER_ADMIN), dipotong otomatis dari saldo dompet lewat cron harian; tanpa langganan aktif, jasa tidak tayang dan tidak bisa dibuat.
 - **Ringkasan pendapatan** — total dari pesanan yang selesai, jumlah pesanan menunggu tindakan, rating rata-rata.
 - **Tabel riwayat** — tabel di desktop, kartu di mobile.
 
@@ -61,6 +64,7 @@ Katalog  →  Checkout  →  Provider terima  →  Dikerjakan  →  Selesai  →
 - **Ringkasan platform** — KPI, grafik pesanan 14 hari, pendapatan per kategori, provider teratas.
 - **Moderasi jasa** — tinjau jasa berstatus draf sebelum tayang ke publik.
 - **Kelola pengguna** — cari akun, lihat statistik per pengguna.
+- **Langganan penyedia** — SUPER_ADMIN mengubah harga bulanan dan menjalankan penagihan; ADMIN melihat status dan saldo semua penyedia.
 - **Impersonasi** — masuk sebagai pengguna tertentu untuk melihat pengalaman mereka, dengan bar peringatan yang selalu tampak.
 - **Ekspor CSV** — unduh data platform.
 
@@ -144,6 +148,8 @@ Berkas `.env` tidak di-commit — ia berisi rahasia. Buat sendiri berdasarkan ta
 | `AUTH_TRUST_HOST` | Ya | Setel `true`. NextAuth v5 beta menolak start tanpa ini. |
 | `NEXTAUTH_URL` | Dev | URL callback OAuth. Di produksi, gunakan `NEXT_PUBLIC_SITE_URL`. |
 | `NEXT_PUBLIC_SITE_URL` | Produksi | URL kanonik publik, dipakai metadata, Open Graph, JSON-LD, sitemap, dan robots.txt. |
+| `CRON_SECRET` | Ya (produksi) | Kunci `Authorization: Bearer` untuk `/api/cron/subscription` (penagihan langganan harian). Tanpa ini endpoint menjawab 503. Hasilkan dengan `openssl rand -hex 32`. |
+| `PLATFORM_COMMISSION_PERCENT` | Tidak | Komisi platform dari nilai pesanan. Bawaan `10`, maksimum `50`. |
 
 **Penting:** Di Vercel, setel `NEXT_PUBLIC_SITE_URL` ke `https://weblomba-rouge.vercel.app` untuk produksi dan preview. Tanpa variabel ini, seluruh metadata (Open Graph, JSON-LD, sitemap, robots.txt) menunjuk `http://localhost:3000` dan crawler tidak bisa mengambil preview. Aplikasi mencetak peringatan ke log bila ini terjadi — akibatnya tidak terlihat di UI, jadi jangan mengandalkan tampilan untuk mendeteksinya. Variabel ini di-Vercel disetel sebagai sensitive di environment vars prod+preview, bukan di `.env` (karena `.env` gitignored).
 

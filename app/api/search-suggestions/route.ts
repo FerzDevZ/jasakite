@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
     const suggestions = await prisma.service.findMany({
       where: {
         status: "ACTIVE",
+        // Saran yang menunjuk jasa tersembunyi akan berakhir 404 saat diklik.
+        provider: { subscriptionUntil: { gt: new Date() } },
         AND: tokens.map((token) => ({
           OR: [
             { title: { contains: token } },

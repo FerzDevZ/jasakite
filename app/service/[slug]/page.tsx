@@ -38,6 +38,8 @@ const getServiceForView = cache(async (slug: string) => {
           avatarUrl: true,
           city: true,
           createdAt: true,
+          // Dipakai gerbang langganan di bawah — bukan untuk ditampilkan.
+          subscriptionUntil: true,
         },
       },
       category: { select: { id: true, name: true, slug: true } },
@@ -53,6 +55,16 @@ const getServiceForView = cache(async (slug: string) => {
   // Izinkan ADMIN preview DRAFT via moderasi (?preview=1). Publik tidak
   // melihat jasa non-ACTIVE sama sekali.
   if (service.status !== "ACTIVE") {
+    const session = await auth()
+    if (!isAdminRole(session?.user?.role)) return null
+  }
+
+  // Langganan penyedia yang berakhir menyembunyikan jasanya dari publik,
+  // sama seperti status DRAFT. Penyedia tetap melihatnya di dashboard.
+  const providerSubscriptionActive =
+    service.provider.subscriptionUntil !== null &&
+    service.provider.subscriptionUntil.getTime() > Date.now()
+  if (!providerSubscriptionActive) {
     const session = await auth()
     if (!isAdminRole(session?.user?.role)) return null
   }
