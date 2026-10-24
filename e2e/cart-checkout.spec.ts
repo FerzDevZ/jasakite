@@ -1,3 +1,4 @@
+import { resetOrderCreateLimits } from "./helpers/api"
 import { expect, test } from "@playwright/test"
 import { ACCOUNTS, login } from "./helpers/auth"
 import { apiGet, csrfHeaders, postJson, serviceNotOwnedBy } from "./helpers/api"
@@ -39,6 +40,7 @@ async function ensureAddress(page: import("@playwright/test").Page) {
 test.describe("keranjang & checkout tiga langkah", () => {
   test("keranjang kosong menawarkan jalan ke katalog", async ({ page }) => {
     await login(page, "customer", "/services")
+    await resetOrderCreateLimits()
     await clearCart(page)
 
     await page.goto("/keranjang")
@@ -53,6 +55,7 @@ test.describe("keranjang & checkout tiga langkah", () => {
     page,
   }) => {
     await login(page, "customer", "/services")
+    await resetOrderCreateLimits()
     const service = await serviceNotOwnedBy(page, ACCOUNTS.provider.name)
 
     await clearCart(page)

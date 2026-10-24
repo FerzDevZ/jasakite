@@ -6,7 +6,7 @@ import {
   postJson,
   serviceNotOwnedBy,
   serviceOwnedBy,
-} from "./helpers/api"
+resetOrderCreateLimits } from "./helpers/api"
 
 /**
  * Uji perilaku marketplace yang ditambahkan saat perombakan UI/UX:
@@ -111,6 +111,7 @@ test("API orders memakai harga paket & menolak paket jasa lain", async ({
   page,
 }) => {
   await login(page, "customer", "/services")
+  await resetOrderCreateLimits()
 
   const s1 = await serviceNotOwnedBy(page, ACCOUNTS.customer.name)
   const rows = await listServices(page)

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { ACCOUNTS, login } from "./helpers/auth"
-import { markOrderPaid } from "./helpers/api"
+import { markOrderPaid, resetOrderCreateLimits } from "./helpers/api"
 
 /**
  * Alur pesanan end-to-end: customer memesan → provider menerima → provider
@@ -51,6 +51,9 @@ test.describe("siklus hidup pesanan", () => {
     page,
   }) => {
     await login(page, "customer", "/services")
+    // Kuota orderCreate 10/10 menit bersifat global — Spec sebelumnya (project
+    // chromium) bisa sudah menghabiskannya untuk akun uji yang sama.
+    await resetOrderCreateLimits()
     await page.goto(serviceHref)
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
 

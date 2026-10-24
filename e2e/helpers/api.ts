@@ -172,6 +172,7 @@ export async function ensureOrderWithProvider(
   )
   if (existing) return String(existing.id)
 
+  await resetOrderCreateLimits()
   const res = await postJson(page, "/api/orders", {
     serviceId: service.id,
     address: BORROWED_ADDRESS,
@@ -186,6 +187,23 @@ let fixtureDb: PrismaClient | null = null
 function db(): PrismaClient {
   fixtureDb ??= new PrismaClient()
   return fixtureDb
+}
+
+
+/**
+ * Kosongkan bucket rate-limit pembuatan pesanan di database uji.
+ *
+ * Batas `orderCreate` 10/10 menit kini GLOBAL (MongoDB, lihat
+ * lib/rate-limit.ts), sementara suite e2e menjalankan dua project beruntun
+ * (chromium lalu mobile-320) yang sama-sama membuat pesanan atas akun uji
+ * yang sama — totalnya melewati kuota dan spec berikutnya menerima 429 yang
+ * memang tidak sedang diuji. Ini fixture terhadap database uji (CI/dev),
+ * bukan jalur produksi.
+ */
+export async function resetOrderCreateLimits(): Promise<void> {
+  await db().rateLimitBucket.deleteMany({
+    where: { id: { startsWith: "orderCreate:" } },
+  })
 }
 
 /**
@@ -217,6 +235,7 @@ export async function createOrderWithProvider(
   providerName: string
 ): Promise<string | null> {
   const service = await serviceOwnedBy(page, providerName)
+  await resetOrderCreateLimits()
   const res = await postJson(page, "/api/orders", {
     serviceId: service.id,
     address: BORROWED_ADDRESS,
