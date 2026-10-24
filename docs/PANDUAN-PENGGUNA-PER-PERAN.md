@@ -10,7 +10,7 @@
 > [panduan-jasakite.pdf](../panduan-jasakite.pdf) (edisi pemula). Versi PDF dokumen ini:
 > [PANDUAN-PENGGUNA-PER-PERAN.pdf](PANDUAN-PENGGUNA-PER-PERAN.pdf).
 
-- Alamat aplikasi: `https://weblomba-rouge.vercel.app` (produksi)
+- Alamat aplikasi: `https://jasakite.vercel.app` (produksi)
 - Wilayah layanan: Provinsi Kepulauan Bangka Belitung — 7 kabupaten/kota
 - Kategori jasa: **Jasa Antar, Jasa Belanja, Jasa Pembayaran, Jasa Titip**
 
@@ -33,7 +33,7 @@ Semua memakai password `password123`.
 ### A.1 Membuka aplikasi
 
 Buka browser (Chrome/Firefox/Safari, di HP maupun laptop) dan tuju
-`https://weblomba-rouge.vercel.app`. Beranda menampilkan kotak pencarian,
+`https://jasakite.vercel.app`. Beranda menampilkan kotak pencarian,
 4 kategori jasa, jasa terbaru, promo, dan voucher yang berlaku.
 
 ### A.2 Mendaftar akun baru
