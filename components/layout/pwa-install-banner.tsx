@@ -33,6 +33,10 @@ const DISMISS_DAYS = 7
 export function PwaInstallBanner() {
   const [installEvent, setInstallEvent] = React.useState<InstallPromptEvent | null>(null)
   const [visible, setVisible] = React.useState(false)
+  // "instruction" = event prompt tak tersedia (iOS, atau Chromium yang
+  // prompt-nya diredam Chrome karena pernah ditolak/berulang) — banner tetap
+  // tampil sebagai petunjuk jalan manual, tidak hilang diam-diam.
+  const [mode, setMode] = React.useState<"prompt" | "instruction">("instruction")
   const [isIOS] = React.useState(
     () =>
       typeof window !== "undefined" &&
@@ -64,6 +68,7 @@ export function PwaInstallBanner() {
 
     const accept = (e: InstallPromptEvent) => {
       setInstallEvent(e)
+      setMode("prompt")
       setVisible(true)
     }
     // Event yang sudah ditangkap script head sebelum hidrasi.
@@ -80,9 +85,30 @@ export function PwaInstallBanner() {
     }
     window.addEventListener("beforeinstallprompt", onPrompt)
     window.addEventListener("jasakite:install-ready", onStashed)
+
+    // Jaring pengaman: pada Chromium yang tidak pernah mengirim event
+    // (incognito, prompt situs ini pernah ditolak Chrome berulang kali),
+    // banner tetap muncul sebagai instruksi manual — pengguna selalu punya
+    // jalan memasang. Browser non-Chromium tanpa dukungan install sama
+    // sekali (Firefox/Safari desktop) tidak diganggu.
+    const isChromium =
+      /chrome|chromium|crios|edg/i.test(window.navigator.userAgent) &&
+      !/iphone|ipad|ipod/i.test(window.navigator.userAgent)
+    let fallbackTimer: number | undefined
+    if (isChromium) {
+      fallbackTimer = window.setTimeout(() => {
+        setVisible((already) => {
+          if (already) return already
+          setMode((m) => (m === "prompt" ? m : "instruction"))
+          return true
+        })
+      }, 8_000)
+    }
+
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt)
       window.removeEventListener("jasakite:install-ready", onStashed)
+      if (fallbackTimer) window.clearTimeout(fallbackTimer)
     }
   }, [isIOS])
 
@@ -121,13 +147,7 @@ export function PwaInstallBanner() {
         <img src="/icon-192.png" alt="" aria-hidden className="h-11 w-11 shrink-0 rounded-xl" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold leading-tight">Pasang JASAKITE</p>
-          {isIOS ? (
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-2xs text-muted-foreground">
-              <Share className="h-3 w-3 shrink-0" aria-hidden />
-              Ketuk ikon Bagikan di bilah Safari, lalu
-              <span className="font-semibold text-foreground">Tambahkan ke Layar Utama</span>
-            </p>
-          ) : (
+          {mode === "prompt" ? (
             <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-2xs text-muted-foreground">
               <span className="inline-flex items-center gap-0.5">
                 <Zap className="h-3 w-3" aria-hidden /> Buka lebih cepat
@@ -139,11 +159,23 @@ export function PwaInstallBanner() {
                 <WifiOff className="h-3 w-3" aria-hidden /> Tahan offline
               </span>
             </p>
+          ) : isIOS ? (
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-2xs text-muted-foreground">
+              <Share className="h-3 w-3 shrink-0" aria-hidden />
+              Ketuk ikon Bagikan di bilah Safari, lalu
+              <span className="font-semibold text-foreground">Tambahkan ke Layar Utama</span>
+            </p>
+          ) : (
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-2xs text-muted-foreground">
+              Buka menu Chrome <span className="font-semibold text-foreground">⋮ → Pasang aplikasi</span>
+              <span className="text-muted-foreground/60">·</span>
+              di komputer: ikon install di address bar
+            </p>
           )}
         </div>
         {/* min_h-11/w-11 = 44px: target sentuh WCAG 2.5.8 — area klik lebih
             besar dari visual tombolnya, khas app-banner mobile. */}
-        {!isIOS && (
+        {mode === "prompt" && (
           <Button size="sm" className="shrink-0 px-3 font-bold min-h-11" onClick={install}>
             Pasang
           </Button>
