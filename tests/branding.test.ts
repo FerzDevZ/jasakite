@@ -124,13 +124,29 @@ const SCANNED: ScannedFile[] = [
 
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8")
 
-/** Baris yang memuat pola, agar pesan kegagalan menunjuk lokasi persisnya. */
-function linesMatching(file: ScannedFile, pattern: RegExp): string[] {
+/** Baris yang memuat pola, agar pesan kegagalan menunjuk lokasi persisnya.
+ *
+ * `raw` TIDAK boleh dibuang: pemanggil yang menyaring pelanggaran (mis.
+ * baris ber-domain .id yang dikecualikan bila memuat @jasakite.id) wajib
+ * menguji BARIS UTUH — memotongnya ke 120 karakter lebih dulu membuat
+ * surel merek di ujung baris panjang "menghilang" dari pengecualian dan
+ * tes meng-merah tanpa pelanggaran sungguhan (post-mortem 26-10-22).
+ * Pemotongan hanya untuk `display`.
+ */
+function linesMatching(
+  file: ScannedFile,
+  pattern: RegExp
+): { path: string; n: number; raw: string; display: string }[] {
   return file.text
     .split("\n")
     .map((line, i) => ({ line, n: i + 1 }))
     .filter(({ line }) => pattern.test(line))
-    .map(({ line, n }) => `${file.path}:${n}  ${line.trim().slice(0, 120)}`)
+    .map(({ line, n }) => ({
+      path: file.path,
+      n,
+      raw: line,
+      display: `${file.path}:${n}  ${line.trim().slice(0, 120)}`,
+    }))
 }
 
 describe("merek JASAKITE", () => {
@@ -149,17 +165,20 @@ describe("merek JASAKITE", () => {
   })
 
   it("tidak menyisakan nama merek lama di permukaan runtime DAN dokumentasi", () => {
-    const hits = SCANNED.flatMap((f) => linesMatching(f, OLD_BRAND))
+    const hits = SCANNED.flatMap((f) => linesMatching(f, OLD_BRAND).map((h) => h.display))
     expect(hits, `Nama merek lama masih muncul:\n${hits.join("\n")}`).toEqual([])
   })
 
   it("memakai satu domain dan satu email merek di seluruh source", () => {
     // Menangkap alamat surel merek lama atau domain lain yang tertinggal
-    // sebagian (mis. `cdn.merek-lain.id`).
+    // sebagian (mis. `cdn.merek-lain.id`). Pengecualian diuji pada baris
+    // UTUH (raw) — lihat catatan di linesMatching soal pemotongan 120.
     const domains = SCANNED.flatMap((f) =>
       linesMatching(f, /@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.id\b/i)
     )
-    const offenders = domains.filter((line) => !/@jasakite\.id\b/i.test(line))
+    const offenders = domains
+      .filter(({ raw }) => !/@jasakite\.id\b/i.test(raw))
+      .map((h) => h.display)
     expect(offenders, `Domain email non-JASAKITE:\n${offenders.join("\n")}`).toEqual([])
   })
 
@@ -205,7 +224,7 @@ describe("merek JASAKITE", () => {
     // berkas penjaga ikut dipindai, dan menulis nama utuh akan membuat tes
     // mencocokkan dirinya sendiri.
     const split = />\s*servis</i
-    const hits = SCANNED.flatMap((f) => linesMatching(f, split))
+    const hits = SCANNED.flatMap((f) => linesMatching(f, split).map((h) => h.display))
     expect(hits, `Wordmark terbelah:\n${hits.join("\n")}`).toEqual([])
   })
 
@@ -215,7 +234,7 @@ describe("merek JASAKITE", () => {
     // Baris yang isinya persis satu huruf itu (whitespace diizinkan) dicari di
     // seluruh permukaan terpindai.
     const mono = /^\s*s\s*$/i
-    const offenders = SCANNED.flatMap((f) => linesMatching(f, mono))
+    const offenders = SCANNED.flatMap((f) => linesMatching(f, mono).map((h) => h.display))
     expect(offenders, `Monogram lama:\n${offenders.join("\n")}`).toEqual([])
   })
 })
