@@ -1,0 +1,5 @@
+// Proyek aplikasi Android WebView JASAKITE — dibangun oleh GitHub Actions
+// (.github/workflows/build-android-app.yml), tidak butuh Android Studio.
+plugins {
+    id "com.android.application" version "8.5.2" apply false
+}

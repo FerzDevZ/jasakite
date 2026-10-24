@@ -54,3 +54,8 @@ tsconfig.tsbuildinfo
 # ...tapi templatnya wajib tetap bisa di-commit: pola `.env*` di atas ikut
 # mengenai `.env.example`, jadi pengecualian ini bukan hiasan.
 !.env.example
+
+# Build Android (keystore sengaja di-commit: tanda tangan stabil lintas CI)
+android-webview/**/build/
+android-webview/.gradle/
+android-webview/local.properties

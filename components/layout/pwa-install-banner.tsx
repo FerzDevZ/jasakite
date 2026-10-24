@@ -90,10 +90,14 @@ export function PwaInstallBanner() {
     // (incognito, prompt situs ini pernah ditolak Chrome berulang kali),
     // banner tetap muncul sebagai instruksi manual — pengguna selalu punya
     // jalan memasang. Browser non-Chromium tanpa dukungan install sama
-    // sekali (Firefox/Safari desktop) tidak diganggu.
+    // sekali (Firefox/Safari desktop) tidak diganggu. KECUALI di dalam
+    // aplikasi WebView JASAKITE (UA berakhiran JasakiteApp): instruksi
+    // "menu ⋮" di sana tidak ada, dan memasang ulang tidak relevan.
+    const ua = window.navigator.userAgent
     const isChromium =
-      /chrome|chromium|crios|edg/i.test(window.navigator.userAgent) &&
-      !/iphone|ipad|ipod/i.test(window.navigator.userAgent)
+      /chrome|chromium|crios|edg/i.test(ua) &&
+      !/iphone|ipad|ipod/i.test(ua) &&
+      !/jasakiteapp/i.test(ua)
     let fallbackTimer: number | undefined
     if (isChromium) {
       fallbackTimer = window.setTimeout(() => {

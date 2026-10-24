@@ -1,0 +1,58 @@
+# Build APK aplikasi Android WebView JASAKITE.
+#
+# Berjalan otomatis saat tag "app-v*" dipush (hasilnya dilepas ke GitHub
+# Releases — tautannya bisa dibagikan langsung ke siapa pun), atau manual
+# dari tab Actions (APK tersedia sebagai artifact build).
+name: Aplikasi Android (WebView)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["app-v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android-webview
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Gradle dipasang oleh action (proyek sengaja tanpa wrapper jar agar
+      # repo bebas berkas biner tambahan).
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Build APK rilis (bertanda tangan keystore stabil)
+        run: gradle assembleRelease --no-daemon
+
+      - name: Siapkan berkas APK dengan nama yang ramah dibagikan
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk JASAKITE-android.apk
+          ls -la JASAKITE-android.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JASAKITE-android-apk
+          path: android-webview/JASAKITE-android.apk
+
+      - name: Rilis ke GitHub Releases (hanya untuk tag)
+        if: startsWith(github.ref, 'refs/tags/app-')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android-webview/JASAKITE-android.apk
+          body: |
+            Aplikasi Android **JASAKITE** (WebView resmi).
+
+            **Cara pasang:** unduh `JASAKITE-android.apk` → buka berkasnya di HP →
+            izinkan "instal dari sumber tidak dikenal" bila diminta. Butuh Android 7.0+.
+
+            **Cara berbagi:** kirim berkas APK-nya langsung (WhatsApp → kirim sebagai
+            dokumen), atau bagikan tautan halaman rilis ini.

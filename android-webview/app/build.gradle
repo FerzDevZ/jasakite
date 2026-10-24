@@ -1,0 +1,38 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace = "id.jasakite.app"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "id.jasakite.app"
+        minSdk = 24          // Android 7.0+ — mencakup hampir semua perangkat aktif
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    signingConfigs {
+        release {
+            // Tanda tangan stabil lintas build CI (lihat gradle.properties).
+            storeFile = rootProject.file(JASAKITE_STORE_FILE)
+            storePassword = JASAKITE_STORE_PASSWORD
+            keyAlias = JASAKITE_KEY_ALIAS
+            keyPassword = JASAKITE_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.release
+            minifyEnabled = false
+        }
+    }
+}
+
+dependencies {
+    // Hanya untuk FileProvider (URI kamera yang aman di Android 7+).
+    implementation "androidx.core:core:1.13.1"
+}
