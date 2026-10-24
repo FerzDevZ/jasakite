@@ -11,7 +11,7 @@ import { REGENCIES } from "@/lib/provinces"
  * Feed "Di sekitar Anda".
  *
  * Kejujuran data: database tidak menyimpan koordinat penyedia, sehingga
- * jarak user→tukang mustahil dihitung. Yang dihitung adalah jarak user→pusat
+ * jarak user→penyedia mustahil dihitung. Yang dihitung adalah jarak user→pusat
  * kabupaten/kota terdekat, lalu pengguna dibawa ke /services?location=<daerah>
  * — filter katalog yang memang ada. Label selalu menyebut "daerah terdekat",
  * tidak pernah "jasa terdekat X km".

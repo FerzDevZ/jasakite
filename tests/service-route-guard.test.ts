@@ -9,28 +9,28 @@ import { isNonDocumentRequest, serviceSlugFromPath } from "@/lib/service-route-g
  */
 describe("serviceSlugFromPath", () => {
   it("mengambil slug dari rute detail", () => {
-    expect(serviceSlugFromPath("/service/cuci-ac-rutin")).toBe("cuci-ac-rutin")
+    expect(serviceSlugFromPath("/service/antar-paket-rutin")).toBe("antar-paket-rutin")
   })
 
   it("menerima garis miring penutup", () => {
-    expect(serviceSlugFromPath("/service/cuci-ac-rutin/")).toBe("cuci-ac-rutin")
+    expect(serviceSlugFromPath("/service/antar-paket-rutin/")).toBe("antar-paket-rutin")
   })
 
   it("menolak segmen kedua seperti opengraph-image", () => {
     // Kartu OG harus tetap 200 dengan kartu fallback; kalau ikut digerbangi,
     // tautan yang dibagikan ke WhatsApp kehilangan preview-nya.
-    expect(serviceSlugFromPath("/service/cuci-ac-rutin/opengraph-image")).toBeNull()
+    expect(serviceSlugFromPath("/service/antar-paket-rutin/opengraph-image")).toBeNull()
   })
 
   it("menolak halaman katalog dan path tanpa slug", () => {
     expect(serviceSlugFromPath("/service")).toBeNull()
     expect(serviceSlugFromPath("/services")).toBeNull()
-    expect(serviceSlugFromPath("/services/cuci-ac-rutin")).toBeNull()
+    expect(serviceSlugFromPath("/services/antar-paket-rutin")).toBeNull()
     expect(serviceSlugFromPath("/")).toBeNull()
   })
 
   it("men-decode persen encoding", () => {
-    expect(serviceSlugFromPath("/service/cuci%2Dac")).toBe("cuci-ac")
+    expect(serviceSlugFromPath("/service/antar%2Dpaket")).toBe("antar-paket")
   })
 
   it("menolak encoding rusak tanpa melempar", () => {

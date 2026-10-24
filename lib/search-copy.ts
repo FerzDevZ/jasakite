@@ -1,10 +1,10 @@
 /**
  * Teks contoh di kolom pencarian beranda.
  *
- * Dulu tulisannya hardcode "Cari: Service AC, Pasang Listrik, Bersih Rumah..."
- * dan terus menampilkan kategori yang sudah tidak ada di database — teks promosi
- * yang menjanjikan sesuatu yang tidak bisa dicari. Contohnya sekarang diturunkan
- * dari kategori yang benar-benar dikirim halaman, jadi tidak bisa basi.
+ * Dulu tulisannya hardcode dengan nama layanan yang sudah tidak ada di
+ * database — teks promosi yang menjanjikan sesuatu yang tidak bisa dicari.
+ * Contohnya sekarang diturunkan dari kategori yang benar-benar dikirim
+ * halaman, jadi tidak bisa basi.
  *
  * Fungsi murni supaya bisa diuji tanpa merender komponen klien.
  */

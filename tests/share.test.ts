@@ -11,9 +11,9 @@ import {
  */
 
 const SHARE_INPUT = {
-  title: "Instalasi AC Split Pangkal Pinang",
-  price: 350000,
-  url: "https://jasakite.example/service/instalasi-ac-split-pangkal-pinang-15133",
+  title: "Antar Paket Dokumen Pangkal Pinang",
+  price: 150000,
+  url: "https://jasakite.example/service/antar-paket-dokumen-pangkal-pinang-15133",
 }
 
 describe("buildWhatsAppShareText", () => {
@@ -24,7 +24,7 @@ describe("buildWhatsAppShareText", () => {
     expect(lines[1]).toBe(SHARE_INPUT.title)
     // formatIDR memakai pemisah non-breaking space, jadi dicek per bagian.
     expect(lines[2]).toMatch(/Rp/)
-    expect(lines[2]).toContain("350.000")
+    expect(lines[2]).toContain("150.000")
     expect(lines[3]).toBe(SHARE_INPUT.url)
   })
 
@@ -38,7 +38,7 @@ describe("buildWhatsAppShareText", () => {
   it("mempertahankan URL lengkap dengan slug jasa", () => {
     const text = buildWhatsAppShareText(SHARE_INPUT)
 
-    expect(text).toContain("/service/instalasi-ac-split-pangkal-pinang-15133")
+    expect(text).toContain("/service/antar-paket-dokumen-pangkal-pinang-15133")
   })
 })
 

@@ -188,7 +188,7 @@ export function BukaJasaForm({ onCreated }: { onCreated: (id: string | number) =
               <Label htmlFor="title">Judul Jasa</Label>
               <Input
                 id="title"
-                placeholder="Contoh: Instalasi AC Split 1/2 - 2 PK"
+                placeholder="Contoh: Antar Paket Dokumen Pangkal Pinang"
                 value={form.title}
                 onChange={(e) => set("title", e.target.value)}
                 required

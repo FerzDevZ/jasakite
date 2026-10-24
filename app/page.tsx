@@ -26,11 +26,11 @@ export const revalidate = 60;
 /**
  * Deskripsi beranda mengikuti kategori yang benar-benar ada di database.
  *
- * Sebelumnya teksnya hardcode "service AC, kebersihan rumah, instalasi
- * listrik, hingga pindahan" dan tetap tampil di hasil pencarian Google
- * berbulan-bulan setelah kategori itu dihapus — janji di snippet yang tidak
- * bisa dipenuhi katalog. Query di sini memakai kategori yang sama dengan
- * hero, jadi teks tidak bisa lagi menyimpang dari isi katalog.
+ * Sebelumnya teksnya hardcode menyebut layanan yang sudah tidak ditawarkan
+ * dan tetap tampil di hasil pencarian Google berbulan-bulan setelah kategori
+ * itu dihapus — janji di snippet yang tidak bisa dipenuhi katalog. Query di
+ * sini memakai kategori yang sama dengan hero, jadi teks tidak bisa lagi
+ * menyimpang dari isi katalog.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const categoryNames = (
@@ -72,7 +72,7 @@ export default async function HomePage() {
   ] = await Promise.all([
     // Batas 12 kategori: tiga baris pintasan 4 kolom di mobile sekaligus
     // enam pill di hero tanpa memuat seluruh taksonomi bila nanti bertambah
-    // (10 kategori saat ini — 6 awal + Jasa Titip/Antar/Pembayaran/Belanja).
+    // (4 kategori saat ini: Antar, Belanja, Pembayaran, Titip).
     prisma.category.findMany({
       take: 12,
       include: {

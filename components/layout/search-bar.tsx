@@ -129,7 +129,7 @@ function SuggestionList({
   if (query.trim().length < 2) {
     const hint = (
       <div className="p-3 text-xs text-muted-foreground">
-        Ketik minimal 2 huruf — contoh: <span className="font-medium text-foreground">AC</span>, <span className="font-medium text-foreground">listrik</span>
+        Ketik minimal 2 huruf — contoh: <span className="font-medium text-foreground">antar</span>, <span className="font-medium text-foreground">belanja</span>
       </div>
     )
     if (onRecentSelect) {
@@ -176,8 +176,8 @@ function SuggestionList({
 
 /**
  * @param categories Kategori yang benar-benar ada di database. Contoh di
- * placeholder diturunkan dari daftar ini supaya tidak pernah menawarkan
- * kategori yang sudah dihapus (dulu hardcode "AC, listrik, kebersihan").
+ * placeholder diturunkan dari daftar ini, jadi kolom pencarian tidak pernah
+ * menawarkan kategori yang sudah tidak ada di katalog.
  */
 export function SearchBar({ categories = [] }: { categories?: { name: string }[] }) {
   const placeholder = searchPlaceholder(categories.map((category) => category.name))

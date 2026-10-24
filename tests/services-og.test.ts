@@ -21,11 +21,11 @@ const SHARE_URL = "https://jasakite.example/services"
 const INPUT: ServicesOgInput = {
   activeServiceCount: 247,
   categories: [
-    { name: "Kebersihan", count: 41 },
-    { name: "Perbaikan Rumah", count: 96 },
-    { name: "Instalasi", count: 58 },
-    { name: "Les Privat", count: 22 },
-    { name: "Pindahan", count: 18 },
+    { name: "Jasa Belanja", count: 41 },
+    { name: "Jasa Antar", count: 96 },
+    { name: "Jasa Pembayaran", count: 58 },
+    { name: "Jasa Titip", count: 22 },
+    { name: "Layanan Lain", count: 18 },
   ],
   regionLabel: "Kepulauan Bangka Belitung",
   shareUrl: SHARE_URL,
@@ -38,9 +38,9 @@ describe("buildServicesOgViewModel", () => {
     expect(viewModel.metricLabel).toBe("247")
     expect(viewModel.metricCaption).toBe("jasa aktif siap dipesan")
     expect(viewModel.chips.map((chip) => chip.label)).toEqual([
-      "PERBAIKAN RUMAH",
-      "INSTALASI",
-      "KEBERSIHAN",
+      "JASA ANTAR",
+      "JASA PEMBAYARAN",
+      "JASA BELANJA",
     ])
     expect(viewModel.chips[0].countLabel).toBe("96 jasa")
   })
@@ -74,7 +74,7 @@ describe("buildServicesOgViewModel", () => {
     const viewModel = buildServicesOgViewModel({
       ...INPUT,
       activeServiceCount: 1_480,
-      categories: [{ name: "Kebersihan", count: 1_200 }],
+      categories: [{ name: "Jasa Belanja", count: 1_200 }],
     })
 
     expect(viewModel.metricLabel).toBe("1.480")
@@ -101,11 +101,11 @@ describe("buildServicesOgViewModel", () => {
     buildServicesOgViewModel({ ...INPUT, categories })
 
     expect(categories.map((category) => category.name)).toEqual([
-      "Kebersihan",
-      "Perbaikan Rumah",
-      "Instalasi",
-      "Les Privat",
-      "Pindahan",
+      "Jasa Belanja",
+      "Jasa Antar",
+      "Jasa Pembayaran",
+      "Jasa Titip",
+      "Layanan Lain",
     ])
   })
 

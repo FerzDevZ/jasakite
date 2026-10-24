@@ -65,17 +65,20 @@ type ServiceDetail = {
 }
 
 const PAYMENT_METHODS = [
-  {
-    value: "saldo",
-    label: "Saldo JASAKITE",
-    description: "Bayar instan dari saldo dompet",
-    icon: Wallet,
-  },
+  // "transfer" adalah metode bawaan (lihat state `paymentMethod`). Ia harus
+  // berada di urutan pertama: radiogroup memakai roving tabindex, dan pilihan
+  // aktif harus menjadi satu-satunya tab stop yang terlihat di awal.
   {
     value: "transfer",
     label: "Bank Transfer",
     description: "BCA, Mandiri, BRI, Permata",
     icon: Landmark,
+  },
+  {
+    value: "saldo",
+    label: "Saldo JASAKITE",
+    description: "Bayar instan dari saldo dompet",
+    icon: Wallet,
   },
   {
     value: "ewallet",
@@ -648,7 +651,7 @@ function CheckoutContent() {
                 <textarea
                   id="notes"
                   rows={3}
-                  placeholder="Contoh: AC di kamar utama, akses lewat samping, mohon hubungi dulu sebelum datang"
+                  placeholder="Contoh: antar dokumen dari Jl. Depati Amir ke kantor pos, mohon hubungi dulu sebelum datang"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   maxLength={500}

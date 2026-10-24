@@ -149,7 +149,7 @@ describe("cakupan wilayah data seed", () => {
     // Angka ini sengaja eksplisit: bila format literal seed berubah dan regex
     // di atas berhenti cocok, test harus GAGAL, bukan lulus tanpa memeriksa apa pun.
     expect(users).toHaveLength(33)
-    expect(services).toHaveLength(46)
+    expect(services).toHaveLength(30)
     expect(providers).toHaveLength(21)
   })
 

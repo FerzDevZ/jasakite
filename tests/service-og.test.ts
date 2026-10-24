@@ -21,28 +21,28 @@ import {
 const SITE_URL = "https://jasakite.example"
 
 const SERVICE_INPUT: ServiceOgInput = {
-  title: "Instalasi AC Split Pangkal Pinang",
-  categoryName: "Perbaikan Rumah",
-  price: 350000,
+  title: "Antar Paket Dokumen Pangkal Pinang",
+  categoryName: "Jasa Antar",
+  price: 150000,
   ratingAvg: 4.7,
   totalReviews: 18,
-  imageUrl: "https://images.unsplash.com/photo-ac.jpg",
+  imageUrl: "https://images.unsplash.com/photo-kurir.jpg",
   providerName: "Budi Santoso",
   providerCity: "Pangkal Pinang",
   completedOrders: 12,
-  shareUrl: "https://jasakite.example/service/instalasi-ac-split",
+  shareUrl: "https://jasakite.example/service/antar-paket-dokumen-pangkal-pinang",
 }
 
 describe("resolveOgImageUrl", () => {
   it("mempertahankan URL http(s) remote apa adanya", () => {
     expect(resolveOgImageUrl(SERVICE_INPUT.imageUrl, SITE_URL)).toBe(
-      "https://images.unsplash.com/photo-ac.jpg"
+      "https://images.unsplash.com/photo-kurir.jpg"
     )
   })
 
   it("mengabsolutkan path relatif ke SITE_URL", () => {
-    expect(resolveOgImageUrl("/uploads/ac.jpg", SITE_URL)).toBe(
-      "https://jasakite.example/uploads/ac.jpg"
+    expect(resolveOgImageUrl("/uploads/paket.jpg", SITE_URL)).toBe(
+      "https://jasakite.example/uploads/paket.jpg"
     )
   })
 
@@ -71,19 +71,19 @@ describe("buildServiceOgViewModel", () => {
   it("membangun kartu lengkap: kategori kapital, harga, rating, penyedia", () => {
     const viewModel = buildServiceOgViewModel(SERVICE_INPUT, SITE_URL)
 
-    expect(viewModel.title).toBe("Instalasi AC Split Pangkal Pinang")
-    expect(viewModel.categoryLabel).toBe("PERBAIKAN RUMAH")
-    expect(viewModel.priceLabel).toContain("350.000")
+    expect(viewModel.title).toBe("Antar Paket Dokumen Pangkal Pinang")
+    expect(viewModel.categoryLabel).toBe("JASA ANTAR")
+    expect(viewModel.priceLabel).toContain("150.000")
     expect(viewModel.ratingLabel).toBe("4,7 · 18 ulasan")
     expect(viewModel.providerLabel).toBe("Budi Santoso · Pangkal Pinang")
     expect(viewModel.imageSrc).toBe(
-      "https://images.unsplash.com/photo-ac.jpg"
+      "https://images.unsplash.com/photo-kurir.jpg"
     )
     expect(viewModel.trustLabel).toBe("12 pesanan selesai")
     // QR menunjuk halaman yang sedang dibagikan — bukan halaman depan, yang
     // membuat pemindai mendarat di tempat yang tidak dilihatnya di kartu.
     expect(viewModel.qrValue).toBe(
-      "https://jasakite.example/service/instalasi-ac-split"
+      "https://jasakite.example/service/antar-paket-dokumen-pangkal-pinang"
     )
     expect(viewModel.qrLabel).toBe("Pindai untuk buka")
   })

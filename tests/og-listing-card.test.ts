@@ -28,19 +28,19 @@ import { expectCardMatchesBaseline } from "./helpers/og-card-visual"
 const PNG_MAGIC_HEX = "89504e470d0a1a0a"
 
 const CATEGORY_GROUPS = [
-  { categoryId: "cat-perbaikan", _count: { _all: 96 } },
-  { categoryId: "cat-instalasi", _count: { _all: 58 } },
-  { categoryId: "cat-kebersihan", _count: { _all: 41 } },
-  { categoryId: "cat-les", _count: { _all: 22 } },
-  { categoryId: "cat-pindahan", _count: { _all: 18 } },
+  { categoryId: "cat-antar", _count: { _all: 96 } },
+  { categoryId: "cat-belanja", _count: { _all: 58 } },
+  { categoryId: "cat-pembayaran", _count: { _all: 41 } },
+  { categoryId: "cat-titip", _count: { _all: 22 } },
+  { categoryId: "cat-lain", _count: { _all: 18 } },
 ]
 
 const CATEGORY_ROWS = [
-  { id: "cat-perbaikan", name: "Perbaikan Rumah" },
-  { id: "cat-instalasi", name: "Instalasi" },
-  { id: "cat-kebersihan", name: "Kebersihan" },
-  { id: "cat-les", name: "Les Privat" },
-  { id: "cat-pindahan", name: "Pindahan" },
+  { id: "cat-antar", name: "Jasa Antar" },
+  { id: "cat-belanja", name: "Jasa Belanja" },
+  { id: "cat-pembayaran", name: "Jasa Pembayaran" },
+  { id: "cat-titip", name: "Jasa Titip" },
+  { id: "cat-lain", name: "Layanan Lain" },
 ]
 
 async function renderListingCard(): Promise<Buffer> {
@@ -139,7 +139,10 @@ describe("kartu OG halaman daftar jasa", () => {
       },
       _count: { _all: true },
     })
-  })
+    // Render pertama di proses ini memuat inisialisasi satori/resvg; di mesin
+    // lambat itu melewati batas default 5 detik. Render berikutnya ~1 detik.
+    // Batas eksplisit ini menyamakan test dengan test render lain di berkas ini.
+  }, 120_000)
 
   it("memuat QR halaman daftar yang modulnya terbaca utuh", async () => {
     const cardPng = await renderListingCard()

@@ -2,7 +2,7 @@
  * Geolokasi tingkat kabupaten/kota di Kepulauan Bangka Belitung.
  *
  * Database hanya menyimpan `User.city` berupa teks; TIDAK ada koordinat
- * penyedia, sehingga jarak user→tukang tidak mungkin dihitung. Yang bisa
+ * penyedia, sehingga jarak user→penyedia tidak mungkin dihitung. Yang bisa
  * dihitung dengan benar adalah jarak user→pusat kabupaten/kota, lalu daerah
  * itu dipakai sebagai filter katalog. UI HARUS melabeli hasilnya sebagai
  * "daerah terdekat", bukan "jasa terdekat 2 km" — itu akan berbohong.

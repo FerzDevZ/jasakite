@@ -44,11 +44,27 @@ const QUIET_TILE_STYLE = {
   display: "flex" as const,
   flexDirection: "column" as const,
   justifyContent: "center" as const,
-  gap: 6,
-  padding: "22px 26px",
+  gap: 4,
+  padding: "18px 22px",
   borderRadius: 26,
   background: "#1C1917",
   border: "1px solid rgba(251,122,35,0.22)",
+}
+
+/**
+ * Nama kategori berasal dari database, jadi panjangnya tidak bisa ditebak.
+ * Petak sempit (kolom kanan) memakai huruf lebih kecil daripada petak utama:
+ * label panjang seperti "JASA PEMBAYARAN" akan turun ke dua baris, dan dengan
+ * ukuran 30px dua baris itu menimpa baris jumlah — kartu yang dibagikan ke
+ * WhatsApp terbaca seperti render rusak.
+ */
+function categoryNameFontSize(name: string, emphasis: "lead" | "quiet"): number {
+  if (emphasis === "lead") {
+    return name.length <= 16 ? 30 : name.length <= 20 ? 26 : 22
+  }
+  if (name.length <= 10) return 26
+  if (name.length <= 16) return 22
+  return 19
 }
 
 function CategoryTile({
@@ -65,15 +81,23 @@ function CategoryTile({
       <div
         style={{
           display: "flex",
-          fontSize: 30,
+          fontSize: categoryNameFontSize(name, emphasis),
           fontWeight: 800,
           color: "#FAF7F2",
           letterSpacing: "-0.01em",
+          lineHeight: 1.15,
         }}
       >
         {name}
       </div>
-      <div style={{ display: "flex", fontSize: 24, color: "#FB9A4A", fontWeight: 600 }}>
+      <div
+        style={{
+          display: "flex",
+          fontSize: emphasis === "lead" ? 24 : 21,
+          color: "#FB9A4A",
+          fontWeight: 600,
+        }}
+      >
         {countLabel}
       </div>
     </div>
@@ -244,7 +268,7 @@ export function ListingCard({ content }: { content: ServicesOgViewModel }) {
       {/* Kolom kanan: petak kategori dengan bobot berbeda + QR. */}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 16 }}>
         {hasCategoryChips ? (
-          <div style={{ display: "flex", flexGrow: 1.5, flexBasis: 0 }}>
+          <div style={{ display: "flex", flexGrow: 1.15, flexBasis: 0 }}>
             <div style={{ display: "flex", flex: 1 }}>
               <CategoryTile
                 name={leadChip.label}
@@ -260,7 +284,7 @@ export function ListingCard({ content }: { content: ServicesOgViewModel }) {
         )}
 
         {hasCategoryChips ? (
-          <div style={{ display: "flex", flexGrow: 1, flexBasis: 0, gap: 16 }}>
+          <div style={{ display: "flex", flexGrow: 1.3, flexBasis: 0, gap: 16 }}>
             <div style={{ display: "flex", flex: 1.35 }}>
               <CategoryTile
                 name={secondChip.label}

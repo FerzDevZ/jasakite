@@ -455,7 +455,7 @@ function CartLineRow({
                     maxLength={300}
                     value={draftNote}
                     onChange={(e) => setDraftNote(e.target.value)}
-                    placeholder="Contoh: AC 1 PK di kamar utama, akses lewat samping"
+                    placeholder="Contoh: 2 dus sembako, belanja di pasar pagi, antar ke Jl. Merdeka"
                     aria-label={`Catatan untuk ${line.service.title}`}
                     className="focus-ring w-full resize-none rounded-lg border border-input bg-transparent px-3 py-2 text-xs placeholder:text-muted-foreground"
                   />

@@ -65,27 +65,27 @@ async function main() {
     // Kabupaten Bangka (Sungailiat)
     ["siti.rahayu@email.com", "Siti Rahayu", "PROVIDER", "Jl. Raya Sungailiat No.22, Sungailiat, Kabupaten Bangka", "https://i.pravatar.cc/300?img=5"],
     ["rina.marlina@email.com", "Rina Marlina", "PROVIDER", "Jl. Pemuda No.9, Sungailiat, Kabupaten Bangka", "https://i.pravatar.cc/300?img=9"],
-    ["bangka.jaya@email.com", "Bangka Jaya Servis", "PROVIDER", "Jl. Air Anyir No.7, Sungailiat, Kabupaten Bangka", "https://i.pravatar.cc/300?img=25"],
+    ["bangka.jaya@email.com", "Bangka Jaya Antaran", "PROVIDER", "Jl. Air Anyir No.7, Sungailiat, Kabupaten Bangka", "https://i.pravatar.cc/300?img=25"],
     // Kabupaten Bangka Barat (Muntok)
-    ["muntok.teknik@email.com", "Muntok Teknik", "PROVIDER", "Jl. Jenderal Sudirman No.18, Muntok, Kabupaten Bangka Barat", "https://i.pravatar.cc/300?img=13"],
+    ["muntok.teknik@email.com", "Muntok Express", "PROVIDER", "Jl. Jenderal Sudirman No.18, Muntok, Kabupaten Bangka Barat", "https://i.pravatar.cc/300?img=13"],
     ["agus.pratama@email.com", "Agus Pratama", "PROVIDER", "Jl. Pelabuhan No.4, Muntok, Kabupaten Bangka Barat", "https://i.pravatar.cc/300?img=15"],
-    ["babel.listrik@email.com", "Babel Listrik", "PROVIDER", "Jl. Raya Muntok No.31, Muntok, Kabupaten Bangka Barat", "https://i.pravatar.cc/300?img=17"],
+    ["babel.bayar@email.com", "Babel Bayar", "PROVIDER", "Jl. Raya Muntok No.31, Muntok, Kabupaten Bangka Barat", "https://i.pravatar.cc/300?img=17"],
     // Kabupaten Bangka Tengah (Koba)
-    ["koba.servis@email.com", "Koba Servis", "PROVIDER", "Jl. Raya Koba No.12, Koba, Kabupaten Bangka Tengah", "https://i.pravatar.cc/300?img=19"],
+    ["koba.servis@email.com", "Koba Kurir", "PROVIDER", "Jl. Raya Koba No.12, Koba, Kabupaten Bangka Tengah", "https://i.pravatar.cc/300?img=19"],
     ["yoga.permana@email.com", "Yoga Permana", "PROVIDER", "Jl. Merdeka No.17, Koba, Kabupaten Bangka Tengah", "https://i.pravatar.cc/300?img=18"],
-    ["tengah.cat@email.com", "Bangka Tengah Cat", "PROVIDER", "Jl. Ahmad Yani No.6, Koba, Kabupaten Bangka Tengah", "https://i.pravatar.cc/300?img=24"],
+    ["tengah.cat@email.com", "Bangka Tengah Belanja", "PROVIDER", "Jl. Ahmad Yani No.6, Koba, Kabupaten Bangka Tengah", "https://i.pravatar.cc/300?img=24"],
     // Kabupaten Bangka Selatan (Toboali)
     ["toboali.pro@email.com", "Toboali Pro", "PROVIDER", "Jl. Jenderal Sudirman No.8, Toboali, Kabupaten Bangka Selatan", "https://i.pravatar.cc/300?img=28"],
     ["dewi.anggraini@email.com", "Dewi Anggraini", "PROVIDER", "Jl. Pahlawan No.11, Toboali, Kabupaten Bangka Selatan", "https://i.pravatar.cc/300?img=32"],
-    ["selatan.pindah@email.com", "Bangka Selatan Pindahan", "PROVIDER", "Jl. Raya Toboali No.20, Toboali, Kabupaten Bangka Selatan", "https://i.pravatar.cc/300?img=30"],
+    ["selatan.pindah@email.com", "Bangka Selatan Titip", "PROVIDER", "Jl. Raya Toboali No.20, Toboali, Kabupaten Bangka Selatan", "https://i.pravatar.cc/300?img=30"],
     // Kabupaten Belitung (Tanjung Pandan)
     ["belitung.prime@email.com", "Belitung Prime", "PROVIDER", "Jl. Hang Tuah No.8, Tanjung Pandan, Kabupaten Belitung", "https://i.pravatar.cc/300?img=21"],
-    ["lina.natuna@email.com", "Belitung Bersih", "PROVIDER", "Jl. Sijuk No.3, Tanjung Pandan, Kabupaten Belitung", "https://i.pravatar.cc/300?img=29"],
-    ["pindah.belitung@email.com", "Pindah Belitung", "PROVIDER", "Jl. Sriwijaya No.14, Tanjung Pandan, Kabupaten Belitung", "https://i.pravatar.cc/300?img=27"],
+    ["lina.natuna@email.com", "Belitung Belanja", "PROVIDER", "Jl. Sijuk No.3, Tanjung Pandan, Kabupaten Belitung", "https://i.pravatar.cc/300?img=29"],
+    ["pindah.belitung@email.com", "Titip Belitung", "PROVIDER", "Jl. Sriwijaya No.14, Tanjung Pandan, Kabupaten Belitung", "https://i.pravatar.cc/300?img=27"],
     // Kabupaten Belitung Timur (Manggar)
-    ["manggar.teknik@email.com", "Manggar Teknik", "PROVIDER", "Jl. Raya Manggar No.5, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=34"],
-    ["timur.cat@email.com", "Belitung Timur Cat", "PROVIDER", "Jl. Merdeka No.22, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=35"],
-    ["gantung.servis@email.com", "Gantung Servis", "PROVIDER", "Jl. Gantung No.9, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=11"],
+    ["manggar.teknik@email.com", "Manggar Kurir", "PROVIDER", "Jl. Raya Manggar No.5, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=34"],
+    ["timur.cat@email.com", "Belitung Timur Bayar", "PROVIDER", "Jl. Merdeka No.22, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=35"],
+    ["gantung.servis@email.com", "Gantung Titip", "PROVIDER", "Jl. Gantung No.9, Manggar, Kabupaten Belitung Timur", "https://i.pravatar.cc/300?img=11"],
     // Customers — tersebar di daerah yang sama
     ["dewi.lestari@email.com", "Dewi Lestari", "CUSTOMER", "Jl. Depati Amir No.12, Pangkal Pinang", "https://i.pravatar.cc/300?img=33"],
     ["citra.bangka@email.com", "Citra Bangka", "CUSTOMER", "Jl. Jendral Sudirman No.24, Pangkal Pinang", "https://i.pravatar.cc/300?img=36"],
@@ -147,17 +147,15 @@ async function main() {
   }
 
   // ============ CATEGORIES ============
+  // Empat kategori inti JASAKITE. Kategori lama (perbaikan rumah, kebersihan,
+  // instalasi, pengecatan, pindahan, tukang) sudah tidak ditawarkan dan tidak
+  // boleh dibuat ulang oleh seed — katalog, hero, dan sitemap semuanya
+  // membaca daftar ini.
   const catData = [
-    ["Perbaikan Rumah", "perbaikan-rumah", "Wrench", "Perbaikan AC, pipa, dan peralatan rumah tangga."],
-    ["Kebersihan", "kebersihan", "Sparkles", "Jasa bersih-bersih rumah, kantor, dan pasca renovasi."],
-    ["Listrik", "listrik", "Zap", "Instalasi dan perbaikan instalasi listrik."],
-    ["Pengecatan", "pengecatan", "Paintbrush", "Cat tembok interior dan eksterior."],
-    ["Pindahan", "pindahan", "Truck", "Jasa pindah rumah dan kantor."],
-    ["Tukang", "tukang", "Home", "Tukang bangunan dan renovasi."],
-    ["Jasa Titip", "jasa-titip", "Package", "Titip beli dan titip antar barang lewat penyedia di sekitar Anda."],
     ["Jasa Antar", "jasa-antar", "Bike", "Antar paket, barang, dan dokumen dalam kota hingga antar pulau."],
-    ["Jasa Pembayaran", "jasa-pembayaran", "CreditCard", "Bantuan bayar tagihan listrik, air, PPOB, dan sejenisnya."],
     ["Jasa Belanja", "jasa-belanja", "ShoppingCart", "Belanja kebutuhan harian ke pasar atau toko sesuai daftar Anda."],
+    ["Jasa Pembayaran", "jasa-pembayaran", "CreditCard", "Bantuan bayar tagihan rutin, PPOB, dan cicilan."],
+    ["Jasa Titip", "jasa-titip", "Package", "Titip beli dan titip antar barang lewat penyedia di sekitar Anda."],
   ]
   const categories = {}
   for (const [name, slug, icon, description] of catData) {
@@ -193,6 +191,46 @@ async function main() {
   await prisma.servicePackage.deleteMany()
   await prisma.order.deleteMany()
   await prisma.service.deleteMany()
+  // Riwayat langganan ikut di-reset: seed memberi masa aktif baru ke semua
+  // penyedia, dan membiarkan baris lama membuat riwayat demo berisi periode
+  // yang tidak pernah dibayar.
+  await prisma.providerSubscription.deleteMany()
+
+  // Kategori yang tidak ada lagi di katalog produk (sisa kategori lama)
+  // dihapus setelah jasanya hilang, bukan sebelumnya — Prisma menolak
+  // menghapus induk yang masih punya anak.
+  const seededCategorySlugs = catData.map(([, slug]) => slug)
+  await prisma.category.deleteMany({
+    where: { slug: { notIn: seededCategorySlugs } },
+  })
+
+  // ============ LANGGANAN PENYEDIA ============
+  // Katalog hanya menampilkan jasa milik penyedia dengan masa aktif berjalan.
+  // Tanpa grant ini, seluruh jasa hasil seed langsung tersembunyi dan demo
+  // tampak kosong padahal datanya lengkap. Dicatat sebagai ADMIN_GRANT
+  // (nominal 0) karena tidak ada uang yang dipotong saat seeding.
+  const subscriptionEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  const seededProviders = await prisma.user.findMany({
+    where: { role: "PROVIDER" },
+    select: { id: true },
+  })
+  for (const provider of seededProviders) {
+    await prisma.user.update({
+      where: { id: provider.id },
+      data: { subscriptionUntil: subscriptionEnd },
+    })
+    await prisma.providerSubscription.create({
+      data: {
+        providerId: provider.id,
+        amount: 0,
+        periodStart: new Date(),
+        periodEnd: subscriptionEnd,
+        status: "ACTIVE",
+        source: "ADMIN_GRANT",
+      },
+    })
+  }
+
 
   // ============ SERVICES ============
   // Foto dari Unsplash (lisensi bebas). URL memakai parameter crop agar
@@ -200,63 +238,68 @@ async function main() {
   const img = (id) =>
     `https://images.unsplash.com/${id}?q=80&w=1200&auto=format&fit=crop`
 
+  // Foto per tema. Semua URL sudah diperiksa merespons 200 dan isinya sesuai
+  // tema (kurir, paket, pasar, kasir, tagihan, titipan) — bukan sekadar
+  // "gambar yang tidak rusak".
+  const PHOTO = {
+    kurir: img("photo-1526367790999-0150786686a2"),
+    paket: img("photo-1580674285054-bed31e145f59"),
+    gudang: img("photo-1587293852726-70cdb56c2866"),
+    pasar: img("photo-1542838132-92c53300491e"),
+    belanjaan: img("photo-1588964895597-cfccd6e2dbf9"),
+    kasir: img("photo-1556742049-0cfed4f6a45d"),
+    terminal: img("photo-1601597111158-2fceff292cdc"),
+    tagihan: img("photo-1554224155-6726b3ff858f"),
+    nirsentuh: img("photo-1556742502-ec7c0e9f34b1"),
+    ponsel: img("photo-1616077168712-fc6c788db4af"),
+    kotak: img("photo-1595246140625-573b715d11dc"),
+  }
+
   const serviceData = [
     // slug, kategori, provider email, deskripsi, harga, hari, foto
     // Judul jasa DITURUNKAN dari slug, jadi nama daerah di slug wajib sama
     // dengan daerah penyedianya — penjaga di bawah array ini yang memaksa.
-    // Perbaikan Rumah — Pangkal Pinang, Muntok, Koba
-    ["instalasi-ac-split-pangkal-pinang", "perbaikan-rumah", "budi.santoso@email.com", "Instalasi AC split 1 PK baru di Pangkal Pinang: bracket, pipa, vacuum, dan pengecekan tekanan freon. Garansi 1 bulan untuk kerjaan.", 350000, 1, img("photo-1753826477307-82c71f3d9537")],
-    ["servis-ac-bocor-tidak-dingin-pangkal-pinang", "perbaikan-rumah", "budi.santoso@email.com", "Pengecekan menyeluruh, cuci evaporator dan kondensor, tambah freon R410A, perbaikan kebocoran. Dijamin dingin kembali atau uang kembali.", 150000, 1, img("photo-1754665099555-dea88285e4ec")],
-    ["perbaikan-mesin-cuci-1-2-tabung-pangkal-pinang", "perbaikan-rumah", "joko.wibowo@email.com", "Perbaikan mesin cuci 1 dan 2 tabung: tidak berputar, bocor, atau bunyi kasar. Termasuk penggantian sparepart standar.", 175000, 2, img("photo-1626806787461-102c1bfaaea1")],
-    ["pembersihan-kulkas-steam-pangkal-pinang", "perbaikan-rumah", "joko.wibowo@email.com", "Pembersihan mendalam kulkas dengan steam, pengecekan kompresor, penggantian seal pintu bila perlu. Melayani seluruh Kota Pangkal Pinang.", 120000, 1, img("photo-1584568694244-14fbdf83bd30")],
-    ["perbaikan-water-heater-pangkal-pinang", "perbaikan-rumah", "budi.santoso@email.com", "Perbaikan water heater di Pangkal Pinang: tidak panas, bocor, atau error. Termasuk pengecekan elemen pemanas dan anoda.", 200000, 1, img("photo-1585704032915-c3400ca199e7")],
-    ["servis-ac-pangkal-pinang", "perbaikan-rumah", "hendri.bangka@email.com", "Servis AC wilayah Pangkal Pinang: cuci, tambah freon, perbaikan bocor. Garansi 1 bulan.", 175000, 1, img("photo-1759772238012-9d5ad59ae637")],
-    ["servis-elektronik-muntok", "perbaikan-rumah", "muntok.teknik@email.com", "Servis elektronik Muntok–Bangka Barat: AC, kulkas, mesin cuci. Sparepart standar tersedia, bisa panggilan.", 160000, 2, img("photo-1626806787461-102c1bfaaea1")],
-    ["servis-ac-koba-bangka-tengah", "perbaikan-rumah", "koba.servis@email.com", "Cuci AC & servis kulkas area Koba, Kabupaten Bangka Tengah: cepat, bersih, bergaransi.", 140000, 1, img("photo-1584568694244-14fbdf83bd30")],
-    // Kebersihan — Sungailiat, Pangkal Pinang, Tanjung Pandan, Manggar
-    ["bersih-rumah-reguler-sungailiat", "kebersihan", "siti.rahayu@email.com", "Pembersihan menyeluruh di Sungailiat: menyapu, mengepel, kamar mandi, dapur, dan kaca. Alat dan cairan pembersih disediakan vendor.", 50000, 1, img("photo-1581578731548-c64695cc6952")],
-    ["deep-clean-pasca-renovasi-sungailiat", "kebersihan", "siti.rahayu@email.com", "Pembersihan mendalam pasca renovasi di Sungailiat: debu semen, cat, dan keramik. Tim 2 orang dengan peralatan profesional.", 75000, 2, img("photo-1527515637462-cff94eecc1ac")],
-    ["bersih-sofa-karpet-steam-sungailiat", "kebersihan", "rina.marlina@email.com", "Cuci sofa dan karpet metode steam di Kabupaten Bangka: hilangkan noda, debu, dan bau tidak sedap. Per kursi atau per meter persegi.", 90000, 1, img("photo-1563453392212-326f5e854473")],
-    ["jasa-bersih-kos-kontrakan-bangka", "kebersihan", "bangka.jaya@email.com", "Paket kebersihan kos & kontrakan se-Kabupaten Bangka: 2x seminggu, termasuk cuci sprei dan mengepel lantai. Kontrak minimal 1 bulan.", 3500000, 1, img("photo-1615875605825-5eb9bb5d52ac")],
-    ["pembersihan-ducting-ac-pangkal-pinang", "kebersihan", "hendri.bangka@email.com", "Pembersihan saluran AC ducting untuk rumah dan kantor di Pangkal Pinang. Udara lebih bersih, AC lebih efisien.", 450000, 1, img("photo-1711696488222-3a5af2a3dd72")],
-    ["bersih-villa-homestay-belitung", "kebersihan", "lina.natuna@email.com", "Daily cleaning villa & homestay Tanjung Pandan: harian, mingguan, deep clean. Tim ramah dan teliti.", 85000, 1, img("photo-1563453392212-326f5e854473")],
-    ["bersih-kantor-ruko-tanjung-pandan", "kebersihan", "belitung.prime@email.com", "Kebersihan kantor & ruko Tanjung Pandan: harian atau mingguan, dikerjakan di luar jam kerja.", 320000, 1, img("photo-1581578731548-c64695cc6952")],
-    ["bersih-pasca-banjir-belitung-timur", "kebersihan", "gantung.servis@email.com", "Bersih-bersih pasca banjir di Manggar & Belitung Timur: lumpur, sanitasi, dan pengeringan ruangan.", 240000, 1, img("photo-1527515637462-cff94eecc1ac")],
-    // Listrik — Muntok, Koba, Toboali, Tanjung Pandan, Manggar
-    ["instalasi-listrik-rumah-muntok", "listrik", "babel.listrik@email.com", "Pemasangan instalasi listrik standar SNI di Muntok: titik lampu, stop kontak, dan panel MCB. Termasuk gambar jalur dan konsultasi penempatan.", 25000000, 5, img("photo-1621905251189-08b45d6a269e")],
-    ["perbaikan-listrik-konslet-muntok", "listrik", "babel.listrik@email.com", "Pencarian gangguan listrik, perbaikan korsleting, dan penggantian komponen rusak di Muntok & Kabupaten Bangka Barat. Ditarget selesai hari yang sama.", 200000, 1, img("photo-1621905252507-b35492cc74b4")],
-    ["pasang-lampu-saklar-muntok", "listrik", "agus.pratama@email.com", "Pemasangan titik lampu, saklar, dan stop kontak baru di Muntok. Material bisa disediakan atau dibawa sendiri oleh klien.", 100000, 1, img("photo-1581858726788-75bc0f6a952d")],
-    ["perawatan-panel-mcb-muntok", "listrik", "muntok.teknik@email.com", "Pengecekan panel listrik, pengencangan terminal, dan penggantian MCB yang sudah jelek di Muntok. Penting untuk keamanan.", 150000, 1, img("photo-1509391366360-2e959784a276")],
-    ["pemasangan-lampu-led-downlight-koba", "listrik", "koba.servis@email.com", "Pasang downlight LED recessed 5-12 watt di Koba, Bangka Tengah. Termasuk lubang dan wiring. Per titik.", 85000, 1, img("photo-1600585152220-90363fe7e115")],
-    ["listrik-toboali-24-jam", "listrik", "toboali.pro@email.com", "Emergency listrik Toboali 24 jam: konslet, MCB trip, dan tambah daya. Panggilan malam tetap dilayani.", 200000, 1, img("photo-1621905252507-b35492cc74b4")],
-    ["instalasi-listrik-tanjung-pandan", "listrik", "belitung.prime@email.com", "Instalasi & perbaikan listrik Tanjung Pandan, Kabupaten Belitung. Standar SNI, bergaransi.", 180000, 2, img("photo-1621905251189-08b45d6a269e")],
-    ["penambahan-daya-manggar", "listrik", "manggar.teknik@email.com", "Penambahan daya & penggantian MCB di Manggar, Belitung Timur: survei, material standar, dan uji beban.", 425000, 2, img("photo-1509391366360-2e959784a276")],
-    // Pengecatan — Koba, Sungailiat, Tanjung Pandan, Manggar
-    ["cat-tembok-interior-koba", "pengecatan", "tengah.cat@email.com", "Pengecatan tembok interior 2 lapis dengan cat dinding premium di Koba, Kabupaten Bangka Tengah. Termasuk plamir dan finishing rapi.", 25000, 3, img("photo-1615873968403-89e068629265")],
-    ["cat-tembok-eksterior-koba", "pengecatan", "tengah.cat@email.com", "Pengecatan eksterior tahan cuaca 2 lapis di Kabupaten Bangka Tengah. Termasuk persiapan permukaan, primer, dan pembersihan area kerja.", 30000, 4, img("photo-1560184897-ae75f418493e")],
-    ["cat-ulangan-kusen-pagar-besi-koba", "pengecatan", "tengah.cat@email.com", "Pengamplasan, pelapisan anti karat, dan cat finishing untuk kusen dan pagar besi di Koba. Hasil halus dan tahan lama.", 45000, 2, img("photo-1562259949-e8e7689d7828")],
-    ["cat-rumah-sungailiat", "pengecatan", "rina.marlina@email.com", "Pengecatan rumah Sungailiat: interior & eksterior, 2 lapis, cat premium.", 28000, 3, img("photo-1615873968403-89e068629265")],
-    ["cat-dekoratif-tanjung-pandan", "pengecatan", "belitung.prime@email.com", "Cat dekoratif Tanjung Pandan: motif, coating, dan sentuhan akhir interior untuk rumah maupun penginapan.", 35000, 3, img("photo-1616464916356-3a777b2b60b1")],
-    ["cat-rumah-manggar", "pengecatan", "timur.cat@email.com", "Pengecatan rumah area Manggar & Belitung Timur: persiapan permukaan, primer, dan cat finishing 2 lapis.", 30000, 3, img("photo-1562259949-e8e7689d7828")],
-    ["waterproofing-dinding-sungailiat", "pengecatan", "bangka.jaya@email.com", "Pelapisan anti bocor dinding & dak beton di Sungailiat, Kabupaten Bangka. Garansi 6 bulan.", 65000, 2, img("photo-1560184897-ae75f418493e")],
-    // Pindahan — Toboali, Tanjung Pandan, Manggar
-    ["pindah-rumah-1-2-kamar-toboali", "pindahan", "dewi.anggraini@email.com", "Pindah rumah skala kecil di Toboali: packing, angkut, bongkar, dan susun ulang. Termasuk truk dan 2 tenaga kerja.", 900000, 1, img("photo-1714647211902-bb711d643a17")],
-    ["pindah-kantor-toboali", "pindahan", "dewi.anggraini@email.com", "Pindah kantor lengkap dengan packing khusus meja, komputer, dan arsip di Toboali. Tim 4 orang profesional.", 2500000, 2, img("photo-1585129777188-94600bc7b4b3")],
-    ["jasa-packing-saja-toboali", "pindahan", "selatan.pindah@email.com", "Packing barang dengan bubble wrap dan kardus berkualitas di Toboali. Siap angkut, per jam atau per barang.", 75000, 1, img("photo-1611145367651-6303b46e4040")],
-    ["penyimpanan-barang-toboali", "pindahan", "selatan.pindah@email.com", "Penyimpanan barang sementara di gudang aman Toboali. Per bulan per meter kubik, termasuk asuransi.", 150000, 1, img("photo-1600518464441-9154a4dea21b")],
-    ["pindahan-lokal-tanjung-pandan", "pindahan", "pindah.belitung@email.com", "Pindahan lokal Tanjung Pandan & Kabupaten Belitung: packing, angkut, bongkar. Truk + 2 crew.", 1100000, 1, img("photo-1714647211902-bb711d643a17")],
-    ["pindahan-antar-pulau-bangka-belitung", "pindahan", "pindah.belitung@email.com", "Pindahan antar pulau Bangka–Belitung: packing khusus, jadwal feri, dan pengawalan barang sampai tujuan.", 3200000, 3, img("photo-1585129777188-94600bc7b4b3")],
-    ["pindahan-manggar-belitung-timur", "pindahan", "gantung.servis@email.com", "Pindahan area Manggar & Belitung Timur: dalam kota maupun antar kabupaten. Packing aman.", 1250000, 2, img("photo-1600518464441-9154a4dea21b")],
-    // Tukang — Koba, Toboali, Pangkal Pinang, Manggar
-    ["renovasi-kamar-mandi-koba", "tukang", "yoga.permana@email.com", "Renovasi kamar mandi di Koba: keramik baru, closet, kran, dan sanitair. Termasuk pembongkaran yang lama.", 35000000, 7, img("photo-1595515106969-1ce29566ff1c")],
-    ["pasang-keramik-lantai-koba", "tukang", "yoga.permana@email.com", "Pemasangan keramik lantai dengan nat rapi di Koba. Termasuk persiapan acian dasar dan pengeringan.", 60000, 3, img("photo-1504148455328-c376907d081c")],
-    ["perbaikan-atap-bocor-toboali", "tukang", "toboali.pro@email.com", "Lokalisir kebocoran, ganti genteng atau nok yang rusak, dan aplikasi waterproofing di Toboali & Kabupaten Bangka Selatan. Garansi 6 bulan.", 300000, 1, img("photo-1541888946425-d81bb19240f5")],
-    ["plafon-gypsum-pangkal-pinang", "tukang", "budi.santoso@email.com", "Pemasangan plafon gypsum rangka hollow galvanis di Pangkal Pinang. Termasuk finishing nat dan dempul halus. Rapih dan kuat.", 85000, 4, img("photo-1581092160562-40aa08e78837")],
-    ["pemasangan-dinding-batako-manggar", "tukang", "manggar.teknik@email.com", "Pemasangan dinding batako untuk perluasan atau pembatas ruangan di Manggar. Termasuk adukan dan plesteran dasar.", 55000, 3, img("photo-1504307651254-35680f356dfd")],
-    ["renovasi-ringan-manggar", "tukang", "gantung.servis@email.com", "Renovasi ringan Manggar–Belitung Timur: plafon, keramik, dan cat. Survei lokasi gratis.", 75000, 4, img("photo-1595515106969-1ce29566ff1c")],
-    // DRAFT & ARCHIVED samples
-    ["jasa-bangun-pagar-tembok", "tukang", "budi.santoso@email.com", "Pembangunan pagar tembok dengan pondasi dan finishing cat. Min. 3 meter lari. Free konsultasi desain.", 65000, 7, img("photo-1530124566582-a618bc2615dc")],
-    ["cuci-ac-rutin-paket-4-unit", "perbaikan-rumah", "budi.santoso@email.com", "Paket cuci 4 unit AC hemat: cuci indoor dan outdoor, cek freon, dan pembersihan filter. Pesan lebih dulu.", 450000, 2, img("photo-1759772238012-9d5ad59ae637")],
+    //
+    // Jasa Antar — Pangkal Pinang, Sungailiat, Muntok, Koba, Toboali,
+    // Tanjung Pandan, Manggar
+    ["antar-paket-dokumen-pangkal-pinang", "jasa-antar", "budi.santoso@email.com", "Antar dokumen dan paket kecil se-Kota Pangkal Pinang dengan motor. Titik jemput fleksibel, foto bukti pengiriman dikirim lewat chat setelah barang diterima.", 15000, 1, PHOTO.kurir],
+    ["antar-belanja-pasar-sungailiat", "jasa-antar", "siti.rahayu@email.com", "Antar hasil belanja pasar dari Sungailiat ke alamat Anda. Cocok untuk pesanan sayur, buah, dan lauk yang harus segera sampai.", 20000, 1, PHOTO.paket],
+    ["kurir-motor-muntok", "jasa-antar", "muntok.teknik@email.com", "Kurir motor untuk paket dan makanan di Muntok, Kabupaten Bangka Barat. Pengantaran hari yang sama untuk pesanan sebelum pukul 16.00.", 12000, 1, PHOTO.kurir],
+    ["antar-barang-koba", "jasa-antar", "koba.servis@email.com", "Antar barang berukuran sedang di area Koba dengan motor bak. Termasuk pengikatan barang dan bantuan menaikkan ke kendaraan.", 25000, 1, PHOTO.gudang],
+    ["antar-paket-toboali", "jasa-antar", "toboali.pro@email.com", "Pengantaran paket dalam Kota Toboali dan sekitarnya. Status pengiriman diperbarui lewat chat: dijemput, di jalan, dan diterima.", 18000, 1, PHOTO.paket],
+    ["antar-dokumen-tanjung-pandan", "jasa-antar", "belitung.prime@email.com", "Antar dokumen dan berkas kantor di Tanjung Pandan. Bisa menunggu tanda terima bila dokumen perlu diserahkan langsung.", 15000, 1, PHOTO.kurir],
+    ["pengiriman-paket-manggar", "jasa-antar", "manggar.teknik@email.com", "Antar paket area Manggar dan Belitung Timur. Barang dibungkus ulang bila kemasan aslinya sudah tidak aman.", 20000, 1, PHOTO.gudang],
+    // Jasa Belanja — Pangkal Pinang, Sungailiat, Muntok, Koba, Toboali,
+    // Tanjung Pandan, Manggar
+    ["belanja-harian-pangkal-pinang", "jasa-belanja", "joko.wibowo@email.com", "Belanja kebutuhan harian sesuai daftar Anda di pasar dan minimarket Pangkal Pinang. Struk asli disertakan, sisa uang dikembalikan.", 30000, 1, PHOTO.pasar],
+    ["belanja-pasar-sungailiat", "jasa-belanja", "rina.marlina@email.com", "Titip belanja sayur, ikan, dan bumbu dapur di pasar Sungailiat. Dipilih langsung dengan foto sebelum dibayar.", 25000, 1, PHOTO.belanjaan],
+    ["belanja-bulanan-muntok", "jasa-belanja", "agus.pratama@email.com", "Belanja bulanan keluarga di Muntok: sembako, sabun, dan kebutuhan dapur. Daftar panjang dikerjakan sekaligus, barang diantar ke rumah.", 40000, 2, PHOTO.pasar],
+    ["belanja-sembako-koba", "jasa-belanja", "yoga.permana@email.com", "Belanja sembako di Koba dengan harga toko, bukan harga jasa. Ongkos jasa terpisah dan sudah tertera di halaman ini.", 30000, 1, PHOTO.belanjaan],
+    ["belanja-obat-toboali", "jasa-belanja", "dewi.anggraini@email.com", "Beli obat bebas dan kebutuhan apotek di Toboali. Resep dibacakan lewat chat, obat diantar lengkap dengan struk.", 35000, 1, PHOTO.kasir],
+    ["belanja-kebutuhan-tanjung-pandan", "jasa-belanja", "lina.natuna@email.com", "Belanja kebutuhan rumah tangga di Tanjung Pandan, dari bahan masakan sampai perlengkapan mandi. Bisa sekalian antar ke alamat tujuan.", 30000, 1, PHOTO.pasar],
+    ["belanja-pasar-manggar", "jasa-belanja", "timur.cat@email.com", "Titip belanja pasar Manggar untuk sayur, buah, dan lauk segar. Belanja pagi, diantar sebelum makan siang.", 25000, 1, PHOTO.belanjaan],
+    // Jasa Pembayaran — Pangkal Pinang, Sungailiat, Muntok, Koba, Toboali,
+    // Tanjung Pandan, Manggar
+    ["bayar-ppob-pangkal-pinang", "jasa-pembayaran", "hendri.bangka@email.com", "Bantu bayar tagihan rutin dan PPOB di Pangkal Pinang: air, internet, pulsa, dan cicilan. Bukti bayar resmi dikirim lewat chat.", 10000, 1, PHOTO.kasir],
+    ["bantu-bayar-tagihan-sungailiat", "jasa-pembayaran", "bangka.jaya@email.com", "Bantuan pembayaran tagihan bulanan di Sungailiat tanpa harus antre. Cukup kirim nomor pelanggan, bukti transfer diteruskan ke Anda.", 10000, 1, PHOTO.tagihan],
+    ["bayar-tagihan-muntok", "jasa-pembayaran", "babel.bayar@email.com", "Layanan bayar tagihan di Muntok untuk warga yang tidak sempat ke loket. Nominal tagihan dicek dulu sebelum uang ditransfer.", 12000, 1, PHOTO.terminal],
+    ["bayar-ppob-koba", "jasa-pembayaran", "tengah.cat@email.com", "Pembayaran PPOB dan tagihan rumah tangga di Koba. Dikerjakan pada hari yang sama, struk dikirim sebagai bukti.", 10000, 1, PHOTO.tagihan],
+    ["bayar-tagihan-toboali", "jasa-pembayaran", "selatan.pindah@email.com", "Bantu bayar tagihan dan cicilan di Toboali. Anda hanya perlu mengirim nomor tagihan dan nominalnya, sisanya diurus.", 12000, 1, PHOTO.nirsentuh],
+    ["bayar-ppob-tanjung-pandan", "jasa-pembayaran", "pindah.belitung@email.com", "Pembayaran tagihan rutin di Tanjung Pandan, termasuk pulsa dan paket data. Bukti bayar dikirim lengkap dengan nomor referensi.", 10000, 1, PHOTO.kasir],
+    ["bayar-tagihan-manggar", "jasa-pembayaran", "gantung.servis@email.com", "Bantuan bayar tagihan bulanan di Manggar dan Belitung Timur. Bisa dikerjakan untuk beberapa tagihan sekaligus dalam satu pesanan.", 12000, 1, PHOTO.tagihan],
+    // Jasa Titip — Pangkal Pinang, Sungailiat, Muntok, Koba, Toboali,
+    // Tanjung Pandan, Manggar
+    ["titip-beli-makanan-pangkal-pinang", "jasa-titip", "budi.santoso@email.com", "Titip beli makanan dan minuman di Pangkal Pinang, dari warung sampai restoran. Pesanan dipesan sesuai jam yang Anda minta.", 20000, 1, PHOTO.kotak],
+    ["titip-beli-obat-sungailiat", "jasa-titip", "siti.rahayu@email.com", "Titip beli obat dan kebutuhan apotek di Sungailiat. Foto kemasan dikirim sebelum dibayar supaya tidak salah merek.", 25000, 1, PHOTO.ponsel],
+    ["titip-barang-muntok", "jasa-titip", "agus.pratama@email.com", "Titip beli barang dari toko di Muntok dan antar ke alamat Anda. Barang dicek kondisi sebelum diserahkan.", 30000, 1, PHOTO.kotak],
+    ["titip-beli-koba", "jasa-titip", "koba.servis@email.com", "Titip beli kebutuhan kecil di Koba: alat tulis, baterai, sampai paket kiriman. Ongkos jasa tetap, berapa pun jumlah barangnya.", 20000, 1, PHOTO.paket],
+    ["titip-paket-toboali", "jasa-titip", "dewi.anggraini@email.com", "Titip terima dan antar paket di Toboali untuk Anda yang sedang di luar kota. Paket disimpan aman sampai diambil.", 25000, 1, PHOTO.gudang],
+    ["titip-beli-tanjung-pandan", "jasa-titip", "belitung.prime@email.com", "Titip beli oleh-oleh dan makanan khas Belitung dari Tanjung Pandan. Dikemas rapi supaya aman dibawa pulang.", 20000, 1, PHOTO.ponsel],
+    ["titip-barang-manggar", "jasa-titip", "manggar.teknik@email.com", "Titip beli dan antar barang di Manggar. Bisa juga untuk mengambil barang yang sudah dipesan di toko lain.", 25000, 1, PHOTO.kotak],
+    // Contoh status non-aktif: satu DRAFT (menunggu moderasi) dan satu
+    // ARCHIVED (disembunyikan penyedia), supaya halaman moderasi punya isi.
+    ["titip-hewan-manggar", "jasa-titip", "gantung.servis@email.com", "Titip antar hewan peliharaan kecil di Manggar dengan kandang angkut. Perlu konfirmasi jadwal sebelum memesan.", 50000, 2, PHOTO.kotak],
+    ["antar-furnitur-pangkal-pinang", "jasa-antar", "joko.wibowo@email.com", "Antar furnitur besar di Pangkal Pinang dengan kendaraan bak. Butuh dua orang untuk bongkar muat.", 150000, 2, PHOTO.gudang],
   ]
 
   // ============ PENJAGA: DAERAH DI JUDUL = DAERAH PENYEDIA ============
@@ -269,7 +312,7 @@ async function main() {
   //
   // Token di bawah hanya nama daerah yang TIDAK ambigu. "bangka" dan
   // "belitung" sengaja tidak ada: keduanya bisa berarti pulau/provinsi
-  // (mis. "pindahan-antar-pulau-bangka-belitung") sehingga tidak bisa dipakai
+  // (mis. "antar-barang-lintas-pulau-bangka-belitung") sehingga tidak bisa dipakai
   // untuk menyimpulkan satu kabupaten.
   const AREA_TOKENS = {
     "pangkal-pinang": "pangkal pinang",
@@ -310,42 +353,10 @@ async function main() {
   // Pool galeri per kategori — 2 foto tambahan selain foto utama, agar detail
   // jasa punya carousel 3 gambar tanpa harus cari foto baru per jasa.
   const galleryPool = {
-    "perbaikan-rumah": [
-      img("photo-1753826477307-82c71f3d9537"),
-      img("photo-1754665099555-dea88285e4ec"),
-      img("photo-1626806787461-102c1bfaaea1"),
-      img("photo-1584568694244-14fbdf83bd30"),
-    ],
-    kebersihan: [
-      img("photo-1581578731548-c64695cc6952"),
-      img("photo-1527515637462-cff94eecc1ac"),
-      img("photo-1563453392212-326f5e854473"),
-      img("photo-1615875605825-5eb9bb5d52ac"),
-    ],
-    listrik: [
-      img("photo-1621905251189-08b45d6a269e"),
-      img("photo-1621905252507-b35492cc74b4"),
-      img("photo-1581858726788-75bc0f6a952d"),
-      img("photo-1509391366360-2e959784a276"),
-    ],
-    pengecatan: [
-      img("photo-1615873968403-89e068629265"),
-      img("photo-1560184897-ae75f418493e"),
-      img("photo-1562259949-e8e7689d7828"),
-      img("photo-1616464916356-3a777b2b60b1"),
-    ],
-    pindahan: [
-      img("photo-1714647211902-bb711d643a17"),
-      img("photo-1585129777188-94600bc7b4b3"),
-      img("photo-1611145367651-6303b46e4040"),
-      img("photo-1600518464441-9154a4dea21b"),
-    ],
-    tukang: [
-      img("photo-1595515106969-1ce29566ff1c"),
-      img("photo-1504148455328-c376907d081c"),
-      img("photo-1541888946425-d81bb19240f5"),
-      img("photo-1581092160562-40aa08e78837"),
-    ],
+    "jasa-antar": [PHOTO.kurir, PHOTO.paket, PHOTO.gudang, PHOTO.kotak],
+    "jasa-belanja": [PHOTO.pasar, PHOTO.belanjaan, PHOTO.kasir, PHOTO.kotak],
+    "jasa-pembayaran": [PHOTO.kasir, PHOTO.tagihan, PHOTO.terminal, PHOTO.nirsentuh],
+    "jasa-titip": [PHOTO.kotak, PHOTO.paket, PHOTO.ponsel, PHOTO.gudang],
   }
 
   const services = []
@@ -363,7 +374,7 @@ async function main() {
         images: extras.length ? JSON.stringify(extras) : null,
         categoryId: categories[catSlug].id,
         providerId: users[email].id,
-        status: slug === "jasa-bangun-pagar-tembok" ? "ARCHIVED" : slug === "cuci-ac-rutin-paket-4-unit" ? "DRAFT" : "ACTIVE",
+        status: slug === "antar-furnitur-pangkal-pinang" ? "ARCHIVED" : slug === "titip-hewan-manggar" ? "DRAFT" : "ACTIVE",
         createdAt: daysAgo(Math.floor(Math.random() * 60) + 5),
       },
     })
@@ -435,20 +446,20 @@ async function main() {
   ]
 
   const REVIEW_COMMENTS = [
-    "Hasilnya rapi dan sesuai janji. Sangat direkomendasikan untuk yang butuh tukang cepat dan teliti.",
-    "Cepat, bersih, dan harganya wajar. Pasti pakai lagi untuk service berkala.",
-    "Komunikasi dari awal sampai selesai sangat jelas. Datang tepat waktu seperti yang dijanjikan.",
-    "Datang tepat waktu, kerja profesional, hasil memuaskan. Kamar mandi baru kinclong!",
-    "Sudah langganan dua kali, kualitasnya konsisten. Harga juga tidak kemahalan.",
-    "Penjelasan detail sebelum kerja dimulai, tidak ada biaya tersembunyi. Profesional.",
-    "Hasil melebihi ekspektasi, harganya juga masuk akal. AC sekarang adem banget.",
-    "Tukangnya ramah dan sabar menjawab pertanyaan saya. Sangat puas dengan hasilnya.",
-    "Pengecatan rumah selesai lebih cepat dari estimasi. Hasil cat rapi dan tidak ada cipratan di lantai.",
-    "Proses pindah rumah lancar, barang aman sampai tujuan. Timnya kooperatif banget.",
-    "Servis AC sekarang dingin kembali seperti baru. Charges wajar, tidak overpriced.",
-    "Bersih banget, bahkan bagian yang saya tidak minta dibersihkan juga dirapikan.",
-    "Sudah tiga kali pakai untuk perawatan AC. Konsisten baik pelayanannya.",
-    "Respon cepat dari chat sampai datang. Masalah listrik di rumah solved dalam 2 jam.",
+    "Antarnya cepat dan barang sampai utuh. Update status dikirim tanpa perlu ditanya.",
+    "Komunikatif dari awal sampai paket diterima. Pasti pakai lagi untuk kiriman berikutnya.",
+    "Titip belanja sesuai daftar, struk asli disertakan. Sisa uang dikembalikan tanpa diminta.",
+    "Belanjaannya lengkap dan sayurnya masih segar. Daftar yang saya tulis dipatuhi semua.",
+    "Bantu bayar tagihan selesai hari itu juga, bukti bayarnya jelas. Tidak ada biaya tersembunyi.",
+    "Sangat membantu waktu saya sedang di luar kota. Tagihan tetap dibayar tepat waktu.",
+    "Titip beli makanan sesuai jam yang saya minta. Pesanan masih hangat saat sampai.",
+    "Harga jasa wajar dan komunikasinya enak. Cocok untuk kebutuhan mendadak.",
+    "Barang titipan dikemas rapi dan dicek dulu sebelum diantar. Profesional.",
+    "Respon cepat di chat, jemput paket sesuai jadwal. Sudah tiga kali pakai dan konsisten.",
+    "Belanja pasar dibantu pilih, dikirim foto sebelum dibayar. Jadi tidak salah beli.",
+    "Bayar tagihan beberapa sekaligus dalam satu pesanan, praktis sekali.",
+    "Kurirnya sabar menunggu saya siapkan barang. Terima kasih atas kesabarannya.",
+    "Titipan sampai tepat waktu dan kondisinya sesuai yang saya minta.",
   ]
 
   for (const service of services) {

@@ -25,11 +25,11 @@ function asRecord(value: unknown): Record<string, unknown> {
 }
 
 const SERVICE_INPUT = {
-  title: "Instalasi AC Split Pangkal Pinang",
-  description: "Instalasi AC split 1 PK baru: bracket, pipa, vacuum.",
-  categoryName: "Perbaikan Rumah",
-  url: `${SITE_URL}/service/instalasi-ac-split-pangkal-pinang`,
-  imageUrl: "https://images.unsplash.com/photo-ac.jpg",
+  title: "Antar Paket Dokumen Pangkal Pinang",
+  description: "Antar dokumen dan paket kecil se-Kota Pangkal Pinang dengan motor.",
+  categoryName: "Jasa Antar",
+  url: `${SITE_URL}/service/antar-paket-dokumen-pangkal-pinang`,
+  imageUrl: "https://images.unsplash.com/photo-kurir.jpg",
   providerName: "Budi Santoso",
   providerUrl: `${SITE_URL}/provider/507f1f77bcf86cd799439011`,
   price: 350000,
@@ -39,7 +39,7 @@ const SERVICE_INPUT = {
 
 const PROVIDER_INPUT = {
   name: "Siti Rahayu",
-  bio: "Tim kebersihan Sungailiat sejak 2015.",
+  bio: "Kurir dan titip beli area Sungailiat sejak 2015.",
   location: "Sungailiat, Bangka",
   avatarUrl: "https://images.unsplash.com/avatar.jpg",
   url: `${SITE_URL}/provider/507f1f77bcf86cd799439011`,
@@ -47,10 +47,10 @@ const PROVIDER_INPUT = {
   totalReviews: 31,
   services: [
     {
-      title: "Bersih Rumah Reguler Sungailiat",
-      url: `${SITE_URL}/service/bersih-rumah-reguler-sungailiat`,
-      price: 50000,
-      categoryName: "Kebersihan",
+      title: "Titip Beli Obat Sungailiat",
+      url: `${SITE_URL}/service/titip-beli-obat-sungailiat`,
+      price: 25000,
+      categoryName: "Jasa Titip",
     },
   ],
 }
@@ -59,8 +59,8 @@ describe("breadcrumbJsonLd", () => {
   it("memberi nomor posisi berurutan mulai dari 1", () => {
     const node = breadcrumbJsonLd([
       { name: "Beranda", url: `${SITE_URL}/` },
-      { name: "Kebersihan", url: `${SITE_URL}/services?category=abc` },
-      { name: "Bersih Rumah", url: `${SITE_URL}/service/bersih-rumah` },
+      { name: "Jasa Antar", url: `${SITE_URL}/services?category=abc` },
+      { name: "Antar Paket Toboali", url: `${SITE_URL}/service/antar-paket-toboali` },
     ])
     const items = node.itemListElement as Record<string, unknown>[]
 
@@ -69,7 +69,7 @@ describe("breadcrumbJsonLd", () => {
     expect(items[1]).toEqual({
       "@type": "ListItem",
       position: 2,
-      name: "Kebersihan",
+      name: "Jasa Antar",
       item: `${SITE_URL}/services?category=abc`,
     })
   })
@@ -84,7 +84,7 @@ describe("serviceJsonLd", () => {
     const node = serviceJsonLd(SERVICE_INPUT)
 
     expect(node["@type"]).toBe("Service")
-    expect(node.serviceType).toBe("Perbaikan Rumah")
+    expect(node.serviceType).toBe("Jasa Antar")
     expect(node.url).toBe(SERVICE_INPUT.url)
     expect(node.image).toBe(SERVICE_INPUT.imageUrl)
     expect(node.areaServed).toEqual({ "@type": "Country", name: "Indonesia" })
@@ -174,13 +174,13 @@ describe("providerJsonLd", () => {
     const offers = asRecord(node.mainEntity).makesOffer as Record<string, unknown>[]
 
     expect(offers).toHaveLength(1)
-    expect(offers[0].price).toBe(50000)
+    expect(offers[0].price).toBe(25000)
     expect(offers[0].priceCurrency).toBe("IDR")
     expect(offers[0].itemOffered).toEqual({
       "@type": "Service",
-      name: "Bersih Rumah Reguler Sungailiat",
-      category: "Kebersihan",
-      url: `${SITE_URL}/service/bersih-rumah-reguler-sungailiat`,
+      name: "Titip Beli Obat Sungailiat",
+      category: "Jasa Titip",
+      url: `${SITE_URL}/service/titip-beli-obat-sungailiat`,
     })
   })
 

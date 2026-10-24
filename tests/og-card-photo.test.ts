@@ -223,11 +223,11 @@ async function renderProviderCard(): Promise<Buffer> {
 
 const SERVICE_ROW_WITH_PHOTO = {
   id: "6a93d7956120198330469705",
-  title: "Instalasi Ac Split Pangkal Pinang",
-  price: 350_000,
+  title: "Antar Paket Dokumen Pangkal Pinang",
+  price: 150_000,
   ratingAvg: 5,
   totalReviews: 1,
-  category: { name: "Perbaikan Rumah" },
+  category: { name: "Jasa Antar" },
   provider: { name: "Budi Santoso", city: "pangkal pinang" },
 }
 

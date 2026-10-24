@@ -21,7 +21,7 @@ import {
  */
 
 const SERVICE_URL =
-  "https://jasakite.id/service/instalasi-ac-split-pangkal-pinang"
+  "https://jasakite.id/service/antar-paket-dokumen-pangkal-pinang"
 
 /** Ukuran sisi QR mentah (tanpa quiet zone) hanya boleh 21 + 4k. */
 function rawSize(matrix: QrMatrix): number {

@@ -242,7 +242,7 @@ model Address {
 
 /// Satu baris = satu jasa di keranjang pelanggan.
 /// `qty` jarang lebih dari 1 untuk jasa (pekerjaannya tunggal), tetapi tetap
-/// didukung karena paket seperti "cuci AC 4 unit" wajar dipesan dua kali.
+/// didukung karena paket seperti dua kali antar dokumen wajar dipesan dua kali.
 ///
 /// Keunikan per (pengguna, jasa) — BUKAN termasuk `packageId` — karena dua
 /// alasan sekaligus: satu jasa cukup punya satu baris (memilih paket lain

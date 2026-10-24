@@ -16,7 +16,7 @@ function escapeCsv(value: unknown): string {
 
 describe("escapeCsv", () => {
   it("meneruskan nilai biasa tanpa perubahan", () => {
-    expect(escapeCsv("Service AC")).toBe("Service AC")
+    expect(escapeCsv("Antar Paket Toboali")).toBe("Antar Paket Toboali")
     expect(escapeCsv(150000)).toBe("150000")
   })
 
