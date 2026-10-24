@@ -201,8 +201,12 @@ function db(): PrismaClient {
  * bukan jalur produksi.
  */
 export async function resetOrderCreateLimits(): Promise<number> {
+  // AWAS: scope runtime memakai bentuk kebab "order-create" (lihat
+  // app/api/orders/route.ts) — "orderCreate" hanya nama kunci di RATE_LIMITS.
+  // Salah bentuk membuat deleteMany meleset diam-diam (0 terhapus) dan CI
+  // tetap 429 meski reset "berjalan".
   const removed = await db().rateLimitBucket.deleteMany({
-    where: { id: { startsWith: "orderCreate:" } },
+    where: { id: { startsWith: "order-create:" } },
   })
   return removed.count
 }
