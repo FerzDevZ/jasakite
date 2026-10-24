@@ -47,7 +47,7 @@ export async function POST(
 
   const adminId = prismaId(session.user.id)
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "wallet-verify",
     RATE_LIMITS.walletVerify,
@@ -56,7 +56,7 @@ export async function POST(
   if (limited) return limited
 
   // Ambang terpisah dan jauh lebih ketat untuk tebakan kode 6 digit.
-  const twoFactorLimited = enforceRateLimit(
+  const twoFactorLimited = await enforceRateLimit(
     request,
     "wallet-verify-2fa",
     RATE_LIMITS.totpVerify,

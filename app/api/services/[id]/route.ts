@@ -25,7 +25,7 @@ export async function PATCH(
     return NextResponse.json({ error: "ID tidak valid" }, { status: 400 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "service-write",
     RATE_LIMITS.serviceWrite,

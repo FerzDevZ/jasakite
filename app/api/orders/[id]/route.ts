@@ -30,7 +30,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "order-read",
     RATE_LIMITS.read,
@@ -152,7 +152,7 @@ export async function PATCH(
     return NextResponse.json({ error: "ID tidak valid" }, { status: 400 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "order-mutate",
     RATE_LIMITS.orderMutate,

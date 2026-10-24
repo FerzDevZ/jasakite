@@ -9,7 +9,7 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "service-reviews",
     RATE_LIMITS.read

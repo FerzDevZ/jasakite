@@ -5,7 +5,7 @@ import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 export const dynamic = "force-dynamic"
 
 export async function GET(request: Request) {
-  const limited = enforceRateLimit(request, "categories", RATE_LIMITS.read)
+  const limited = await enforceRateLimit(request, "categories", RATE_LIMITS.read)
   if (limited) return limited
 
   try {

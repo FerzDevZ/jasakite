@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "totp-status",
     RATE_LIMITS.read,
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "totp-setup",
     RATE_LIMITS.totpSetup,
@@ -185,7 +185,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "totp-setup",
     RATE_LIMITS.totpSetup,

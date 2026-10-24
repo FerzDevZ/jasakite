@@ -40,7 +40,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "messages-read",
     RATE_LIMITS.read,
@@ -122,7 +122,7 @@ export async function POST(
     return NextResponse.json({ error: check.error }, { status: check.status })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "message",
     RATE_LIMITS.message,

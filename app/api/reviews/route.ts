@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "review",
     RATE_LIMITS.review,

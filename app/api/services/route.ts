@@ -14,7 +14,7 @@ import { isAdminRole } from '@/lib/roles'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-  const limited = enforceRateLimit(request, 'services-list', RATE_LIMITS.read)
+  const limited = await enforceRateLimit(request, 'services-list', RATE_LIMITS.read)
   if (limited) return limited
 
   try {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     'service-write',
     RATE_LIMITS.serviceWrite,

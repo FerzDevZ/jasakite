@@ -2,6 +2,13 @@ import NextAuth, { CredentialsSignin } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import {
+  RATE_LIMITS,
+  consumeGlobal,
+  isFailureQuotaSpent,
+  peekGlobal,
+  resetGlobal,
+} from "@/lib/rate-limit"
 import { isSuperAdminRole } from "@/lib/roles"
 import { claimTotpStep, decideMoneyAccess } from "@/lib/totp-guard"
 import type { MoneyAccessDecision } from "@/lib/totp-guard"
@@ -22,31 +29,30 @@ class TotpChallengeUnavailable extends CredentialsSignin {
   code = "totp_unavailable"
 }
 
-// In-memory rate limit untuk login per email: 10 attempts per 15 menit (longgar untuk demo).
-// authorize tidak punya akses ke Request, jadi tidak bisa pakai enforceRateLimit.
-// Map<email, number[]> menyimpan timestamp attempts yang gagal.
-const LOGIN_RATE_LIMIT_MAX = 10
-const LOGIN_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000
-const loginAttempts = new Map<string, number[]>()
+// Rate limit login per email, GLOBAL lewat MongoDB.
+//
+// Dulu berupa Map per proses: di Vercel, sepuluh percobaan per lambda berarti
+// penyerang yang mengenai lima lambda mendapat lima puluh percobaan — batas yang
+// tertulis bukan batas yang berlaku. Sekarang hitungannya satu dokumen bersama;
+// uji dua-proses di tests/rate-limit-global.test.ts membuktikannya.
+//
+// `authorize` tidak punya akses ke Request, jadi tidak memakai
+// `enforceRateLimit` — yang dipakai adalah mesin yang sama dengan kunci email.
+// Hanya percobaan GAGAL yang dihitung: pemeriksaan memakai `peekGlobal` (baca
+// tanpa menambah) supaya login yang berhasil tidak menghabiskan kuota, dan
+// pencatatan memakai `consumeGlobal`.
+const LOGIN_RATE_LIMIT = RATE_LIMITS.login
 
-function isLoginRateLimited(email: string): boolean {
-  const now = Date.now()
-  const attempts = loginAttempts.get(email) ?? []
-  const recent = attempts.filter((ts) => now - ts < LOGIN_RATE_LIMIT_WINDOW_MS)
-  // bersihkan entry kadaluarsa
-  if (recent.length !== attempts.length) {
-    if (recent.length === 0) loginAttempts.delete(email)
-    else loginAttempts.set(email, recent)
-  }
-  return recent.length >= LOGIN_RATE_LIMIT_MAX
+async function isLoginRateLimited(email: string): Promise<boolean> {
+  const result = await peekGlobal("login", email, LOGIN_RATE_LIMIT)
+  return isFailureQuotaSpent(result.count, LOGIN_RATE_LIMIT.limit)
 }
 
-function recordLoginAttempt(email: string): void {
-  const now = Date.now()
-  const attempts = loginAttempts.get(email) ?? []
-  const recent = attempts.filter((ts) => now - ts < LOGIN_RATE_LIMIT_WINDOW_MS)
-  recent.push(now)
-  loginAttempts.set(email, recent)
+async function recordLoginAttempt(email: string): Promise<void> {
+  const result = await consumeGlobal("login", email, LOGIN_RATE_LIMIT)
+  if (!result.ok && result.source === "mongo") {
+    console.warn(`[auth] login diblokir sementara untuk ${email}`)
+  }
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -72,7 +78,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const email = String(credentials.email).toLowerCase().trim()
 
-        if (isLoginRateLimited(email)) {
+        if (await isLoginRateLimited(email)) {
           console.warn(`[auth] login rate-limited for ${email}`)
           return null
         }
@@ -82,7 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         })
 
         if (!user || !user.passwordHash) {
-          recordLoginAttempt(email)
+          await recordLoginAttempt(email)
           return null
         }
 
@@ -92,7 +98,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         )
 
         if (!isValid) {
-          recordLoginAttempt(email)
+          await recordLoginAttempt(email)
           return null
         }
 
@@ -117,19 +123,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           if (decision.kind !== "allow") {
-            recordLoginAttempt(email)
+            await recordLoginAttempt(email)
             throw new TotpChallengeInvalid()
           }
           // Kode hanya boleh dipakai sekali; kegagalan klaim berarti replay.
           const claimed = await claimTotpStep(user.id, decision.stepStartedAt)
           if (!claimed) {
-            recordLoginAttempt(email)
+            await recordLoginAttempt(email)
             throw new TotpChallengeInvalid()
           }
         }
 
-        // sukses: bersihkan hitungan
-        loginAttempts.delete(email)
+        // sukses: bersihkan hitungan percobaan gagal di jendela ini
+        await resetGlobal("login", email, LOGIN_RATE_LIMIT)
 
         return {
           id: String(user.id),

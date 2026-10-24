@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic"
  * promo yang tidak bisa dipakai pelanggan.
  */
 export async function GET(request: Request) {
-  const limited = enforceRateLimit(request, "promos", RATE_LIMITS.read)
+  const limited = await enforceRateLimit(request, "promos", RATE_LIMITS.read)
   if (limited) return limited
 
   try {

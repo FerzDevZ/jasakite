@@ -15,7 +15,7 @@ const registerSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const limited = enforceRateLimit(request, "register", RATE_LIMITS.register)
+  const limited = await enforceRateLimit(request, "register", RATE_LIMITS.register)
   if (limited) return limited
 
   try {

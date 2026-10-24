@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   const originalId = prismaId(session.user.impersonatedBy!)
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "impersonate",
     RATE_LIMITS.impersonate,

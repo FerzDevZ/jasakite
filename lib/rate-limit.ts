@@ -1,11 +1,22 @@
-// Rate limiter Token Bucket in-memory.
+// Rate limiter dua lapis.
 //
-// Cakupan: melindungi endpoint tulis & endpoint pencarian dari burst/abuse
-// pada satu instance Node (dev, VPS single-node, atau Vercel per-lambda).
-// CATATAN PRODUKSI: state ini per-proses, jadi pada deployment multi-instance
-// kuota efektif = limit × jumlah instance. Untuk penegakan global, ganti
-// implementasi `consume()` dengan Redis (INCR + EXPIRE) atau Upstash Ratelimit
-// tanpa mengubah pemanggil — kontrak fungsinya sengaja dibuat sinkron-agnostik.
+// 1. `consumeGlobal()` — penghitung di MongoDB, dibagi SEMUA instance. Ini yang
+//    dipakai jalur permintaan sungguhan (`enforceRateLimit`, login). Satu
+//    `findAndModify` atomik per permintaan, jadi tidak ada hitungan yang hilang
+//    saat dua permintaan bersamaan.
+// 2. `consume()` — token bucket in-memory, dipertahankan sebagai CADANGAN saat
+//    database tidak terjangkau. Kuotanya per proses, jadi hanya boleh dibaca
+//    sebagai "lebih baik daripada tanpa batas", bukan sebagai batas global.
+//
+// Konsekuensi yang perlu diketahui: batas global berbasis jendela tetap, jadi
+// pemakaian bisa mencapai 2× limit di perbatasan dua jendela (burst), dan
+// setiap permintaan yang dibatasi menambah satu operasi tulis ke database.
+// Kalau volume endpoint yang dibatasi meningkat, Redis/Upstash adalah
+// penggantinya — kontrak `consumeGlobal` sengaja dibuat agar penggantian itu
+// tidak menyentuh pemanggil.
+
+import prisma from "@/lib/prisma"
+import { hitBucket, readBucket, resetBucket } from "./rate-limit-store.js"
 
 type Bucket = {
   tokens: number
@@ -126,6 +137,8 @@ export function rateLimitHeaders(result: RateLimitResult): HeadersInit {
 export const RATE_LIMITS = {
   /** Pendaftaran akun: mahal (bcrypt) dan target utama spam. */
   register: { limit: 5, windowMs: 60 * 60 * 1000 },
+  /** Login per email. Hanya percobaan GAGAL yang dihitung (lihat lib/auth.ts). */
+  login: { limit: 10, windowMs: 15 * 60 * 1000 },
   /** Pembuatan pesanan. */
   orderCreate: { limit: 10, windowMs: 10 * 60 * 1000 },
   /** Perubahan status pesanan. */
@@ -176,6 +189,114 @@ export const RATE_LIMITS = {
   /** Pendaftaran / rotasi authenticator admin (mahal: bcrypt + pembuatan QR). */
   totpSetup: { limit: 5, windowMs: 15 * 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>
+
+export type RateLimitSource = "mongo" | "memory"
+
+export type GlobalRateLimitResult = RateLimitResult & {
+  /** Jumlah hitungan pada jendela berjalan (termasuk permintaan ini). */
+  count: number
+  /** Dari mana angka ini berasal. `memory` berarti database gagal dijangkau. */
+  source: RateLimitSource
+}
+
+/**
+ * Tambah satu hitungan pada jendela berjalan, di penyimpanan bersama.
+ *
+ * Gagal database TIDAK mengunci pengguna: jatuh ke bucket per proses dan
+ * mencatat peringatan. Memblokir semua permintaan karena Mongo sedang lambat
+ * akan mengubah gangguan kecil menjadi pemadaman total.
+ */
+export async function consumeGlobal(
+  scope: string,
+  identifier: string,
+  rule: RateLimitRule
+): Promise<GlobalRateLimitResult> {
+  try {
+    const persisted = await hitBucket(prisma, {
+      scope,
+      identifier,
+      limit: rule.limit,
+      windowMs: rule.windowMs,
+    })
+    return { ...(persisted as Omit<GlobalRateLimitResult, "source">), source: "mongo" }
+  } catch (error) {
+    console.warn(
+      `[rate-limit] penyimpanan global gagal (${scope}): ${(error as Error).message} — jatuh ke bucket per proses`
+    )
+    const local = consume(`${scope}:${identifier}`, rule)
+    return {
+      ...local,
+      // Hitungan pasti tidak diketahui dari bucket token; selisih sisa adalah
+      // perkiraan terbaik yang tersedia dan hanya dipakai saat DB mati.
+      count: rule.limit - local.remaining,
+      source: "memory",
+    }
+  }
+}
+
+/** Baca hitungan jendela berjalan tanpa menambah. Lihat `lib/auth.ts`. */
+export async function peekGlobal(
+  scope: string,
+  identifier: string,
+  rule: RateLimitRule
+): Promise<GlobalRateLimitResult> {
+  try {
+    const persisted = await readBucket(prisma, {
+      scope,
+      identifier,
+      limit: rule.limit,
+      windowMs: rule.windowMs,
+    })
+    return { ...(persisted as Omit<GlobalRateLimitResult, "source">), source: "mongo" }
+  } catch (error) {
+    console.warn(
+      `[rate-limit] pembacaan global gagal (${scope}): ${(error as Error).message} — pemeriksaan dilewatkan`
+    )
+    // Sengaja TIDAK menebak dari state per proses: bucket cadangan tidak punya
+    // operasi baca, dan menebak akan memblokir pengguna sah berdasarkan angka
+    // satu instance. Gangguan database = periksa dilewatkan, bukan dikarang.
+    return {
+      ok: true,
+      limit: rule.limit,
+      remaining: rule.limit,
+      retryAfterSeconds: 0,
+      resetAt: Date.now() + rule.windowMs,
+      count: 0,
+      source: "memory",
+    }
+  }
+}
+
+/**
+ * Apakah percobaan berikutnya harus ditolak, untuk limiter yang menghitung
+ * PERCOBAAN GAGAL (login).
+ *
+ * Ambangnya `>=` karena `count` adalah kegagalan yang SUDAH tercatat: kuota
+ * habis tepat ketika angkanya mencapai limit. Memakai `count > limit` memberi
+ * satu percobaan ekstra — terukur 11 kegagalan untuk limit 10.
+ */
+export function isFailureQuotaSpent(count: number, limit: number): boolean {
+  return count >= limit
+}
+
+/** Kosongkan hitungan jendela berjalan (mis. setelah login berhasil). */
+export async function resetGlobal(
+  scope: string,
+  identifier: string,
+  rule: RateLimitRule
+): Promise<void> {
+  try {
+    await resetBucket(prisma, {
+      scope,
+      identifier,
+      windowMs: rule.windowMs,
+    })
+  } catch (error) {
+    console.warn(
+      `[rate-limit] gagal mengosongkan hitungan (${scope}): ${(error as Error).message}`
+    )
+  }
+}
 
 // Hanya untuk pengujian: kosongkan state antar test case.
 export function __resetRateLimiter() {

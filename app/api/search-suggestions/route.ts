@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 
 export async function GET(request: NextRequest) {
-  const limited = enforceRateLimit(request, "search", RATE_LIMITS.search)
+  const limited = await enforceRateLimit(request, "search", RATE_LIMITS.search)
   if (limited) return limited
 
   const query = (request.nextUrl.searchParams.get("q") || "").trim().slice(0, 50)

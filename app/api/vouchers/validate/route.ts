@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "voucher-validate",
     RATE_LIMITS.voucher,

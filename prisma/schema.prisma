@@ -458,3 +458,25 @@ model OgPhotoPreflightSnapshot {
 
   @@index([capturedAt])
 }
+
+/// Penghitung rate limit GLOBAL — satu dokumen per (scope, identitas, jendela).
+///
+/// Kenapa ada: `lib/rate-limit.ts` menyimpan bucket di memori proses, sehingga
+/// kuota efektif di Vercel = limit × jumlah instance. Login dan endpoint tulis
+/// karenanya bisa dicoba berkali-kali lipat hanya dengan mengenai lambda yang
+/// berbeda. Dokumen di sini adalah satu-satunya keadaan yang dibagi semua
+/// instance.
+///
+/// Kunci (`_id`) sengaja memuat indeks jendela waktu: setiap permintaan cukup
+/// satu `upsert` atomik dengan `increment`, tanpa baca-lalu-tulis yang bisa
+/// kehilangan hitungan saat dua permintaan bersamaan. Dokumen lama dibuang oleh
+/// TTL index pada `expiresAt` (dibuat best-effort oleh `lib/rate-limit-store.js`).
+model RateLimitBucket {
+  id          String   @id @map("_id")
+  count       Int
+  expiresAt   DateTime
+  windowStart DateTime
+
+  @@map("rateLimitBuckets")
+  @@index([expiresAt])
+}

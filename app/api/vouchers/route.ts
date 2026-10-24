@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(request, "vouchers", RATE_LIMITS.read, session.user.id)
+  const limited = await enforceRateLimit(request, "vouchers", RATE_LIMITS.read, session.user.id)
   if (limited) return limited
 
   try {

@@ -49,7 +49,7 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "order-payment",
     RATE_LIMITS.orderPayment,
@@ -188,7 +188,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "order-payment-verify",
     RATE_LIMITS.walletVerify,
@@ -197,7 +197,7 @@ export async function PATCH(
   if (limited) return limited
 
   // Ambang terpisah dan jauh lebih ketat untuk tebakan kode 6 digit.
-  const twoFactorLimited = enforceRateLimit(
+  const twoFactorLimited = await enforceRateLimit(
     request,
     "order-payment-verify-2fa",
     RATE_LIMITS.totpVerify,

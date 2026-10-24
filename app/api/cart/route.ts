@@ -144,7 +144,7 @@ export async function GET(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(request, "cart-read", RATE_LIMITS.read, session.user.id)
+  const limited = await enforceRateLimit(request, "cart-read", RATE_LIMITS.read, session.user.id)
   if (limited) return limited
 
   try {
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(request, "cart-write", RATE_LIMITS.cart, session.user.id)
+  const limited = await enforceRateLimit(request, "cart-write", RATE_LIMITS.cart, session.user.id)
   if (limited) return limited
 
   try {
@@ -263,7 +263,7 @@ export async function DELETE(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(request, "cart-write", RATE_LIMITS.cart, session.user.id)
+  const limited = await enforceRateLimit(request, "cart-write", RATE_LIMITS.cart, session.user.id)
   if (limited) return limited
 
   try {

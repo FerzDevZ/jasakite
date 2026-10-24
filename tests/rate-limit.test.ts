@@ -4,6 +4,7 @@ import {
   __resetRateLimiter,
   clientKey,
   consume,
+  isFailureQuotaSpent,
   rateLimitHeaders,
 } from "@/lib/rate-limit"
 
@@ -118,5 +119,19 @@ describe("RATE_LIMITS", () => {
     expect(perMs(RATE_LIMITS.register)).toBeLessThan(
       perMs(RATE_LIMITS.search)
     )
+  })
+})
+
+describe("isFailureQuotaSpent — ambang login", () => {
+  it("kuota habis TEPAT saat hitungan mencapai limit, bukan setelahnya", () => {
+    // Regresi terukur: memakai `count > limit` membuat percobaan ke-11 untuk
+    // limit 10 tetap lolos, dan login mencatat 11 kegagalan padahal batasnya 10.
+    expect(isFailureQuotaSpent(9, 10)).toBe(false)
+    expect(isFailureQuotaSpent(10, 10)).toBe(true)
+    expect(isFailureQuotaSpent(11, 10)).toBe(true)
+  })
+
+  it("limit nol berarti langsung terkunci", () => {
+    expect(isFailureQuotaSpent(0, 0)).toBe(true)
   })
 })

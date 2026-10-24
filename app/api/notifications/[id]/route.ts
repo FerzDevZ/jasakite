@@ -15,7 +15,7 @@ export async function PATCH(
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const limited = enforceRateLimit(
+  const limited = await enforceRateLimit(
     request,
     "notifications",
     RATE_LIMITS.notifications,
