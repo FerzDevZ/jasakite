@@ -1,13 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { X, Bell, Zap, WifiOff } from "lucide-react"
+import { X, Bell, Zap, WifiOff, Share } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
 }
+
+// Event yang dititipkan script inline di <head> layout — lihat komentar di
+// sana kenapa penangkapan harus terjadi sebelum hidrasi React.
+type PromptWindow = Window & { __jasakiteInstallPrompt?: InstallPromptEvent | null }
 
 const DISMISS_KEY = "jasakite-pwa-dismissed-at"
 const DISMISS_DAYS = 7
@@ -16,17 +20,31 @@ const DISMISS_DAYS = 7
  * Banner install ala app-banner marketplace (Shopee/GoFood): ikon + nama +
  * manfaat singkat, tombol Pasang, dan dismiss yang dihormati 7 hari.
  *
- * Hanya muncul bila browser mengirim `beforeinstallprompt` (Chrome/Edge
- * Android/desktop) DAN service worker aktif — tidak pernah mengganggu sesi
- * yang sudah terpasang (display-mode standalone tak menampilkannya lagi).
+ * Dua jalur tampil:
+ * - Chrome/Edge (Android & desktop): event `beforeinstallprompt` — termasuk
+ *   yang sudah lewat sebelum komponen ini terpasang (dititipkan script head).
+ * - iOS Safari/Chrome: Apple tidak pernah mengirim `beforeinstallprompt`;
+ *   satu-satunya jalan install adalah manual "Bagikan → Tambahkan ke Layar
+ *   Utama", jadi banner berubah menjadi instruksi singkat.
+ *
+ * Tidak pernah mengganggu sesi yang sudah terpasang (display-mode standalone
+ * atau navigator.standalone iOS).
  */
 export function PwaInstallBanner() {
   const [installEvent, setInstallEvent] = React.useState<InstallPromptEvent | null>(null)
   const [visible, setVisible] = React.useState(false)
+  const [isIOS] = React.useState(
+    () =>
+      typeof window !== "undefined" &&
+      /iphone|ipad|ipod/i.test(window.navigator.userAgent)
+  )
 
   React.useEffect(() => {
-    // Sudah terpasang → jangan pernah tampil.
-    if (window.matchMedia("(display-mode: standalone)").matches) return
+    // Sudah terpasang → jangan pernah tampil. `navigator.standalone` adalah
+    // padanan iOS untuk media query display-mode (Safari iOS menyetujunya
+    // hanya saat diluncurkan dari layar utama).
+    const nav = window.navigator as Navigator & { standalone?: boolean }
+    if (window.matchMedia("(display-mode: standalone)").matches || nav.standalone === true) return
 
     let dismissedRecently = false
     try {
@@ -37,14 +55,36 @@ export function PwaInstallBanner() {
     }
     if (dismissedRecently) return
 
-    const onPrompt = (e: Event) => {
-      e.preventDefault()
-      setInstallEvent(e as InstallPromptEvent)
+    // iOS tidak akan pernah menerima event — tampilkan varian instruksi
+    // setelah tabungan sesaat agar tidak bertabrakan dengan konten awal.
+    if (isIOS) {
+      const t = window.setTimeout(() => setVisible(true), 1_500)
+      return () => window.clearTimeout(t)
+    }
+
+    const accept = (e: InstallPromptEvent) => {
+      setInstallEvent(e)
       setVisible(true)
     }
+    // Event yang sudah ditangkap script head sebelum hidrasi.
+    const stashed = (window as PromptWindow).__jasakiteInstallPrompt
+    if (stashed) accept(stashed)
+
+    const onPrompt = (e: Event) => {
+      e.preventDefault()
+      accept(e as InstallPromptEvent)
+    }
+    const onStashed = () => {
+      const ev = (window as PromptWindow).__jasakiteInstallPrompt
+      if (ev) accept(ev)
+    }
     window.addEventListener("beforeinstallprompt", onPrompt)
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt)
-  }, [])
+    window.addEventListener("jasakite:install-ready", onStashed)
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt)
+      window.removeEventListener("jasakite:install-ready", onStashed)
+    }
+  }, [isIOS])
 
   const dismiss = () => {
     setVisible(false)
@@ -81,23 +121,33 @@ export function PwaInstallBanner() {
         <img src="/icon-192.png" alt="" aria-hidden className="h-11 w-11 shrink-0 rounded-xl" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold leading-tight">Pasang JASAKITE</p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-2xs text-muted-foreground">
-            <span className="inline-flex items-center gap-0.5">
-              <Zap className="h-3 w-3" aria-hidden /> Buka lebih cepat
-            </span>
-            <span className="inline-flex items-center gap-0.5">
-              <Bell className="h-3 w-3" aria-hidden /> Notifikasi pesanan
-            </span>
-            <span className="inline-flex items-center gap-0.5">
-              <WifiOff className="h-3 w-3" aria-hidden /> Tahan offline
-            </span>
-          </p>
+          {isIOS ? (
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-2xs text-muted-foreground">
+              <Share className="h-3 w-3 shrink-0" aria-hidden />
+              Ketuk ikon Bagikan di bilah Safari, lalu
+              <span className="font-semibold text-foreground">Tambahkan ke Layar Utama</span>
+            </p>
+          ) : (
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-2xs text-muted-foreground">
+              <span className="inline-flex items-center gap-0.5">
+                <Zap className="h-3 w-3" aria-hidden /> Buka lebih cepat
+              </span>
+              <span className="inline-flex items-center gap-0.5">
+                <Bell className="h-3 w-3" aria-hidden /> Notifikasi pesanan
+              </span>
+              <span className="inline-flex items-center gap-0.5">
+                <WifiOff className="h-3 w-3" aria-hidden /> Tahan offline
+              </span>
+            </p>
+          )}
         </div>
-        {/* min-h-11/w-11 = 44px: target sentuh WCAG 2.5.8 — area klik lebih
+        {/* min_h-11/w-11 = 44px: target sentuh WCAG 2.5.8 — area klik lebih
             besar dari visual tombolnya, khas app-banner mobile. */}
-        <Button size="sm" className="shrink-0 px-3 font-bold min-h-11" onClick={install}>
-          Pasang
-        </Button>
+        {!isIOS && (
+          <Button size="sm" className="shrink-0 px-3 font-bold min-h-11" onClick={install}>
+            Pasang
+          </Button>
+        )}
         <button
           type="button"
           aria-label="Tutup, jangan tampilkan lagi selama 7 hari"

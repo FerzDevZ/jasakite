@@ -172,10 +172,28 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="theme-color" content="#F97316" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Tangkap beforeinstallprompt SESUDAH halaman dimuat namun
+              // SEBELUM React hidrasi memasang listener banner. Chrome bisa
+              // memicu event ini lebih awal dari hidrasi; tanpa dititipkan
+              // di sini, event hilang dan banner "Pasang" tidak pernah muncul
+              // sampai navigasi berikutnya.
+              window.__jasakiteInstallPrompt = null;
+              window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                window.__jasakiteInstallPrompt = e;
+                window.dispatchEvent(new Event('jasakite:install-ready'));
+              });
+            `,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

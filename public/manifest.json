@@ -1,7 +1,8 @@
 {
+  "id": "/",
   "name": "JASAKITE — Cari Jasa Lokal Terpercaya",
   "short_name": "JASAKITE",
-  "description": "Marketplace jasa lokal yang menghubungkan pelanggan dengan penyedia jasa profesional di seluruh Indonesia.",
+  "description": "Marketplace jasa lokal yang menghubungkan pelanggan dengan penyedia jasa profesional di Kepulauan Bangka Belitung.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FBFAF8",
@@ -21,7 +22,10 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "lifestyle"],
+  "categories": [
+    "business",
+    "lifestyle"
+  ],
   "lang": "id",
   "dir": "ltr"
 }
