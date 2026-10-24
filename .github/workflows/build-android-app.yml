@@ -13,6 +13,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Melepas ke GitHub Releases butuh izin tulis — token workflow bawaan
+    # bersifat read-only sejak GitHub mengubah defaultnya.
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: android-webview
