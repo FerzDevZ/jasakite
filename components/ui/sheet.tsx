@@ -107,8 +107,12 @@ export function Sheet({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          "absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-3xl border-t border-border bg-background shadow-card-lg",
-          size === "tall" ? "h-[85vh]" : "",
+          // dvh, bukan vh: saat keyboard Android terbuka, viewport dinamis
+          // mengecil — dvh membuat sheet ikut memendek sehingga input di
+          // dalamnya tetap terlihat di atas keyboard. vh tetap setinggi
+          // layar penuh dan keyboard diam-diam menutupi bagian bawah sheet.
+          "absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-3xl border-t border-border bg-background shadow-card-lg",
+          size === "tall" ? "h-[85dvh]" : "",
           className
         )}
       >

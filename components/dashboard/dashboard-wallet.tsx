@@ -483,6 +483,37 @@ function TopupSheet({
           if (valid && !submitting) void submit()
         }}
       >
+        {/* Nominal dulu, kartu QRIS setelahnya. Dulu QRIS (±650px tinggi)
+            dipasang paling atas sehingga input Nominal terdorong ke bawah
+            lipatan layar pada ponsel pendek — pengguna harus menebak ada
+            input yang tersembunyi, dan saat keyboard terbuka malah tak
+            terjangkau sama sekali. Urutan kerja juga lebih logis: tentukan
+            nominal dulu, baru scan QRIS-nya (catatan "masukkan persis Rp X"
+            di kartu ikut terisi setelah nominal diketik). */}
+        <div className="space-y-2">
+          <Label htmlFor="topup-amount">Nominal</Label>
+          <Input
+            id="topup-amount"
+            inputMode="numeric"
+            placeholder={`Minimal ${MIN_TOPUP_AMOUNT.toLocaleString("id-ID")}`}
+            value={amount}
+            onChange={(event) => setAmount(event.target.value.replace(/\D/g, ""))}
+            required
+          />
+          <div className="flex flex-wrap gap-1.5">
+            {TOPUP_PRESETS.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setAmount(String(preset))}
+                className="focus-ring rounded-lg bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                {formatIDR(preset)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-3 rounded-xl border border-border bg-card p-4">
           <p className="text-2xs font-bold uppercase tracking-widest text-muted-foreground">
             Scan QRIS platform
@@ -551,30 +582,6 @@ function TopupSheet({
               </p>
             </div>
           )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="topup-amount">Nominal</Label>
-          <Input
-            id="topup-amount"
-            inputMode="numeric"
-            placeholder={`Minimal ${MIN_TOPUP_AMOUNT.toLocaleString("id-ID")}`}
-            value={amount}
-            onChange={(event) => setAmount(event.target.value.replace(/\D/g, ""))}
-            required
-          />
-          <div className="flex flex-wrap gap-1.5">
-            {TOPUP_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setAmount(String(preset))}
-                className="focus-ring rounded-lg bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                {formatIDR(preset)}
-              </button>
-            ))}
-          </div>
         </div>
 
         <ProofImageField
