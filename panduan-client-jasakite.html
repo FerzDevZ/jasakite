@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>JASAKITE — Buku Panduan Lengkap untuk Client</title>
+<style>
+/* ====== DASAR ====== */
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0;
+  color: #1C1917; background: #FFFFFF;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size: 10pt; line-height: 1.55;
+}
+p { margin: 0 0 7pt; }
+strong { color: #1C1917; }
+.small { font-size: 8.5pt; color: #57534E; }
+
+h1 { font-size: 30pt; line-height: 1.1; margin: 0; letter-spacing: -0.5pt; }
+h2 {
+  font-size: 15.5pt; line-height: 1.25; margin: 0 0 10pt;
+  break-after: avoid; page-break-after: avoid;
+}
+h3 { font-size: 11.5pt; margin: 12pt 0 6pt; break-after: avoid; page-break-after: avoid; }
+
+/* ====== STRUKTUR HALAMAN ====== */
+.section { margin-bottom: 18pt; }
+.page-break { break-before: page; page-break-before: always; }
+.keep { break-inside: avoid; page-break-inside: avoid; }
+
+/* ====== JUDUL BAB ====== */
+.chap-head { display: flex; align-items: center; gap: 10pt; margin-bottom: 10pt; }
+.chap-num {
+  flex: 0 0 auto; width: 30pt; height: 30pt; border-radius: 9pt;
+  background: #EA580C; color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14pt; font-weight: 700;
+}
+.chap-head h2 { margin: 0; }
+.chap-sub { font-size: 9pt; color: #57534E; margin-top: 1pt; }
+
+/* ====== KOTAK & KARTU ====== */
+.card {
+  border: 1pt solid #E7E5E4; border-radius: 8pt;
+  padding: 9pt 11pt; margin-bottom: 8pt;
+  break-inside: avoid; page-break-inside: avoid;
+}
+.card-title { font-weight: 700; font-size: 10.5pt; margin-bottom: 3pt; }
+.box-tip { border-left: 3pt solid #EA580C; background: #FFF7ED; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-info { border-left: 3pt solid #1D4ED8; background: #EFF6FF; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-warn { border-left: 3pt solid #B45309; background: #FFFBEB; border-radius: 0 8pt 8pt 0; padding: 8pt 11pt; margin: 8pt 0; break-inside: avoid; page-break-inside: avoid; }
+.box-label { font-size: 8pt; font-weight: 700; letter-spacing: 0.6pt; text-transform: uppercase; margin-bottom: 2pt; }
+.box-tip .box-label { color: #C2410C; }
+.box-info .box-label { color: #1D4ED8; }
+.box-warn .box-label { color: #B45309; }
+.box-tip p:last-child, .box-info p:last-child, .box-warn p:last-child { margin-bottom: 0; }
+
+/* ====== TABEL ====== */
+table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
+th, td { border: 0.75pt solid #E7E5E4; padding: 5pt 7pt; text-align: left; vertical-align: top; }
+th { background: #FAFAF9; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.4pt; color: #57534E; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+
+/* ====== LANGKAH ====== */
+.step { display: flex; gap: 9pt; margin-bottom: 9pt; break-inside: avoid; page-break-inside: avoid; }
+.step-n {
+  flex: 0 0 auto; width: 19pt; height: 19pt; border-radius: 50%;
+  background: #EA580C; color: #FFFFFF; font-size: 9.5pt; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 1pt;
+}
+.step-body { flex: 1 1 auto; }
+.step-body p:last-child { margin-bottom: 0; }
+
+/* ====== DIAGRAM ALUR ====== */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 9pt 0; }
+.flow-box {
+  border: 1pt solid #FED7AA; background: #FFF7ED; border-radius: 6pt;
+  padding: 5pt 7pt; font-size: 8.5pt; font-weight: 600; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+  break-inside: avoid; page-break-inside: avoid;
+}
+.flow-arrow { color: #EA580C; font-weight: 700; padding: 0 4pt; align-self: center; font-size: 10pt; }
+.flow-box.dark { background: #1C1917; border-color: #1C1917; color: #FFFFFF; }
+.flow-box.green { background: #F0FDF4; border-color: #BBF7D0; }
+.flow-box.blue { background: #EFF6FF; border-color: #BFDBFE; }
+.flow-box.red { background: #FEF2F2; border-color: #FECACA; }
+
+/* ====== BADGE ====== */
+.badge { display: inline-block; font-size: 8pt; font-weight: 700; padding: 1.5pt 7pt; border-radius: 99pt; margin-right: 3pt; }
+.b-amber { background: #FFFBEB; color: #B45309; border: 0.75pt solid #FDE68A; }
+.b-green { background: #F0FDF4; color: #15803D; border: 0.75pt solid #BBF7D0; }
+.b-blue { background: #EFF6FF; color: #1D4ED8; border: 0.75pt solid #BFDBFE; }
+.b-gray { background: #FAFAF9; color: #57534E; border: 0.75pt solid #E7E5E4; }
+.b-red { background: #FEF2F2; color: #B91C1C; border: 0.75pt solid #FECACA; }
+.b-new { background: #EA580C; color: #FFFFFF; border: 0.75pt solid #EA580C; }
+/* ====== GRID 2/3 KOLOM ====== */
+.cols-3 { display: flex; gap: 8pt; margin-bottom: 8pt; }
+.cols-3 > * { flex: 1 1 0; }
+.cols-2 { display: flex; gap: 8pt; margin-bottom: 8pt; }
+.cols-2 > * { flex: 1 1 0; }
+
+.role-card { border: 1pt solid #E7E5E4; border-top: 3pt solid #EA580C; border-radius: 8pt; padding: 9pt 10pt; break-inside: avoid; page-break-inside: avoid; }
+.role-card.ink { border-top-color: #1C1917; }
+.role-card.blue { border-top-color: #1D4ED8; }
+.role-card .card-title { margin-bottom: 2pt; }
+.role-card p:last-child { margin-bottom: 0; }
+
+/* ====== DAFTAR ISI ====== */
+.toc { border: 1pt solid #E7E5E4; border-radius: 10pt; padding: 14pt 18pt; }
+.toc-row { display: flex; align-items: baseline; gap: 8pt; padding: 4.5pt 0; border-bottom: 0.75pt dotted #D6D3D1; font-size: 10pt; }
+.toc-row:last-child { border-bottom: none; }
+.toc-num { color: #EA580C; font-weight: 700; flex: 0 0 auto; }
+.toc-title { font-weight: 600; }
+.toc-desc { color: #57534E; font-size: 8.5pt; margin-left: auto; text-align: right; }
+
+/* ====== COVER ====== */
+.cover { text-align: left; padding-top: 30pt; }
+.cover-kicker {
+  display: inline-block; font-size: 8.5pt; font-weight: 700; letter-spacing: 1.5pt;
+  text-transform: uppercase; color: #C2410C; border: 1pt solid #FED7AA;
+  background: #FFF7ED; border-radius: 99pt; padding: 3pt 12pt; margin-bottom: 18pt;
+}
+.cover h1 { margin-bottom: 6pt; }
+.cover-sub { font-size: 13pt; color: #57534E; max-width: 130mm; margin-bottom: 4pt; }
+.cover-meta { font-size: 9pt; color: #78716C; margin-bottom: 22pt; }
+.cover-rule { width: 42pt; height: 3.5pt; background: #EA580C; border-radius: 99pt; margin: 14pt 0 18pt; }
+.cover-list { border: 1pt solid #E7E5E4; border-radius: 10pt; padding: 12pt 16pt; max-width: 150mm; }
+.cover-list-title { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.8pt; text-transform: uppercase; color: #57534E; margin-bottom: 6pt; }
+.cover-list-item { display: flex; gap: 8pt; font-size: 9.5pt; padding: 3pt 0; }
+.cover-list-item span:first-child { color: #EA580C; font-weight: 700; }
+
+/* ====== LAIN-LAIN ====== */
+.check-list { list-style: none; margin: 6pt 0; padding: 0; }
+.check-list li { padding: 2pt 0 2pt 15pt; position: relative; }
+.check-list li::before { content: ""; position: absolute; left: 0; top: 7pt; width: 7pt; height: 4pt; border-left: 2pt solid #EA580C; border-bottom: 2pt solid #EA580C; transform: rotate(-45deg); }
+.dash-list { list-style: none; margin: 4pt 0; padding: 0; }
+.dash-list li { padding: 1.5pt 0 1.5pt 12pt; position: relative; }
+.dash-list li::before { content: ""; position: absolute; left: 0; top: 8pt; width: 6pt; height: 1.5pt; background: #EA580C; }
+.kicker { font-size: 8pt; font-weight: 700; letter-spacing: 1pt; text-transform: uppercase; color: #C2410C; margin-bottom: 3pt; }
+ul, ol { margin: 4pt 0 7pt; padding-left: 16pt; }
+li { margin-bottom: 2pt; }
+.footer-note { border-top: 1pt solid #E7E5E4; margin-top: 16pt; padding-top: 7pt; font-size: 8pt; color: #78716C; }
+/*CSS-EXTRA*/
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="cover-kicker">Buku Panduan Client · Edisi Lengkap</div>
+  <h1>JASAKITE</h1>
+  <div class="cover-sub">Memahami Seluruh Website: Siapa Mengerjakan Apa, Bagaimana Uang Berjalan, dan Cara Memakai Setiap Fitur — Dijelaskan Sederhana untuk Pemula</div>
+  <div class="cover-rule"></div>
+  <p class="cover-meta">Marketplace jasa lokal Kepulauan Bangka Belitung · jasakite.vercel.app · Edisi Oktober 2026</p>
+  <div class="cover-list">
+    <div class="cover-list-title">Apa yang akan Anda pahami dari buku ini?</div>
+    <div class="cover-list-item"><span>1</span><span>Kenalan dengan JASAKITE — apa itu, untuk siapa, 4 peran pengguna</span></div>
+    <div class="cover-list-item"><span>2</span><span>Konsep uang — escrow, saldo, komisi, dan langganan dijelaskan dengan analogi</span></div>
+    <div class="cover-list-item"><span>3</span><span>Alur uang lengkap — dari dompet pelanggan sampai rekening bank penyedia</span></div>
+    <div class="cover-list-item"><span>4</span><span>Alur saldo — 6 jenis mutasi dompet dan siklus isi/tarik saldo</span></div>
+    <div class="cover-list-item"><span>5–8</span><span>Fungsi tiap peran: Customer, Provider, Admin, dan Super Admin</span></div>
+    <div class="cover-list-item"><span>9</span><span>Studi kasus berangka nyata — mengikuti satu pesanan Rp50.000 dari awal sampai akhir</span></div>
+    <div class="cover-list-item"><span>10–11</span><span>Masalah umum + solusi, glosarium, dan kartu referensi cepat</span></div>
+  </div>
+  <p class="small" style="margin-top: 16pt; max-width: 150mm;">Ditulis untuk client yang belum pernah mengelola aplikasi web. Tidak ada istilah teknis tanpa penjelasan — setiap konsep dibuka dengan analogi sehari-hari, dan setiap angka di buku ini diambil langsung dari pengaturan asli aplikasi.</p>
+</div>
+
+<div class="page-break section keep">
+  <h2>Daftar Isi</h2>
+  <div class="toc">
+    <div class="toc-row"><span class="toc-num">1</span><span class="toc-title">Kenalan dengan JASAKITE</span><span class="toc-desc">Apa itu · wilayah · 4 peran · peta halaman</span></div>
+    <div class="toc-row"><span class="toc-num">2</span><span class="toc-title">Konsep Uang (Bagian Terpenting)</span><span class="toc-desc">Escrow, saldo, komisi, langganan — dengan analogi</span></div>
+    <div class="toc-row"><span class="toc-num">3</span><span class="toc-title">Alur Uang Lengkap</span><span class="toc-desc">8 langkah dari bayar sampai penyedia terima rupiah</span></div>
+    <div class="toc-row"><span class="toc-num">4</span><span class="toc-title">Alur Saldo (Dompet)</span><span class="toc-desc">6 jenis mutasi · siklus isi &amp; tarik saldo · angka penting</span></div>
+    <div class="toc-row"><span class="toc-num">5</span><span class="toc-title">Fungsi Customer</span><span class="toc-desc">Cari, pesan, bayar, pantau, ulasan, dompet</span></div>
+    <div class="toc-row"><span class="toc-num">6</span><span class="toc-title">Fungsi Provider</span><span class="toc-desc">Langganan, buka jasa, kanban pesanan, pendapatan</span></div>
+    <div class="toc-row"><span class="toc-num">7</span><span class="toc-title">Fungsi Admin</span><span class="toc-desc">Pengelolaan platform tanpa pegang uang</span></div>
+    <div class="toc-row"><span class="toc-num">8</span><span class="toc-title">Fungsi Super Admin (Pemegang Kas)</span><span class="toc-desc">2FA · verifikasi uang · harga langganan</span></div>
+    <div class="toc-row"><span class="toc-num">9</span><span class="toc-title">Studi Kasus: Satu Pesanan Rp50.000</span><span class="toc-desc">Mengikuti uang dari scan QRIS sampai mendarat di bank</span></div>
+    <div class="toc-row"><span class="toc-num">10</span><span class="toc-title">Masalah Umum &amp; Solusinya</span><span class="toc-desc">Gejala → penyebab → jalan keluar</span></div>
+    <div class="toc-row"><span class="toc-num">11</span><span class="toc-title">Glosarium &amp; Kartu Referensi</span><span class="toc-desc">Istilah + satu halaman ringkasan semua angka penting</span></div>
+  </div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">1</div><div><h2>Kenalan dengan JASAKITE</h2><div class="chap-sub">Apa itu, melayani siapa, dan siapa saja penggunanya</div></div></div>
+
+  <h3>1.1 Apa itu JASAKITE?</h3>
+  <p>JASAKITE adalah <strong>pasar jasa online</strong> — seperti marketplace belanja, tetapi yang dijual bukan barang melainkan <strong>jasa orang di sekitar Anda</strong>: antar barang, belanja ke pasar, bayar tagihan, dan titip paket. Pelanggan memesan lewat website, penyedia jasa mengerjakannya, dan uangnya dijamin aman oleh platform.</p>
+  <div class="cols-2">
+    <div class="card"><div class="card-title">Wilayah layanan</div><p>Provinsi Kepulauan Bangka Belitung — 7 kabupaten/kota: Pangkal Pinang, Kab. Bangka (Sungailiat), Bangka Barat (Muntok), Bangka Tengah (Koba), Bangka Selatan (Toboali), Belitung (Tanjung Pandan), Belitung Timur (Manggar).</p></div>
+    <div class="card"><div class="card-title">4 kategori jasa</div><p><strong>Jasa Antar</strong> (kirim barang/dokumen) · <strong>Jasa Belanja</strong> (belanjakan ke pasar/toko) · <strong>Jasa Pembayaran</strong> (bayar tagihan) · <strong>Jasa Titip</strong> (titip barang/paket/hewan).</p></div>
+  </div>
+
+  <h3>1.2 Empat peran — analogi satu pasar sungguhan</h3>
+  <p>Bayangkan JASAKITE seperti sebuah pasar dengan empat jenis orang:</p>
+  <table>
+    <tr><th>Peran di aplikasi</th><th>Analogi di pasar</th><th>Hak utamanya</th></tr>
+    <tr><td><strong>Customer</strong> (Pelanggan)</td><td>Pembeli yang berkeliling</td><td>Cari &amp; pesan jasa, bayar, beri ulasan</td></tr>
+    <tr><td><strong>Provider</strong> (Penyedia jasa)</td><td>Penjual yang membuka kios</td><td>Buka jasa, terima pesanan, terima pendapatan</td></tr>
+    <tr><td><strong>Admin</strong></td><td>Kepala pasar / satpam</td><td>Kelola jasa &amp; pengguna, lihat laporan — <strong>tidak pegang uang</strong></td></tr>
+    <tr><td><strong>Super Admin</strong></td><td>Pemilik pasar yang memegang kasir</td><td>Semua akses Admin + <strong>memutuskan semua perpindahan uang</strong> (dengan kode keamanan 2FA)</td></tr>
+  </table>
+  <div class="box-info"><div class="box-label">Mengapa Admin dan Super Admin dipisah?</div><p>Agar tidak ada satu orang yang bisa diam-diam memindahkan uang. Admin bisa melihat antrean uang, tetapi tombol keputusannya mati — hanya Super Admin yang bisa menyetujui, dan setiap persetujuan wajib kode 6 digit dari aplikasi authenticator di HP-nya (2FA). Sekalipun password Super Admin bocor, penjahat tetap tidak bisa memindahkan uang tanpa kode dari HP-nya.</p></div>
+
+  <h3>1.3 Peta halaman website</h3>
+  <table>
+    <tr><th>Halaman</th><th>Isinya</th><th>Siapa yang bisa membuka</th></tr>
+    <tr><td>Beranda</td><td>Pencarian, kategori, jasa terbaru, promo, voucher</td><td>Semua orang</td></tr>
+    <tr><td>Katalog (Jelajahi)</td><td>Semua jasa + filter harga/rating/lokasi</td><td>Semua orang</td></tr>
+    <tr><td>Detail jasa</td><td>Harga, paket, ulasan, profil penyedia</td><td>Semua orang</td></tr>
+    <tr><td>Masuk / Daftar</td><td>Membuka akun baru</td><td>Semua orang</td></tr>
+    <tr><td>Keranjang &amp; Checkout</td><td>Atur pesanan, alamat, jadwal, bayar</td><td>Customer</td></tr>
+    <tr><td>Pesanan</td><td>Status, linimasa, chat, bukti bayar, ulasan</td><td>Customer &amp; Provider</td></tr>
+    <tr><td>Dompet</td><td>Saldo, isi saldo, tarik saldo, riwayat</td><td>Semua yang login</td></tr>
+    <tr><td>Dashboard Provider</td><td>Papan pesanan (kanban), jasa saya, langganan</td><td>Provider</td></tr>
+    <tr><td>Dashboard Admin</td><td>Statistik, moderasi, pengguna, antrean uang</td><td>Admin &amp; Super Admin</td></tr>
+  </table>
+</div>
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">2</div><div><h2>Konsep Uang — Bagian Terpenting</h2><div class="chap-sub">Empat kata kunci yang menjelaskan seluruh bisnis JASAKITE</div></div></div>
+
+  <h3>2.1 Escrow: uang dititipkan dulu di kasir</h3>
+  <p><strong>Escrow</strong> adalah inti JASAKITE. Bayangkan Anda menyewa tukang lewat ketua RT: Anda menyerahkan uang ke <em>ketua RT dulu</em>, tukang bekerja dengan tenang karena uangnya sudah dipegang, dan begitu pekerjaan selesai, ketua RT menyerahkan uang ke tukang. JASAKITE berperan sebagai ketua RT itu.</p>
+  <div class="flow">
+    <div class="flow-box">Pelanggan bayar</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">Uang DITAHAN platform (escrow)</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Pekerjaan dikerjakan</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Selesai → uang dilepas ke penyedia</div>
+  </div>
+  <div class="cols-2">
+    <div class="card"><div class="card-title">Manfaat untuk pelanggan</div><p>Penyedia tidak bisa lari dengan uang — ia baru dibayar setelah pekerjaan ditandai selesai. Bila pesanan dibatalkan setelah dibayar, uang kembali <strong>penuh</strong> ke saldo Anda.</p></div>
+    <div class="card"><div class="card-title">Manfaat untuk penyedia</div><p>Anda tidak perlu menagih — sebelum Anda menekan tombol "Terima &amp; Kerjakan", server sudah memastikan uang pelanggan <strong>sudah ditahan</strong> dan diverifikasi. Kerja pasti dibayar.</p></div>
+  </div>
+
+  <h3>2.2 Empat komponen uang</h3>
+  <table>
+    <tr><th>Komponen</th><th>Analogi</th><th>Penjelasan singkat</th></tr>
+    <tr><td><strong>Saldo JASAKITE</strong></td><td>Dompet di dalam aplikasi</td><td>Diisi lewat transfer QRIS yang diverifikasi. Dipakai bayar pesanan instan, bayar langganan, dan menerima pendapatan.</td></tr>
+    <tr><td><strong>QRIS platform</strong></td><td>Kasir marketplace</td><td>Satu kode QRIS milik platform. Pelanggan transfer ke situ, unggah bukti fotonya, lalu Super Admin memeriksa.</td></tr>
+    <tr><td><strong>Komisi platform</strong></td><td>Sewa meja di pasar</td><td>10% dari nilai pesanan (bisa diubah lewat pengaturan). Dipotong otomatis saat pesanan selesai — sisanya masuk saldo penyedia.</td></tr>
+    <tr><td><strong>Langganan penyedia</strong></td><td>Izin buka kios per bulan</td><td>Rp 10.000 per 30 hari, dipotong otomatis dari saldo. Selama tidak aktif, jasa tidak tampil dan tidak bisa dibuat.</td></tr>
+  </table>
+
+  <h3>2.3 Dua cara pelanggan membayar</h3>
+  <div class="cols-2">
+    <div class="card"><div class="card-title">Cara 1 · QRIS (paling umum)</div><p>Scan QRIS di halaman pesanan → transfer <strong>persis sesuai nominal</strong> → foto bukti transfer diunggah → Super Admin memeriksa → status jadi <strong>Pembayaran terverifikasi</strong>. Butuh beberapa menit sampai admin memeriksa.</p></div>
+    <div class="card"><div class="card-title">Cara 2 · Saldo (instan)</div><p>Punya saldo di dompet? Tinggal pilih <strong>Saldo JASAKITE</strong> — total langsung terpotong, pesanan langsung dianggap <strong>terverifikasi</strong> tanpa menunggu pemeriksaan. Ini alasan pelanggan setia mengisi saldo.</p></div>
+  </div>
+
+  <h3>2.4 Dua status yang berjalan paralel</h3>
+  <p>Satu pesanan punya DUA status yang berbeda — ini sering membingungkan pemula, jadi hafalkan bedanya:</p>
+  <table>
+    <tr><th>Status pekerjaan</th><th>Artinya</th></tr>
+    <tr><td><span class="badge b-amber">Menunggu konfirmasi</span></td><td>Pesanan baru dibuat</td></tr>
+    <tr><td><span class="badge b-blue">Sedang dikerjakan</span></td><td>Penyedia sudah menerima &amp; mulai bekerja</td></tr>
+    <tr><td><span class="badge b-green">Selesai</span></td><td>Pekerjaan tuntas — bisa diberi ulasan</td></tr>
+    <tr><td><span class="badge b-red">Dibatalkan</span></td><td>Pesanan batal</td></tr>
+  </table>
+  <table>
+    <tr><th>Status pembayaran</th><th>Artinya</th></tr>
+    <tr><td><strong>Belum dibayar</strong></td><td>Pelanggan belum transfer / belum pakai saldo</td></tr>
+    <tr><td><strong>Menunggu verifikasi</strong></td><td>Bukti transfer sudah diunggah, menunggu pemeriksaan Super Admin</td></tr>
+    <tr><td><strong>Pembayaran terverifikasi</strong></td><td>Uang sah masuk escrow — penyedia boleh mulai bekerja</td></tr>
+    <tr><td><strong>Dana dikembalikan</strong></td><td>Pesanan batal setelah dibayar; uang kembali ke saldo pelanggan</td></tr>
+  </table>
+  <div class="box-tip"><div class="box-label">Kunci mengingat</div><p>Status pekerjaan = urusan <strong>pekerjaan</strong>. Status pembayaran = urusan <strong>uang</strong>. Tombol "Terima &amp; Kerjakan" milik penyedia baru terbuka bila status pembayaran sudah <em>terverifikasi</em> — itulah gerbang escrow.</p></div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">3</div><div><h2>Alur Uang Lengkap — 8 Langkah</h2><div class="chap-sub">Mengikuti rupiah dari dompet pelanggan sampai rekening bank penyedia</div></div></div>
+
+  <div class="flow">
+    <div class="flow-box">1 Pesan</div><div class="flow-arrow">→</div>
+    <div class="flow-box">2 Bayar QRIS/saldo</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">3 Super Admin periksa</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">4 Escrow</div><div class="flow-arrow">→</div>
+    <div class="flow-box">5 Dikerjakan</div><div class="flow-arrow">→</div>
+    <div class="flow-box">6 Selesai</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">7 Saldo penyedia</div><div class="flow-arrow">→</div>
+    <div class="flow-box">8 Tarik ke bank</div>
+  </div>
+
+  <div class="step"><div class="step-n">1</div><div class="step-body"><p><strong>Pelanggan memesan.</strong> Pilih jasa → "Pesan Sekarang" (atau lewat keranjang untuk beberapa jasa sekaligus) → isi alamat &amp; jadwal → pilih QRIS atau Saldo → pesanan lahir dengan kode <strong>JK-XXXXX</strong>. Uang belum berpindah.</p></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><p><strong>Pelanggan membayar.</strong> QRIS: scan → transfer persis nominal → unggah foto bukti → status <em>Menunggu verifikasi</em>. Saldo: total terpotong langsung → langsung <em>terverifikasi</em>.</p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p><strong>Super Admin memeriksa bukti</strong> di halaman Verifikasi Saldo, memakai kode 2FA. Bukti cocok → <em>Pembayaran terverifikasi</em>. Bukti buruk/beda nominal → ditolak dengan alasan; pelanggan mengunggah ulang.</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p><strong>Uang mengendap di escrow</strong> — dimiliki platform, dijatuhkan ke siapa pun tergantung hasil pekerjaan. Penyedia melihat pesanan bisa dikerjakan.</p></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p><strong>Penyedia bekerja.</strong> Menekan "Terima &amp; Kerjakan" (baru bisa setelah langkah 3), berkoordinasi lewat chat, menyelesaikan pekerjaan.</p></div></div>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><p><strong>Penyedia menandai "Tandai Selesai".</strong> Pelanggan menerima hasil dan memberi ulasan bintang.</p></div></div>
+  <div class="step"><div class="step-n">7</div><div class="step-body"><p><strong>Uang escrow dilepas otomatis</strong>: komisi platform (10%) dipotong, sisanya masuk saldo dompet penyedia — contoh: pesanan Rp50.000 → komisi Rp5.000 → penyedia menerima Rp45.000. Rinciannya tercatat: <em>Total pesanan − Komisi platform = Masuk ke saldo</em>.</p></div></div>
+  <div class="step"><div class="step-n">8</div><div class="step-body"><p><strong>Penyedia menarik saldo ke bank</strong> (minimal Rp50.000): dana dibekukan → Super Admin mentransfer → menandai "Sudah ditransfer". Saldo juga bisa dipakai membayar langganan bulanan tanpa keluar ke bank.</p></div></div>
+
+  <h3>Tiga cabang khusus</h3>
+  <div class="cols-3">
+    <div class="card"><div class="card-title">Batal sebelum bayar</div><p>Tidak ada uang yang bergerak. Pesanan berhenti, selesai.</p></div>
+    <div class="card"><div class="card-title">Batal setelah bayar</div><p>Uang escrow <strong>kembali penuh ke saldo</strong> pelanggan (tercatat "Pengembalian dana"). Penyedia tidak dirugikan karena pekerjaan memang belum selesai.</p></div>
+    <div class="card"><div class="card-title">Bukti ditolak admin</div><p>Uang tidak kemana-mana. Pelanggan memfoto ulang bukti yang lebih jelas, atau pesanan dibatalkan.</p></div>
+  </div>
+  <div class="box-warn"><div class="box-label">Jendela pengaman</div><p>Selama bukti sedang diperiksa (<em>Menunggu verifikasi</em>), pesanan <strong>tidak boleh dibatalkan</strong> — supaya uang tidak menggantung pada pesanan yang sudah tidak jadi. Tunggu keputusan Super Admin dulu (paling lama beberapa menit).</p></div>
+</div>
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">4</div><div><h2>Alur Saldo (Dompet)</h2><div class="chap-sub">Enam jenis mutasi, siklus isi dan tarik saldo, dan semua angka penting</div></div></div>
+
+  <h3>4.1 Saldo itu apa, dan siapa punya</h3>
+  <p>Setiap pengguna — pelanggan maupun penyedia — punya <strong>satu dompet</strong> yang sama bentuknya (halaman <strong>Dashboard → Dompet</strong>). Bedanya hanya arah pakai: pelanggan memakai saldo untuk <em>membayar</em>, penyedia menerima saldo sebagai <em>pendapatan</em> lalu memakainya untuk <em>langganan</em> atau ditarik ke bank. Setiap perubahan saldo, sekecil apa pun, tercatat di <strong>Riwayat Transaksi</strong> beserta saldo akhirnya — seperti buku tabungan.</p>
+
+  <h3>4.2 Enam jenis mutasi saldo</h3>
+  <table>
+    <tr><th>Label di riwayat</th><th>Arah</th><th>Kapan terjadi</th></tr>
+    <tr><td><strong>Isi saldo</strong></td><td>+</td><td>Anda transfer QRIS + unggah bukti, Super Admin menyetujui</td></tr>
+    <tr><td><strong>Bayar pesanan</strong></td><td>−</td><td>Checkout dengan metode Saldo JASAKITE</td></tr>
+    <tr><td><strong>Pendapatan pesanan</strong></td><td>+</td><td>Penyedia: pesanan ditandai selesai (harga − komisi 10%)</td></tr>
+    <tr><td><strong>Pengembalian dana</strong></td><td>+</td><td>Pesanan dibatalkan setelah dibayar, atau pengajuan tarik/top-up ditolak</td></tr>
+    <tr><td><strong>Tarik saldo</strong></td><td>−</td><td>Pengajuan penarikan ke rekening bank disetujui prosesnya</td></tr>
+    <tr><td><strong>Langganan penyedia</strong></td><td>−</td><td>Perpanjangan otomatis Rp 10.000 per 30 hari</td></tr>
+  </table>
+
+  <h3>4.3 Siklus isi saldo (top-up)</h3>
+  <div class="flow">
+    <div class="flow-box">Klik Isi saldo &amp; pilih nominal</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Dapat kode unik JK-TOP-XXXX</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Transfer QRIS sesuai nominal</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">Unggah foto bukti</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">Menunggu pemeriksaan</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Disetujui → saldo naik</div>
+  </div>
+  <ul class="dash-list">
+    <li>Nominal minimal <strong>Rp10.000</strong>, maksimal <strong>Rp10.000.000</strong> per pengajuan.</li>
+    <li>Kode <strong>JK-TOP-XXXX</strong> unik per pengajuan — memudahkan Super Admin mencocokkan uang yang masuk ke rekening platform.</li>
+    <li>Bukti bisa diganti selama masih menunggu (tombol "Ganti bukti"). Jika ditolak, muncul alasan dan tidak ada saldo berkurang.</li>
+  </ul>
+
+  <h3>4.4 Siklus tarik saldo (penarikan) — khusus penyedia</h3>
+  <div class="flow">
+    <div class="flow-box">Lengkapi Rekening saya</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Tarik saldo (min Rp50.000)</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">Saldo DIBEKUKAN</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">Super Admin transfer ke bank</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Ditandai "Sudah ditransfer"</div>
+  </div>
+  <ul class="dash-list">
+    <li>Mengapa dibekukan? Supaya saldo yang sedang diproses tidak terpakai dua kali.</li>
+    <li>Jika ditolak (mis. rekening salah), saldo <strong>kembali otomatis</strong> beserta alasan penolakan.</li>
+  </ul>
+
+  <h3>4.5 Kartu angka penting</h3>
+  <table>
+    <tr><th>Hal</th><th>Angka</th></tr>
+    <tr><td>Komisi platform per pesanan selesai</td><td><strong>10%</strong> (dapat diubah, maksimal 50%)</td></tr>
+    <tr><td>Langganan penyedia</td><td><strong>Rp 10.000 / 30 hari</strong> (dapat diubah Rp1.000–1.000.000)</td></tr>
+    <tr><td>Minimal isi saldo</td><td>Rp 10.000 (maksimal Rp 10.000.000)</td></tr>
+    <tr><td>Minimal tarik saldo</td><td>Rp 50.000</td></tr>
+    <tr><td>Jadwal potong langganan otomatis</td><td>Setiap hari 08.00 WIB, mulai 2 hari sebelum masa aktif habis</td></tr>
+    <tr><td>Kode pesanan / kode top-up</td><td>JK-XXXXX / JK-TOP-XXXX</td></tr>
+    <tr><td>Masa beri ulasan setelah pesanan selesai</td><td>60 hari</td></tr>
+    <tr><td>Percobaan login gagal sebelum terkunci</td><td>10 kali dalam 15 menit (per email)</td></tr>
+  </table>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">5</div><div><h2>Fungsi Customer (Pelanggan)</h2><div class="chap-sub">Semua yang bisa dilakukan pembeli jasa — dari mencari sampai memberi ulasan</div></div></div>
+
+  <h3>5.1 Daftar kemampuan lengkap</h3>
+  <table>
+    <tr><th>Kemampuan</th><th>Caranya singkat</th></tr>
+    <tr><td>Cari jasa</td><td>Kotak pencarian (minimal 2 huruf), kartu kategori, atau katalog dengan filter harga/rating/lokasi + tombol <strong>Terdekat</strong></td></tr>
+    <tr><td>Tanya dulu sebelum pesan</td><td>Tombol <strong>Chat Penyedia</strong> di halaman jasa</td></tr>
+    <tr><td>Simpan pembanding</td><td>Tombol hati <strong>Simpan</strong> pada kartu jasa</td></tr>
+    <tr><td>Pesan satu jasa</td><td><strong>Pesan Sekarang</strong> → isi catatan/alamat/jadwal → pilih QRIS atau Saldo → <strong>Konfirmasi Pesanan</strong></td></tr>
+    <tr><td>Pesan banyak jasa</td><td>Masukkan ke <strong>Keranjang</strong> → checkout 3 langkah: <strong>Alamat → Jadwal → Bayar</strong></td></tr>
+    <tr><td>Pakai voucher</td><td>Di langkah Bayar: <strong>Pakai voucher / kode promo</strong></td></tr>
+    <tr><td>Bayar</td><td>QRIS (scan → transfer persis → foto bukti) atau Saldo (instan)</td></tr>
+    <tr><td>Pantau pesanan</td><td>Tab <strong>Pesanan</strong> — kode JK-XXXXX, linimasa, chat dengan penyedia</td></tr>
+    <tr><td>Batalkan</td><td>Tombol <strong>Batalkan Pesanan</strong> selama status masih <em>Menunggu konfirmasi</em>; uang kembali bila sudah dibayar</td></tr>
+    <tr><td>Beri ulasan</td><td>Setelah <em>Selesai</em>: bintang 1–5 + komentar (60 hari)</td></tr>
+    <tr><td>Kelola dompet</td><td><strong>Isi saldo</strong>, lihat <strong>Riwayat Transaksi</strong></td></tr>
+    <tr><td>Notifikasi</td><td>Lonceng + halaman Notifikasi (tandai dibaca)</td></tr>
+  </table>
+
+  <h3>5.2 Hal yang perlu diketahui pelanggan</h3>
+  <ul class="check-list">
+    <li>Transfer QRIS harus <strong>persis nominal</strong> — jangan dibulatkan, agar mudah dicocokkan admin.</li>
+    <li>Satu checkout banyak jasa otomatis dipecah <strong>satu pesanan per penyedia</strong>, masing-masing berkode sendiri.</li>
+    <li>Setelah penyedia mulai bekerja, pembatalan mandiri tertutup — koordinasikan lewat chat.</li>
+    <li>Jasa yang tampil di katalog dijamin penyedianya berlangganan aktif — tidak ada jasa "mati".</li>
+    <li>Ulangi kembali: apa pun yang terjadi, uang yang sudah dibayar tidak hilang — kembali ke saldo bila batal.</li>
+  </ul>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">6</div><div><h2>Fungsi Provider (Penyedia Jasa)</h2><div class="chap-sub">Bisnis penyedia: langganan, buka jasa, mengerjakan pesanan, dan mengelola pendapatan</div></div></div>
+
+  <h3>6.1 Model bisnis penyedia dalam satu gambar</h3>
+  <div class="flow">
+    <div class="flow-box">Isi saldo Rp10.000</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">Langganan aktif 30 hari</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Jasa tayang di katalog</div><div class="flow-arrow">→</div>
+    <div class="flow-box blue">Pesanan masuk &amp; dikerjakan</div><div class="flow-arrow">→</div>
+    <div class="flow-box green">Pendapatan masuk saldo (−10%)</div><div class="flow-arrow">→</div>
+    <div class="flow-box">Tarik ke bank / bayar langganan lagi</div>
+  </div>
+
+  <h3>6.2 Aturan langganan (wajib dipahami)</h3>
+  <ul class="dash-list">
+    <li>Rp 10.000 per 30 hari, <strong>dipotong otomatis dari saldo</strong> — tanpa kartu kredit, tanpa aplikasi pembayaran lain.</li>
+    <li>Tanpa langganan aktif: jasa baru tidak bisa dibuat; jasa lama <strong>hilang dari katalog</strong> dan tautannya 404 — tapi <strong>tidak terhapus</strong>; tayang lagi begitu langganan diperpanjang.</li>
+    <li>Pesanan yang sedang berjalan <strong>tetap bisa diselesaikan dan tetap dibayar</strong> walau langganan habis.</li>
+    <li>Perpanjangan otomatis dicoba 08.00 WIB setiap hari mulai 2 hari sebelum habis; perpanjangan dini <strong>tidak menghanguskan</strong> sisa hari.</li>
+    <li>Bila saldo kurang saat penagihan: langganan berakhir + notifikasi berisi nominal yang dibutuhkan. Isi saldo → tombol <strong>Perpanjang Rp 10.000</strong> → tayang lagi.</li>
+  </ul>
+
+  <h3>6.3 Buka jasa &amp; kelola</h3>
+  <ul class="dash-list">
+    <li><strong>Buka Jasa</strong>: judul, kategori, estimasi hari, harga, deskripsi (20–500 karakter), foto — dari perangkat (auto-kompres maks 300KB) atau URL. Pratinjau kartu tampil langsung; klik <strong>Publikasikan Jasa</strong> dan langsung tayang.</li>
+    <li>Kelola: <strong>Sembunyikan</strong> / <strong>Tayangkan</strong> kapan saja (mis. sedang penuh order).</li>
+  </ul>
+
+  <h3>6.4 Papan kerja (Kanban) — rutinitas harian</h3>
+  <p>Dashboard penyedia menampilkan papan tiga kolom: <strong>Menunggu → Dikerjakan → Selesai</strong>. Setiap kartu punya tombol; kartu juga bisa diseret atau dipindah dengan panah keyboard.</p>
+  <table>
+    <tr><th>Kejadian</th><th>Yang Anda lakukan</th></tr>
+    <tr><td>Pesanan baru masuk kolom Menunggu</td><td>Tunggu status pembayannya <em>terverifikasi</em>, lalu klik <strong>Terima &amp; Kerjakan</strong></td></tr>
+    <tr><td>Tombol Terima &amp; Kerjakan ditolak</td><td>Pembayaran belum diverifikasi admin — ingatkan pelanggan unggah bukti</td></tr>
+    <tr><td>Pekerjaan tuntas</td><td><strong>Tandai Selesai</strong> — pendapatan otomatis masuk saldo (lihat rincian komisi)</td></tr>
+    <tr><td>Pelanggan membatalkan</td><td>Kartu pindah ke lipatan <em>Dibatalkan (n)</em> — tidak ada yang perlu Anda lakukan</td></tr>
+  </table>
+
+  <h3>6.5 Mengelola pendapatan</h3>
+  <ul class="dash-list">
+    <li>Cek <strong>Riwayat Transaksi</strong>: setiap pendapatan tercatat dengan rincian <em>Total pesanan − Komisi platform = Masuk ke saldo</em>.</li>
+    <li>Rekening bank diisi sekali lewat <strong>Rekening saya</strong>, lalu <strong>Tarik saldo</strong> (min Rp50.000).</li>
+    <li>Saldo juga otomatis dipakai langganan — penyedia sibuk tidak perlu ingat bayar bulanan.</li>
+    <li>Reputasi: ulasan pelanggan menentukan rating di katalog — minta ulasan setelah pekerjaan selesai.</li>
+  </ul>
+</div>
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">7</div><div><h2>Fungsi Admin</h2><div class="chap-sub">Pengelola platform sehari-hari — tanpa pernah menyentuh uang</div></div></div>
+
+  <h3>7.1 Wilayah kerja Admin</h3>
+  <table>
+    <tr><th>Halaman</th><th>Tugas</th></tr>
+    <tr><td><strong>Ringkasan Platform</strong></td><td>Memantau angka: pengguna, pesanan, komisi bulan ini, jasa aktif, rating rata-rata, grafik 14 hari, Top 5 penyedia. Mengunduh <strong>Ekspor CSV Pesanan</strong> untuk laporan.</td></tr>
+    <tr><td><strong>Moderasi</strong></td><td>Memeriksa jasa: tombol <strong>Lihat</strong> (pratinjau) dan <strong>Aktifkan</strong> (menayangkan jasa draf).</td></tr>
+    <tr><td><strong>Pengguna</strong></td><td>Mencari akun, melihat peran &amp; statistik, dan <strong>Masuk sebagai</strong> (impersonasi) untuk membantu pengguna bermasalah — dengan bar peringatan yang selalu terlihat dan sesi 15 menit.</td></tr>
+    <tr><td><strong>Antrean uang</strong></td><td><strong>Hanya melihat</strong> — aplikasi menampilkan peringatan bahwa keputusan uang milik Super Admin. Admin biasa tidak punya tombol setuju/tolak.</td></tr>
+    <tr><td><strong>Status deploy</strong></td><td>Memeriksa build &amp; rilis terakhir aplikasi.</td></tr>
+  </table>
+  <div class="box-info"><div class="box-label">Pembagian kerja yang sehat</div><p>Admin = operasional (konten &amp; pengguna). Super Admin = operasional + uang. Dengan dua kunci berbeda, kesalahan/kebocoran satu akun tidak serta-merta menggerakkan dana.</p></div>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">8</div><div><h2>Fungsi Super Admin — Pemegang Kas</h2><div class="chap-sub">Satu-satunya peran yang bisa memindahkan uang, dijaga kode 2FA</div></div></div>
+
+  <h3>8.1 Rantai keamanan keputusan uang</h3>
+  <div class="flow">
+    <div class="flow-box">Login password</div><div class="flow-arrow">+</div>
+    <div class="flow-box">Kode 2FA 6 digit dari HP</div><div class="flow-arrow">→</div>
+    <div class="flow-box dark">Baru bisa menyetujui uang</div>
+  </div>
+  <ul class="dash-list">
+    <li>2FA diaktifkan sekali di <strong>Keamanan Akun</strong>: masukkan password → pindai QR dengan aplikasi authenticator (Google Authenticator dll.) → ketik satu kode → aktif.</li>
+    <li>Kode berganti tiap 30 detik dan <strong>satu kode hanya untuk satu keputusan</strong> — kode yang sama langsung ditolak.</li>
+    <li>Tanpa 2FA aktif, server menolak <strong>semua</strong> keputusan uang — bukan sekadar menyembunyikan tombol.</li>
+    <li>HP hilang? Akun bisa dibuka lewat perintah reset oleh admin lain, tetapi keputusan uang tetap tertutup sampai 2FA didaftarkan ulang.</li>
+  </ul>
+
+  <h3>8.2 Tugas harian: Verifikasi Saldo</h3>
+  <p>Halaman <strong>Verifikasi Saldo</strong> berisi tiga kartu antrean:</p>
+  <table>
+    <tr><th>Antrean</th><th>Isinya</th><th>Tombol keputusan</th></tr>
+    <tr><td>Pembayaran Pesanan Menunggu</td><td>Bukti transfer QRIS pelanggan</td><td><strong>Verifikasi</strong> / <strong>Tolak</strong></td></tr>
+    <tr><td>Isi Saldo Menunggu</td><td>Pengajuan top-up (kode JK-TOP)</td><td><strong>Setujui</strong> / <strong>Tolak</strong></td></tr>
+    <tr><td>Penarikan Menunggu</td><td>Pengajuan tarik saldo penyedia</td><td><strong>Sudah ditransfer</strong> / <strong>Tolak &amp; kembalikan saldo</strong></td></tr>
+  </table>
+  <p>Cara memeriksa yang benar: buka foto bukti → cocokkan nominal &amp; kode → perhatikan badge <strong>"Bukti diubah"</strong> (bukti diganti setelah diajukan — periksa lebih teliti) → ketik kode 2FA → tekan tombol keputusan. Penolakan selalu menyertakan alasan yang tampil ke pemilik dana.</p>
+
+  <h3>8.3 Pengaturan langganan</h3>
+  <ul class="dash-list">
+    <li><strong>Harga per 30 hari</strong> bisa diubah (Rp1.000–Rp1.000.000) — berlaku untuk penagihan berikutnya; riwayat lama tidak ikut berubah.</li>
+    <li>Tombol <strong>Tagih sekarang</strong> menjalankan penagihan yang sama dengan jadwal otomatis — aman diklik berulang, tidak pernah dobel.</li>
+    <li>Tabel semua penyedia: status langganan, sisa hari, saldo, jumlah jasa — untuk menjangkau penyedia yang akan kedaluwarsa.</li>
+  </ul>
+
+  <h3>8.4 Hal yang dikunci server (tidak bisa dilakukan siapa pun)</h3>
+  <ul class="check-list">
+    <li>Saldo tidak bisa minus — pemotongan selalu syarat saldo cukup, dalam satu transaksi atomik.</li>
+    <li>Satu pengajuan uang hanya bisa diputus sekali.</li>
+    <li>Keputusan tanpa kode 2FA selalu ditolak, apapun caranya memanggilnya.</li>
+    <li>Setiap mutasi tercatat di ledger dengan saldo akhir — jejak audit lengkap.</li>
+  </ul>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">9</div><div><h2>Studi Kasus: Satu Pesanan Rp50.000</h2><div class="chap-sub">Mengikuti uang sungguhan dari awal sampai mendarat di rekening bank</div></div></div>
+
+  <p><strong>Pemainnya:</strong> Dewi (pelanggan, Pangkal Pinang) · Pak Budi (penyedia antar dokumen) · Anda (Super Admin).</p>
+
+  <div class="step"><div class="step-n">1</div><div class="step-body"><p>Dewi mencari "antar dokumen", menemukan jasa Pak Budi Rp50.000 (estimasi 1 hari), menekan <strong>Pesan Sekarang</strong>, mengisi alamat &amp; jadwal, memilih <strong>QRIS</strong>, lalu <strong>Konfirmasi Pesanan</strong>. Pesanan lahir: kode <strong>JK-7RM2K</strong>, status pekerjaan <em>Menunggu konfirmasi</em>, status pembayaran <em>Belum dibayar</em>.</p></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><p>Dewi scan QRIS di halaman pesanan, transfer <strong>persis Rp50.000</strong>, foto struknya, klik <strong>Kirim bukti untuk diverifikasi</strong>. Status pembayaran: <em>Menunggu verifikasi</em>.</p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><p>Anda membuka <strong>Verifikasi Saldo</strong>, melihat antrean "Pembayaran Pesanan Menunggu", memeriksa foto struk (nominal cocok), mengetik kode 2FA, menekan <strong>Verifikasi</strong>. Status: <em>Pembayaran terverifikasi</em>. Rp50.000 kini mengendap di escrow.</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><p>Pak Budi melihat pesanan di kolom <strong>Menunggu</strong>, menekan <strong>Terima &amp; Kerjakan</strong> (kini terbuka), mengantar dokumen, menekan <strong>Tandai Selesai</strong>. Status pekerjaan: <em>Selesai</em>.</p></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><p><strong>Uang bergerak otomatis:</strong> komisi 10% = Rp5.000 untuk platform; Rp45.000 masuk saldo Pak Budi. Di riwayatnya tertulis: Total pesanan Rp50.000 − Komisi Rp5.000 = Masuk ke saldo Rp45.000.</p></div></div>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><p>Dewi memberi 5 bintang + komentar. Rating Pak Budi naik, katalog ikut menampilkan rating barunya.</p></div></div>
+  <div class="step"><div class="step-n">7</div><div class="step-body"><p>Sorenya, penagihan otomatis berjalan: saldo Pak Budi dipotong <strong>Rp10.000</strong> untuk langganan 30 hari berikutnya (tercatat "Langganan penyedia"). Sisa saldo Rp35.000.</p></div></div>
+  <div class="step"><div class="step-n">8</div><div class="step-body"><p>Minggu depan, setelah beberapa pesanan lagi saldonya Rp185.000. Pak Budi menekan <strong>Tarik saldo</strong> Rp150.000 → dana dibekukan → Anda transfer ke rekeningnya → menekan <strong>Sudah ditransfer</strong>. Uang mendarat di bank. Selesai — semua pihak melihat jejak lengkapnya di masing-masing Riwayat Transaksi.</p></div></div>
+
+  <div class="box-tip"><div class="box-label">Kalau di tengah jalan Dewi membatalkan?</div><ul class="dash-list" style="margin-bottom:0;"><li>Sebelum transfer: tidak ada uang yang bergerak.</li><li>Saat bukti diperiksa: ditolak sementara oleh sistem — tunggu keputusan Anda.</li><li>Setelah terverifikasi tapi sebelum selesai: Rp50.000 <strong>kembali penuh ke saldo Dewi</strong> ("Pengembalian dana"); Pak Budi tidak menerima apa-apa karena pekerjaan tidak selesai.</li></ul></div>
+</div>
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">10</div><div><h2>Masalah Umum &amp; Solusinya</h2><div class="chap-sub">Tabel rujukan cepat saat ada yang terasa tidak beres</div></div></div>
+  <table>
+    <tr><th style="width:32%">Gejala</th><th style="width:30%">Penyebab</th><th>Solusi</th></tr>
+    <tr><td>Jasa penyedia hilang dari katalog / tautan 404</td><td>Langganan tidak aktif — sistem otomatis menyembunyikan</td><td>Isi saldo → <strong>Perpanjang Rp 10.000</strong>; jasa tayang lagi tanpa dibuat ulang</td></tr>
+    <tr><td>Gagal membuat jasa</td><td>Langganan belum aktif (ditolak sistem)</td><td>Aktifkan langganan dulu, baru <strong>Publikasikan Jasa</strong></td></tr>
+    <tr><td>Foto jasa ditolak</td><td>Melebihi 300KB walau sudah dikompres otomatis</td><td>Pilih foto lebih sederhana atau pakai URL gambar</td></tr>
+    <tr><td>Tombol "Terima &amp; Kerjakan" ditolak</td><td>Pembayaran pesanan belum diverifikasi</td><td>Pelanggan unggah bukti → Super Admin verifikasi</td></tr>
+    <tr><td>Pesanan tidak bisa dibatalkan</td><td>Bukti sedang diperiksa, atau pekerjaan sudah berjalan</td><td>Tunggu keputusan verifikasi; setelah berjalan, sepakati lewat chat</td></tr>
+    <tr><td>Status pembayaran lama "Menunggu verifikasi"</td><td>Super Admin belum memeriksa antrean</td><td>Ingatkan Super Admin membuka halaman Verifikasi Saldo</td></tr>
+    <tr><td>Saldo berkurang sendiri</td><td>Perpanjangan langganan otomatis</td><td>Cek Riwayat Transaksi — ada baris "Langganan penyedia"</td></tr>
+    <tr><td>Tarik saldo tidak bisa</td><td>Rekening belum lengkap / di bawah Rp50.000</td><td>Lengkapi <strong>Rekening saya</strong>, ajukan minimal Rp50.000</td></tr>
+    <tr><td>Voucher ditolak</td><td>Kuota habis / minimum belanja / sekali pakai / khusus kota</td><td>Alasan tertulis di kartu voucher</td></tr>
+    <tr><td>Login gagal terus padahal benar</td><td>10× salah dalam 15 menit mengunci email</td><td>Tunggu 15 menit</td></tr>
+    <tr><td>Super Admin diminta kode terus</td><td>2FA aktif — memang by design</td><td>Gunakan aplikasi authenticator; HP hilang → reset 2FA lewat server</td></tr>
+    <tr><td>Ulasan tidak muncul</td><td>Pesanan belum selesai / sudah pernah / lewat 60 hari</td><td>Minta penyedia <strong>Tandai Selesai</strong>, ulas segera</td></tr>
+  </table>
+</div>
+
+<div class="page-break section">
+  <div class="chap-head"><div class="chap-num">11</div><div><h2>Glosarium &amp; Kartu Referensi</h2><div class="chap-sub">Semua istilah dalam satu tempat, plus satu halaman yang perlu dicetak</div></div></div>
+
+  <h3>Glosarium istilah</h3>
+  <table>
+    <tr><th>Istilah</th><th>Artinya dalam bahasa sehari-hari</th></tr>
+    <tr><td><strong>Escrow</strong></td><td>Uang dititipkan di platform sampai pekerjaan selesai — seperti titipan di ketua RT</td></tr>
+    <tr><td><strong>Saldo</strong></td><td>Dompet di dalam aplikasi; buku kasnya adalah Riwayat Transaksi</td></tr>
+    <tr><td><strong>QRIS platform</strong></td><td>Kode pembayaran milik platform tempat pelanggan mentransfer</td></tr>
+    <tr><td><strong>Verifikasi</strong></td><td>Pemeriksaan bukti transfer oleh Super Admin sebelum uang dianggap masuk</td></tr>
+    <tr><td><strong>Komisi</strong></td><td>Potongan platform 10% dari pesanan selesai</td></tr>
+    <tr><td><strong>Langganan</strong></td><td>"Izin tayang" penyedia: Rp 10.000 per 30 hari</td></tr>
+    <tr><td><strong>2FA / TOTP</strong></td><td>Kode 6 digit dari aplikasi authenticator yang berganti tiap 30 detik</td></tr>
+    <tr><td><strong>Kanban</strong></td><td>Papan pesanan tiga kolom Menunggu → Dikerjakan → Selesai</td></tr>
+    <tr><td><strong>Impersonasi</strong></td><td>Admin "menjadi" pengguna lain sebentar untuk membantu — bar peringatan selalu terlihat</td></tr>
+    <tr><td><strong>Kode JK-XXXXX</strong></td><td>Nomor pesanan yang mudah dibacakan; JK-TOP-XXXX untuk pengajuan isi saldo</td></tr>
+  </table>
+
+  <h3>Kartu referensi cepat — halaman yang layak dicetak</h3>
+  <div class="card" style="border-top:3pt solid #EA580C;">
+    <div class="card-title">JASAKITE dalam satu kartu</div>
+    <table style="margin-bottom:4pt;">
+      <tr><td>Alamat</td><td><strong>jasakite.vercel.app</strong></td><td>Wilayah</td><td><strong>Bangka Belitung (7 kab/kota)</strong></td></tr>
+      <tr><td>Peran</td><td>Customer · Provider · Admin · <strong>Super Admin</strong></td><td>Kategori</td><td>Antar · Belanja · Pembayaran · Titip</td></tr>
+      <tr><td>Bayar</td><td>QRIS / Saldo</td><td>Escrow</td><td>Uang ditahan sampai selesai</td></tr>
+      <tr><td>Komisi</td><td><strong>10%</strong> per pesanan selesai</td><td>Langganan</td><td><strong>Rp 10.000 / 30 hari</strong></td></tr>
+      <tr><td>Isi saldo</td><td>min Rp10.000</td><td>Tarik saldo</td><td>min Rp50.000</td></tr>
+      <tr><td>Keamanan uang</td><td>Super Admin + 2FA wajib</td><td>Penagihan</td><td>otomatis 08.00 WIB harian</td></tr>
+    </table>
+    <p class="small" style="margin-bottom:0;">Akun latihan (password semua: <strong>password123</strong>) — Customer: dewi.lestari@email.com · Provider: budi.santoso@email.com · Admin: admin@jasakite.id. Panduan klik-demi-klik per peran: dokumen "Panduan Pengguna per Peran".</p>
+  </div>
+
+  <h3>Bacaan lanjutan</h3>
+  <ul class="dash-list">
+    <li><strong>Panduan Pengguna per Peran</strong> (PANDUAN-PENGGUNA-PER-PERAN.pdf) — manual klik-demi-klik tiap tombol untuk tiap peran.</li>
+    <li><strong>Panduan Lengkap untuk Pemula</strong> (panduan-jasakite.pdf) — pengenalan ringkas konsep aplikasi.</li>
+  </ul>
+
+  <div class="footer-note">JASAKITE — Buku Panduan Client · Edisi Oktober 2026 · Semua angka dan nama tombol diverifikasi langsung dari aplikasi (jasakite.vercel.app). Dokumen ini melengkapi — bukan menggantikan — panduan per peran.</div>
+</div>
+</body>
+</html>

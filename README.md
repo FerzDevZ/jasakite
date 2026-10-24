@@ -6,6 +6,8 @@ Dibangun dengan Next.js 15 App Router, React 19, Prisma, dan Tailwind CSS. Menca
 
 > Panduan penggunaan lengkap (akun, seluruh alur, langganan, operasional, skenario demo 5 menit): **[docs/PANDUAN-LENGKAP.md](docs/PANDUAN-LENGKAP.md)** · versi PDF: `docs/PANDUAN-LENGKAP.pdf`
 >
+> Buku panduan client (satu dokumen lengkap: konsep uang & escrow, alur uang 8 langkah, alur saldo, fungsi 4 peran, studi kasus berangka nyata, kartu referensi): **`docs/PANDUAN-CLIENT-JASAKITE.pdf`**
+>
 > Manual operasional per peran (klik demi klik untuk Customer, Provider, Admin, Super Admin — semua label tombol diverifikasi dari kode): **[docs/PANDUAN-PENGGUNA-PER-PERAN.md](docs/PANDUAN-PENGGUNA-PER-PERAN.md)** · versi PDF: `docs/PANDUAN-PENGGUNA-PER-PERAN.pdf`
 
 ```
