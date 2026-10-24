@@ -111,7 +111,7 @@ test("API orders memakai harga paket & menolak paket jasa lain", async ({
   page,
 }) => {
   await login(page, "customer", "/services")
-  await resetOrderCreateLimits()
+  const resetCount = await resetOrderCreateLimits()
 
   const s1 = await serviceNotOwnedBy(page, ACCOUNTS.customer.name)
   const rows = await listServices(page)
@@ -142,7 +142,16 @@ test("API orders memakai harga paket & menolak paket jasa lain", async ({
     packageId: pkg1!.id,
     address,
   })
-  expect(ok.status(), "POST /api/orders dengan paket valid").toBe(201)
+  // Diagnostik: bila CI menjawab 429, pesan asersi membawa fakta yang dibutuhkan
+  // untuk membedakan scope mana yang kena (body memuat detik retry; jumlah
+  // bucket yang dihapus reset menegaskan apakah batasnya memang orderCreate).
+  const okStatus = ok.status()
+  const okBody = await ok.json().catch(() => null)
+  const retryAfter = ok.headers()["retry-after"] ?? "-"
+  expect(
+    okStatus,
+    `POST /api/orders paket valid | resetMenghapus=${resetCount} bucket | retryAfter=${retryAfter} | body=${JSON.stringify(okBody)}`
+  ).toBe(201)
   const order = (await ok.json()) as { totalPrice: number }
   expect(order.totalPrice).toBe(pkg1!.price)
 

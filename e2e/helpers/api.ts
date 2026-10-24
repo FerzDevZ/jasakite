@@ -200,10 +200,11 @@ function db(): PrismaClient {
  * memang tidak sedang diuji. Ini fixture terhadap database uji (CI/dev),
  * bukan jalur produksi.
  */
-export async function resetOrderCreateLimits(): Promise<void> {
-  await db().rateLimitBucket.deleteMany({
+export async function resetOrderCreateLimits(): Promise<number> {
+  const removed = await db().rateLimitBucket.deleteMany({
     where: { id: { startsWith: "orderCreate:" } },
   })
+  return removed.count
 }
 
 /**
