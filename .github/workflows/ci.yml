@@ -110,7 +110,12 @@ jobs:
         continue-on-error: true
 
       - name: Build
-        run: npm run build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log || {
+            echo "::error::Build produksi gagal: $(grep -iE 'error|failed|✗' build.log | tail -c 700 | tr '\n' ' ')"
+            exit 1
+          }
 
       # Verifikasi runtime: server produksi harus benar-benar melayani rute,
       # bukan hanya berhasil di-build. Tanpa langkah ini, kesalahan yang hanya
