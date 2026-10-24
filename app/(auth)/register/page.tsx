@@ -23,7 +23,13 @@ type Role = "CUSTOMER" | "PROVIDER"
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(100, "Nama maksimal 100 karakter"),
   email: z.string().min(1, "Email wajib diisi").email("Format email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
+  // Cermin persis aturan server (app/api/auth/register): min 8 karakter plus
+  // huruf kecil dan angka. Dulu klien hanya min(6) sehingga password "lolos"
+  // validasi form lalu ditolak server dengan pesan yang berbeda.
+  password: z.string().min(8, "Password minimal 8 karakter").regex(
+    /^(?=.*[a-z])(?=.*\d)/,
+    "Password wajib mengandung huruf kecil dan angka"
+  ),
   phone: z.string().optional().refine(
     (val) => !val || /^[0-9+\-\s()]{8,20}$/.test(val),
     "Format nomor HP tidak valid"
@@ -208,7 +214,7 @@ export default function RegisterPage() {
               id="password"
               type="password"
               autoComplete="new-password"
-              placeholder="Minimal 6 karakter"
+              placeholder="Minimal 8 karakter, ada huruf dan angka"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               onBlur={() => handleBlur("password")}

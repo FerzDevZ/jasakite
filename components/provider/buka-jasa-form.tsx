@@ -428,7 +428,7 @@ export function BukaJasaForm({ onCreated }: { onCreated: (id: string | number) =
               {[
                 "Langsung tayang setelah dibuat",
                 "Bisa disembunyikan kapan saja",
-                "Gratis, tanpa biaya bulanan",
+                "Tayang selama langganan aktif — Rp 10.000/30 hari",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
                   <CheckCircle2

@@ -48,15 +48,15 @@ export const FAQ_SECTIONS: FaqSection[] = [
     items: [
       {
         q: "Metode pembayaran apa saja yang tersedia?",
-        a: "Saat ini kami mendukung Bank Transfer (BCA, Mandiri, BRI, Permata), E-Wallet (DANA, OVO, GoPay), dan Cash on Delivery (bayar tunai saat jasa selesai). Metode pembayaran akan terus bertambah.",
+        a: "Ada dua cara membayar pesanan: QRIS (scan kode di halaman pesanan, transfer, unggah bukti, lalu diverifikasi admin) atau Saldo JASAKITE yang terpotong otomatis. Uang ditahan platform sampai pesanan selesai.",
       },
       {
         q: "Apakah pembayaran saya aman?",
-        a: "Ya. Semua pembayaran diproses melalui gateway terenkripsi. Data kartu/kredensial tidak pernah disimpan di server kami. Pembayaran COD aman karena Anda hanya membayar setelah jasa selesai.",
+        a: "Ya. Pembayaran memakai escrow: uang Anda ditahan platform dan penyedia baru dibayar setelah pekerjaan ditandai selesai. Bila pesanan dibatalkan setelah dibayar, dana kembali penuh ke saldo JASAKITE Anda.",
       },
       {
         q: "Apakah ada biaya tambahan?",
-        a: "Tidak ada biaya layanan untuk pelanggan. Harga yang tertera di halaman jasa adalah harga final yang Anda bayar.",
+        a: "Tidak ada biaya layanan untuk pelanggan. Harga yang tertera di halaman jasa adalah harga final yang Anda bayar. Biaya langganan dan komisi platform hanya berlaku untuk penyedia jasa.",
       },
     ],
   },
@@ -66,11 +66,11 @@ export const FAQ_SECTIONS: FaqSection[] = [
     items: [
       {
         q: "Bagaimana cara menjadi penyedia jasa?",
-        a: "Daftar akun, lalu ubah role Anda menjadi PROVIDER di halaman dashboard. Setelah itu, Anda bisa membuka jasa melalui menu 'Buka Jasa'. Jasa langsung tayang setelah dipublikasikan.",
+        a: "Daftar akun dengan peran Provider (peran tidak bisa diubah sendiri setelah daftar — hubungi admin bila perlu), aktifkan langganan Rp 10.000 per 30 hari, lalu buka jasa pertama Anda lewat menu 'Buka Jasa'. Jasa langsung tayang setelah dipublikasikan.",
       },
       {
         q: "Berapa biaya untuk menjadi penyedia jasa?",
-        a: "Gratis. Tidak ada biaya pendaftaran, biaya bulanan, atau biaya transaksi. Anda menerima 100% dari harga jasa yang Anda tetapkan.",
+        a: "Pendaftaran gratis. Untuk menayangkan jasa berlaku langganan Rp 10.000 per 30 hari (dipotong otomatis dari saldo dompet), dan platform memotong komisi 10% dari nilai pesanan yang selesai — sisanya masuk saldo Anda.",
       },
       {
         q: "Bagaimana cara mendapat pesanan?",

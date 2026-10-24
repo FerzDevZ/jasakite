@@ -41,11 +41,17 @@ const createServiceSchema = z.object({
   price: z.coerce.number().positive(),
   deliveryTimeDays: z.coerce.number().int().positive(),
   categoryId: z.string().min(1).refine((v) => /^[0-9a-fA-F]{24}$/.test(v) || /^\d+$/.test(v), 'categoryId tidak valid'),
-  // Hanya URL https:// whitelist; tolak data:image untuk cegah bloat (max 300KB)
+  // Dua bentuk gambar yang diterima:
+  // 1. Data-URI hasil kompresi klien (tombol "Ambil dari Device" mengompres
+  //    ke ≤300KB, pola yang sama dengan bukti transfer dompet di lib/wallet.ts).
+  // 2. URL https dari host whitelist.
+  // Batas `max` memakai panjang string: data-URI dari form dijaga klien pada
+  // 300.000 karakter (~225KB biner setelah base64), jadi angka yang sama di
+  // sini konsisten dengan guard klien.
   imageUrl: z.string().max(300_000, 'Gambar >300KB').optional().or(z.literal('')).refine(
     (v) => {
       if (!v) return true
-      if (v.startsWith('data:image/')) return false
+      if (/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(v)) return true
       try {
         const u = new URL(v); if (!['http:', 'https:'].includes(u.protocol)) return false
         const allowed = ['images.unsplash.com', 'i.pravatar.cc', 'res.cloudinary.com', 'cdn.jasakite.id']

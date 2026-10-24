@@ -32,7 +32,6 @@ import {
   Clock,
   Landmark,
   Wallet,
-  Banknote,
   SearchX,
   Loader2,
   ShieldCheck,
@@ -65,13 +64,18 @@ type ServiceDetail = {
 }
 
 const PAYMENT_METHODS = [
-  // "transfer" adalah metode bawaan (lihat state `paymentMethod`). Ia harus
-  // berada di urutan pertama: radiogroup memakai roving tabindex, dan pilihan
-  // aktif harus menjadi satu-satunya tab stop yang terlihat di awal.
+  // "transfer" adalah alias QRIS di API (lib/payments.ts). Ia harus berada di
+  // urutan pertama: radiogroup memakai roving tabindex, dan pilihan aktif
+  // harus menjadi satu-satunya tab stop yang terlihat di awal.
+  //
+  // Hanya dua metode ini yang diterima server — dulu UI juga menawarkan
+  // E-Wallet dan Bayar di Tempat, tapi POST /api/orders menolak keduanya
+  // ("Metode pembayaran tidak didukung"), jadi menawarkannya hanya
+  // menjanjikan kegagalan saat konfirmasi.
   {
     value: "transfer",
-    label: "Bank Transfer",
-    description: "BCA, Mandiri, BRI, Permata",
+    label: "QRIS / Transfer platform",
+    description: "Scan QRIS, unggah bukti, diverifikasi admin",
     icon: Landmark,
   },
   {
@@ -79,18 +83,6 @@ const PAYMENT_METHODS = [
     label: "Saldo JASAKITE",
     description: "Bayar instan dari saldo dompet",
     icon: Wallet,
-  },
-  {
-    value: "ewallet",
-    label: "E-Wallet",
-    description: "Dana • OVO • GoPay",
-    icon: Wallet,
-  },
-  {
-    value: "cod",
-    label: "Bayar di Tempat",
-    description: "Bayar saat jasa selesai",
-    icon: Banknote,
   },
 ] as const
 
@@ -102,10 +94,7 @@ const PAYMENT_DETAILS: Record<PaymentMethod, string> = {
   saldo:
     "Total langsung dipotong dari saldo dompet Anda. Penyedia menerima dana saat pesanan selesai; pembatalan mengembalikan saldo penuh.",
   transfer:
-    "Setelah konfirmasi, nomor virtual account akan muncul di halaman pesanan. Status pesanan otomatis terkonfirmasi setelah transfer diverifikasi.",
-  ewallet:
-    "Kamu akan diarahkan ke aplikasi dompet digital untuk menyetujui pembayaran. Pastikan saldo mencukupi sebelum melanjutkan.",
-  cod: "Siapkan pembayaran tunai atau QRIS saat pekerjaan selesai. Provider akan mengonfirmasi penerimaan pembayaran di tempat.",
+    "Uang ditahan platform (escrow) sampai pekerjaan selesai. Scan QRIS di halaman pesanan, unggah bukti transfer, lalu diverifikasi admin. Penyedia baru dibayar setelah pesanan selesai.",
 }
 
 // Janji platform yang benar-benar dijalankan aplikasi ini — bukan klaim
@@ -315,7 +304,12 @@ function CheckoutContent() {
   })
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => {
     if (typeof window === "undefined") return "transfer"
-    try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}" ).paymentMethod || "transfer" } catch { return "transfer" }
+    // Draft lama bisa memuat "ewallet"/"cod" yang kini tidak lagi ditawarkan
+    // (dan ditolak server) — nilai tak dikenal jatuh kembali ke "transfer".
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}").paymentMethod
+      return saved === "saldo" || saved === "transfer" ? saved : "transfer"
+    } catch { return "transfer" }
   })
 
   // Simpan draft setiap perubahan
@@ -690,10 +684,6 @@ function CheckoutContent() {
                   loading={walletBalance.loading}
                 />
               )}
-              <p className="text-2xs leading-relaxed text-muted-foreground/70">
-                Demo: pembayaran disimulasikan, tidak ada dana yang benar-benar
-                dipindahkan.
-              </p>
             </CardContent>
           </Card>
         </div>

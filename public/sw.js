@@ -3,7 +3,7 @@
 // Versi cache WAJIB naik setiap kali strategi di bawah berubah: `activate`
 // hanya menghapus cache yang namanya berbeda, jadi nama yang tetap berarti
 // shell hasil strategi lama tetap dipakai oleh pengguna yang sudah pernah buka.
-const CACHE_NAME = 'jasakite-v4'
+const CACHE_NAME = 'jasakite-v5'
 // Dokumen HTML yang disimpan hanya sebagai cadangan OFFLINE. Disajikan lewat
 // jaringan lebih dulu (lihat handler fetch) — bukan dari cache lebih dulu.
 const STATIC_ASSETS = [
@@ -121,6 +121,12 @@ self.addEventListener('fetch', (event) => {
 
   // Aset lain (gambar, font, ikon): cache-first masih tepat — isinya jarang
   // berubah dan justru inilah yang membuat aplikasi tetap berguna offline.
+  //
+  // Rantai ini WAJIB diakhiri .catch: fetch aset bisa reject (offline, host
+  // CDN mati) dan tanpa catch ia menjadi "Uncaught (in promise) TypeError:
+  // Failed to fetch" di console untuk setiap gambar yang gagal — terlihat
+  // seperti bug aplikasi padahal hanya jaringan. Response.error() meneruskan
+  // kegagalan itu secara bersih ke halaman.
   event.respondWith(
     caches.match(event.request).then((response) => {
       if (response) {
@@ -144,17 +150,17 @@ self.addEventListener('fetch', (event) => {
         }
 
         caches.open(CACHE_NAME).then((cache) => {
-          try {
-            cache.put(event.request, responseToCache)
-          } catch (err) {
-            // Chrome / Chromium: Request scheme unsupported for Cache.put
-            console.warn(`[SW] failed to cache PUT: ${event.request.url}`, err?.message || err)
-          }
+          // cache.put mengembalikan Promise: try/catch sinkron tidak menangkap
+          // reject-nya, jadi rantai .catch wajib ada di Promise-nya.
+          cache.put(event.request, responseToCache).catch(() => {
+            // Chrome / Chromium: Request scheme unsupported for Cache.put —
+            // aset tetap sampai ke halaman, hanya tidak ter-cache.
+          })
         })
 
         return response
       })
-    }),
+    }).catch(() => Response.error()),
   )
 })
 

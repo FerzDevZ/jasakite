@@ -56,6 +56,10 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const rawCallbackUrl = searchParams?.get("callbackUrl") ?? "/dashboard"
   const callbackUrl = getSafeCallbackUrl(rawCallbackUrl)
+  // Register mengarahkan ke sini dengan ?registered=1 setelah akun dibuat
+  // (tidak auto-login) — tanpa banner, pengguna baru sampai di form kosong
+  // tanpa tahu langkah berikutnya.
+  const justRegistered = searchParams?.get("registered") === "1"
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -249,6 +253,15 @@ function LoginForm() {
           </form>
         ) : (
           <>
+            {justRegistered && (
+              <p
+                role="status"
+                className="flex items-center gap-2 rounded-lg border border-success/30 bg-success-soft px-3 py-2.5 text-sm text-success"
+              >
+                Pendaftaran berhasil — silakan masuk dengan email dan password
+                baru Anda.
+              </p>
+            )}
             <form onSubmit={handleCredentialsSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
