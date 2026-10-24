@@ -176,7 +176,7 @@ Provinsi Kepulauan Bangka Belitung • 7 kabupaten/kota
 
           {/* Search — command palette style */}
           <div data-hero-fade className="relative mt-8 max-w-xl">
-            <HeroSearch />
+            <HeroSearch categories={categories} />
           </div>
 
           {/* Pills kategori */}

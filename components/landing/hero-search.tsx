@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { Search, ArrowRight } from "lucide-react"
+import { searchPlaceholder } from "@/lib/search-copy"
 
 type Suggestion = { title: string; slug: string }
 
@@ -27,7 +28,11 @@ function useSuggestions(q: string) {
   return { data, loading }
 }
 
-export function HeroSearch() {
+export function HeroSearch({
+  categories = [],
+}: {
+  categories?: { name: string }[]
+}) {
   const router = useRouter()
   const [q, setQ] = React.useState("")
   const [open, setOpen] = React.useState(false)
@@ -81,7 +86,7 @@ export function HeroSearch() {
           aria-controls="hero-suggestions"
           aria-autocomplete="list"
           role="combobox"
-          placeholder="Cari: Service AC, Pasang Listrik, Bersih Rumah..."
+          placeholder={searchPlaceholder(categories.map((category) => category.name))}
           className="w-full bg-transparent px-2 py-3 text-sm outline-none placeholder:text-muted-foreground sm:text-base"
           autoComplete="off"
         />
@@ -98,7 +103,9 @@ export function HeroSearch() {
       {open && (
         <div id="hero-suggestions" className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-card-lg">
           {q.trim().length < 2 ? (
-            <div className="p-3 text-xs text-muted-foreground">Ketik minimal 2 huruf — contoh <span className="font-medium text-foreground">AC</span>, <span className="font-medium text-foreground">listrik</span></div>
+            <div className="p-3 text-xs text-muted-foreground">
+              Ketik minimal 2 huruf untuk melihat saran jasa
+            </div>
           ) : loading ? (
             <div className="p-3 text-xs text-muted-foreground flex items-center gap-2"><span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" aria-hidden /> Mencari…</div>
           ) : data.length === 0 ? (

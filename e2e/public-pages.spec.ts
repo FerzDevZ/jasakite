@@ -20,6 +20,26 @@ test.describe("halaman publik", () => {
     // Kartu statistik hero: angka diambil dari database, bukan hardcode.
     await expect(page.getByText(/Penyedia jasa aktif/i).first()).toBeVisible()
     await expect(page.getByText(/Bergabung bersama/i)).toBeVisible()
+
+    // Placeholder pencarian harus menyebut kategori yang BENAR-BENAR ada.
+    // Dua tempat dulu hardcode nama kategori lama: kolom hero ("Service AC,
+    // Pasang Listrik, Bersih Rumah") dan kolom navbar ("AC, listrik,
+    // kebersihan"). Keduanya kini diturunkan dari kategori milik halaman.
+    const categoryName = (
+      await page.locator('a[href*="/services?category="]').first().innerText()
+    ).trim()
+
+    const searchBoxes = page.getByRole("combobox", { name: "Cari jasa" })
+    const filled = await searchBoxes.evaluateAll((nodes) =>
+      nodes
+        .filter((node) => (node as HTMLInputElement).checkVisibility())
+        .map((node) => (node as HTMLInputElement).placeholder)
+    )
+    expect(filled.length, "harus ada kolom pencarian yang terlihat").toBeGreaterThan(0)
+    for (const placeholder of filled) {
+      expect(placeholder).toContain(categoryName)
+      expect(placeholder).not.toMatch(/Service AC|Pasang Listrik|Bersih Rumah|AC, listrik, kebersihan/)
+    }
   })
 
   test("tepat satu h1 dan tidak ada lompatan level heading", async ({ page }) => {

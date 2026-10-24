@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { Search, X, ArrowRight, Clock } from "lucide-react"
+import { searchPlaceholder } from "@/lib/search-copy"
 
 type Suggestion = { title: string; slug: string }
 
@@ -173,7 +174,13 @@ function SuggestionList({
   )
 }
 
-export function SearchBar() {
+/**
+ * @param categories Kategori yang benar-benar ada di database. Contoh di
+ * placeholder diturunkan dari daftar ini supaya tidak pernah menawarkan
+ * kategori yang sudah dihapus (dulu hardcode "AC, listrik, kebersihan").
+ */
+export function SearchBar({ categories = [] }: { categories?: { name: string }[] }) {
+  const placeholder = searchPlaceholder(categories.map((category) => category.name))
   const router = useRouter()
   const inputRef = React.useRef<HTMLInputElement>(null)
   const mobileInputRef = React.useRef<HTMLInputElement>(null)
@@ -314,7 +321,7 @@ export function SearchBar() {
               aria-controls="search-suggestions"
               aria-autocomplete="list"
               role="combobox"
-              placeholder="Cari jasa: AC, listrik, kebersihan..."
+              placeholder={placeholder}
               className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               autoComplete="off"
             />
@@ -368,7 +375,7 @@ export function SearchBar() {
                   aria-controls="mobile-search-suggestions"
                   aria-autocomplete="list"
                   role="combobox"
-                  placeholder="Cari jasa: AC, listrik, kebersihan..."
+                  placeholder={placeholder}
                   className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   autoComplete="off"
                 />

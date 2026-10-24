@@ -39,8 +39,9 @@ export default async function Navbar() {
           </span>
         </Link>
 
-        {/* Search dengan shortcut "/" */}
-        <SearchBar />
+        {/* Search dengan shortcut "/". Kategori diteruskan agar contoh di
+            placeholder mengikuti isi database, bukan daftar lama. */}
+        <SearchBar categories={categories} />
 
         {/* Nav kanan */}
         <nav className="ml-auto flex items-center gap-1.5 md:gap-2">
