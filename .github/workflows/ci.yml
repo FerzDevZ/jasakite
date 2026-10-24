@@ -23,22 +23,6 @@ jobs:
     # dengan P1012 "the URL must start with the protocol `mongo`" — generate,
     # migrate, bahkan `next build` (beranda & sitemap me-query Prisma saat
     # prerender) — sehingga tes tidak pernah sempat dijalankan.
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        # Replica set WAJIB: Prisma menjalankan upsert MongoDB lewat
-        # transaksi (P2031 pada standalone) — seed gagal di sini selama ini
-        # karena container masih standalone. rs.initiate dijalankan sekali
-        # oleh healthcheck; percobaan berikutnya menangkap error dan
-        # jatuh ke ping biasa.
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'try { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"127.0.0.1:27017\"}]}) } catch (e) { db.runCommand({ ping: 1 }) }'"
-          --health-interval 10s
-          --health-timeout 10s
-          --health-retries 10
-          --health-start-period 5s
 
     env:
       # MongoDB (provider schema = mongodb) — bukan SQLite. `directConnection`
@@ -53,6 +37,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      # MongoDB HARUS replica set tunggal: Prisma menjalankan upsert MongoDB
+      # lewat transaksi (P2031 pada standalone), jadi seed gagal selama CI
+      # masih memakai mongod standalone. Container services GitHub tidak bisa
+      # diberi flag mongod, maka mongo dijalankan manual di sini.
+      - name: Siapkan MongoDB (replica set tunggal rs0)
+        run: |
+          docker run -d --name mongodb -p 27017:27017 mongo:7 --replSet rs0 --bind_ip_all
+          for i in $(seq 1 30); do
+            docker exec mongodb mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" 2>/dev/null | grep -q 1 && break
+            sleep 2
+          done
+          docker exec mongodb mongosh --quiet --eval 'try { rs.initiate({_id:"rs0",members:[{_id:0,host:"127.0.0.1:27017"}]}) } catch (e) { }'
+          for i in $(seq 1 30); do
+            docker exec mongodb mongosh --quiet --eval "db.hello().isWritablePrimary" 2>/dev/null | grep -q true && echo "PRIMARY siap" && exit 0
+            sleep 2
+          done
+          echo "::error::MongoDB replica set tidak kunjung punya PRIMARY dalam 60 detik"
+          exit 1
+
 
       - uses: actions/setup-node@v4
         with:
@@ -152,22 +155,6 @@ jobs:
     timeout-minutes: 40
 
     # Sama dengan job `verify`: MongoDB, bukan SQLite — lihat catatan di atas.
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        # Replica set WAJIB: Prisma menjalankan upsert MongoDB lewat
-        # transaksi (P2031 pada standalone) — seed gagal di sini selama ini
-        # karena container masih standalone. rs.initiate dijalankan sekali
-        # oleh healthcheck; percobaan berikutnya menangkap error dan
-        # jatuh ke ping biasa.
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'try { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"127.0.0.1:27017\"}]}) } catch (e) { db.runCommand({ ping: 1 }) }'"
-          --health-interval 10s
-          --health-timeout 10s
-          --health-retries 10
-          --health-start-period 5s
 
     env:
       DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?replicaSet=rs0&w=majority"
@@ -176,6 +163,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      # MongoDB HARUS replica set tunggal: Prisma menjalankan upsert MongoDB
+      # lewat transaksi (P2031 pada standalone), jadi seed gagal selama CI
+      # masih memakai mongod standalone. Container services GitHub tidak bisa
+      # diberi flag mongod, maka mongo dijalankan manual di sini.
+      - name: Siapkan MongoDB (replica set tunggal rs0)
+        run: |
+          docker run -d --name mongodb -p 27017:27017 mongo:7 --replSet rs0 --bind_ip_all
+          for i in $(seq 1 30); do
+            docker exec mongodb mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" 2>/dev/null | grep -q 1 && break
+            sleep 2
+          done
+          docker exec mongodb mongosh --quiet --eval 'try { rs.initiate({_id:"rs0",members:[{_id:0,host:"127.0.0.1:27017"}]}) } catch (e) { }'
+          for i in $(seq 1 30); do
+            docker exec mongodb mongosh --quiet --eval "db.hello().isWritablePrimary" 2>/dev/null | grep -q true && echo "PRIMARY siap" && exit 0
+            sleep 2
+          done
+          echo "::error::MongoDB replica set tidak kunjung punya PRIMARY dalam 60 detik"
+          exit 1
+
 
       - uses: actions/setup-node@v4
         with:
