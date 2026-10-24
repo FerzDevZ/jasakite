@@ -466,9 +466,11 @@ Buka `/dashboard/admin/wallet` — **Verifikasi Saldo**. Antrean terbagi tiga
 kartu: **Pembayaran Pesanan Menunggu**, **Isi Saldo Menunggu**, **Penarikan
 Menunggu**. Cara memutuskan:
 
-1. Isi **Kode 2FA untuk keputusan** (6 digit) di bagian atas — satu kode
-   hanya untuk satu keputusan; kolom kosong sendiri setelah dipakai; kode
-   yang sama ditolak: *"Kode 2FA ini sudah dipakai. Tunggu kode berikutnya."*
+1. Ketik **kode 2FA** (6 digit) sekali di awal sesi kerja — kode yang sah
+   membuka **jendela kepercayaan 15 menit** di perangkat itu: selama jendela
+   hidup (chip hijau bertuliskan sisa waktunya), semua keputusan berikutnya
+   tidak meminta kode lagi; setelah habis, kolom kode muncul kembali. Satu
+   kode tetap tak boleh dipakai dua kali.
 2. Periksa bukti tiap kartu (klik untuk memperbesar). Perhatikan badge
    **"Bukti diubah"** (bukti diganti setelah diajukan) dan **"Bukti belum
    dilampirkan"**.

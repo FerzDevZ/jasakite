@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth"
 import { prismaId } from "@/lib/ids"
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/api-guard"
 import { isAdminRole, isSuperAdminRole } from "@/lib/roles"
+import { getMoneyTrustUntil } from "@/lib/totp-guard"
 
 export const dynamic = "force-dynamic"
 
@@ -94,6 +95,9 @@ export async function GET(request: Request) {
       // tahu agar bisa menampilkan ajakan mendaftarkan authenticator, bukan
       // membiarkan admin menebak kenapa keputusannya gagal.
       totpEnabled: Boolean(admin?.totpEnabledAt),
+      // Jendela kepercayaan uang per perangkat (hasil satu kode sah): sampai
+      // waktu ini keputusan tidak meminta kode lagi — null berarti wajib kode.
+      moneyTrustUntil: (await getMoneyTrustUntil(String(session.user.id)))?.toISOString() ?? null,
     })
   } catch (error) {
     console.error("[admin/wallet] GET error:", error)

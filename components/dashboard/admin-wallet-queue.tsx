@@ -11,6 +11,7 @@ import {
   Loader2,
   RefreshCw,
   ShieldAlert,
+  ShieldCheck,
   XCircle,
 } from "lucide-react"
 import { toast } from "@/lib/toast-dynamic"
@@ -75,6 +76,15 @@ type AdminWalletPayload = {
   pendingOrderPayments: number
   canVerify: boolean
   totpEnabled: boolean
+  moneyTrustUntil: string | null
+}
+
+/** mm:ss sisa jendela kepercayaan uang. */
+function trustCountdown(untilEpochMs: number, nowEpochMs: number): string {
+  const totalSeconds = Math.max(0, Math.floor((untilEpochMs - nowEpochMs) / 1000))
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}:${String(seconds).padStart(2, "0")}`
 }
 
 export function AdminWalletQueue() {
@@ -82,7 +92,8 @@ export function AdminWalletQueue() {
   const [proofUrl, setProofUrl] = React.useState<string | null>(null)
   // Kode 2FA langkah-kedua. Disimpan di sini (bukan per kartu) karena satu kode
   // berlaku untuk semua keputusan dalam periode 30 detik — dan server menolak
-  // pemakaian ulang kode yang sama.
+  // pemakaian ulang kode yang sama. Satu kode yang sah juga membuka jendela
+  // kepercayaan 15 menit, jadi untuk antrean panjang kode cukup sekali.
   const [totpCode, setTotpCode] = React.useState("")
 
   const { data, isLoading } = useQuery<AdminWalletPayload>({
@@ -94,6 +105,16 @@ export function AdminWalletQueue() {
       return response.json()
     },
   })
+
+  // Detak 1 detik hanya saat jendela kepercayaan aktif — untuk hitung mundur.
+  const trustUntilMs = data?.moneyTrustUntil ? new Date(data.moneyTrustUntil).getTime() : null
+  const [nowMs, setNowMs] = React.useState(() => Date.now())
+  React.useEffect(() => {
+    if (!trustUntilMs || trustUntilMs <= nowMs) return
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1_000)
+    return () => window.clearInterval(timer)
+  }, [trustUntilMs, nowMs])
+  const trustActive = Boolean(trustUntilMs && trustUntilMs > nowMs)
 
   const decidePayment = useMutation({
     mutationFn: async (input: {
@@ -187,8 +208,11 @@ export function AdminWalletQueue() {
   const topups = data.pending.filter((tx) => tx.type === "TOPUP")
   const withdraws = data.pending.filter((tx) => tx.type === "WITHDRAW")
   // Tombol keputusan hanya hidup bila server benar-benar akan menerimanya:
-  // peran cukup, 2FA aktif, dan kode 6 digit sudah diisi.
-  const totpReady = data.totpEnabled && totpCode.replace(/\s/g, "").length === 6
+  // peran cukup, 2FA aktif, dan (kode 6 digit terisi ATAU jendela kepercayaan
+  // 15 menit dari kode sebelumnya masih hidup di perangkat ini).
+  const totpReady =
+    data.totpEnabled &&
+    (trustActive || totpCode.replace(/\s/g, "").length === 6)
   const canDecide = data.canVerify && totpReady
 
   return (
@@ -225,7 +249,19 @@ export function AdminWalletQueue() {
           </p>
         )}
 
-        {data.canVerify && data.totpEnabled && (
+        {data.canVerify && data.totpEnabled && trustActive && trustUntilMs && (
+          <p className="mt-3 flex items-start gap-2 rounded-xl bg-success-soft px-3.5 py-3 text-sm text-success">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <span aria-live="polite">
+              Akses uang tepercaya — kode 2FA tidak diperlukan lagi selama{" "}
+              <strong>{trustCountdown(trustUntilMs, nowMs)}</strong>. Satu kode
+              yang sah tadi membuka jendela 15 menit; setelah habis, kolom kode
+              muncul kembali.
+            </span>
+          </p>
+        )}
+
+        {data.canVerify && data.totpEnabled && !trustActive && (
           <div className="mt-4 max-w-xs space-y-1.5">
             <Label htmlFor="admin-totp-code">Kode 2FA untuk keputusan</Label>
             <Input
@@ -239,8 +275,8 @@ export function AdminWalletQueue() {
               onChange={(event) => setTotpCode(event.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Satu kode hanya bisa dipakai sekali; kolom dikosongkan setelah
-              keputusan berhasil.
+              Satu kode cukup sekali: kode yang sah membuka jendela 15 menit
+              untuk semua keputusan dalam sesi ini.
             </p>
           </div>
         )}

@@ -16,7 +16,25 @@ vi.mock("@/lib/prisma", () => ({
   },
 }))
 
-const { requireMoneyAccess } = await import("@/lib/totp-guard")
+// Cookie palsu untuk jendela kepercayaan uang (next/headers di luar request
+// melempar error — guard menelan error itu, tapi test jendela butuh isinya).
+const cookieJar = vi.hoisted(() => ({
+  store: new Map<string, string>(),
+  get: vi.fn(),
+  set: vi.fn(),
+}))
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(async () => cookieJar),
+}))
+
+const {
+  requireMoneyAccess,
+  signMoneyTrust,
+  parseMoneyTrust,
+  getMoneyTrustKey,
+  MONEY_TRUST_WINDOW_MS,
+} = await import("@/lib/totp-guard")
 
 const STUB_AUTH_SECRET = "rahasia-uji-totp-yang-panjang-sekali"
 const encryptionKey = deriveTotpEncryptionKey(STUB_AUTH_SECRET)
@@ -39,6 +57,15 @@ beforeEach(() => {
   userStore.findUnique.mockReset()
   userStore.updateMany.mockReset()
   userStore.updateMany.mockResolvedValue({ count: 1 })
+  cookieJar.store.clear()
+  cookieJar.get.mockReset()
+  cookieJar.set.mockReset()
+  cookieJar.get.mockImplementation((name: string) =>
+    cookieJar.store.has(name) ? { name, value: cookieJar.store.get(name) } : undefined
+  )
+  cookieJar.set.mockImplementation((name: string, value: string) => {
+    cookieJar.store.set(name, value)
+  })
 })
 
 afterEach(() => {
@@ -119,5 +146,76 @@ describe("requireMoneyAccess", () => {
     )
     expect(denied?.status).toBe(500)
     expect(userStore.updateMany).not.toHaveBeenCalled()
+  })
+})
+
+describe("jendela kepercayaan uang (mode sudo 15 menit)", () => {
+  const USER_ID = "507f1f77bcf86cd799439011"
+  // Lazy: AUTH_SECRET baru di-set oleh beforeEach — jangan turunkan kunci di level modul.
+  const trustKey = () => getMoneyTrustKey()
+
+  it("token sah mengembalikan tanggal kedaluwarsa", () => {
+    const until = Date.now() + 60_000
+    const token = signMoneyTrust(USER_ID, until, trustKey())
+    expect(parseMoneyTrust(token, trustKey(), USER_ID, new Date())).toEqual(new Date(until))
+  })
+
+  it("menolak token kedaluwarsa", () => {
+    const token = signMoneyTrust(USER_ID, Date.now() - 1_000, trustKey())
+    expect(parseMoneyTrust(token, trustKey(), USER_ID, new Date())).toBeNull()
+  })
+
+  it("menolak token milik pengguna lain", () => {
+    const token = signMoneyTrust("user-lain", Date.now() + 60_000, trustKey())
+    expect(parseMoneyTrust(token, trustKey(), USER_ID, new Date())).toBeNull()
+  })
+
+  it("menolak token yang tandatangannya dirusak", () => {
+    const token = signMoneyTrust(USER_ID, Date.now() + 60_000, trustKey())
+    const tampered = `${token.slice(0, -2)}xx`
+    expect(parseMoneyTrust(tampered, trustKey(), USER_ID, new Date())).toBeNull()
+  })
+
+  it("menolak format aneh", () => {
+    expect(parseMoneyTrust("bukan-token", trustKey(), USER_ID, new Date())).toBeNull()
+    expect(parseMoneyTrust("a.b.c.d", trustKey(), USER_ID, new Date())).toBeNull()
+  })
+
+  it("jendela aktif: keputusan diizinkan TANPA kode dan tanpa klaim langkah", async () => {
+    userStore.findUnique.mockResolvedValue(account())
+    cookieJar.store.set(
+      "jasakite-uang-trust",
+      signMoneyTrust(USER_ID, Date.now() + 60_000, trustKey())
+    )
+    const denied = await requireMoneyAccess(USER_ID, "")
+    expect(denied).toBeNull()
+    // Tidak ada klaim TOTP — kode tidak dipakai sama sekali.
+    expect(userStore.updateMany).not.toHaveBeenCalled()
+  })
+
+  it("jendela TIDAK melompati cek peran: ADMIN tetap ditolak", async () => {
+    userStore.findUnique.mockResolvedValue(account({ role: "ADMIN" }))
+    cookieJar.store.set(
+      "jasakite-uang-trust",
+      signMoneyTrust(USER_ID, Date.now() + 60_000, trustKey())
+    )
+    const denied = await requireMoneyAccess(USER_ID, "")
+    expect(denied?.status).toBe(403)
+  })
+
+  it("kode sah memasang cookie jendela untuk keputusan berikutnya", async () => {
+    userStore.findUnique.mockResolvedValue(account())
+    const validCode = totpCodeAt(totpSecret, new Date())
+    const denied = await requireMoneyAccess(USER_ID, validCode)
+    expect(denied).toBeNull()
+    expect(cookieJar.set).toHaveBeenCalledWith(
+      "jasakite-uang-trust",
+      expect.stringMatching(new RegExp(`^${USER_ID}\\.\\d+\\.`)),
+      expect.objectContaining({ httpOnly: true })
+    )
+  })
+
+  it("jendela selama konstanta 15 menit", () => {
+    expect(MONEY_TRUST_WINDOW_MS).toBe(15 * 60 * 1000)
   })
 })

@@ -13,8 +13,22 @@
 //  3. Anti-replay — satu kode hanya boleh dipakai sekali. Klaim dilakukan
 //     dengan updateMany bersyarat, jadi dua permintaan paralel dengan kode yang
 //     sama tidak bisa dua-duanya lolos.
+//
+// ── Jendela kepercayaan 15 menit ("mode sudo") ─────────────────────────────
+// Satu kode yang sah membuka jendela 15 menit PER PERANGKAT: di dalamnya,
+// keputusan uang berikutnya tidak minta kode lagi. Pola yang sama dipakai
+// GitHub ("confirm access"). Poin rancangannya:
+//  - Token jendela adalah cookie HttpOnly bertanda tangan HMAC (kunci turunan
+//    AUTH_SECRET, label terpisah dari kunci enkripsi TOTP) yang memuat
+//    userId + kedaluwarsa — tidak bisa dipalsukan, tidak pindah antar akun,
+//    dan otomatis mati sendiri.
+//  - Jendela HANYA melompati kode; peran SUPER_ADMIN dan status 2FA aktif
+//    tetap dicek pada setiap keputusan (admin yang diturunkan perannya, atau
+//    yang merotasi 2FA, tetap ditolak meski cookie-nya masih hidup).
 
+import { createHash, createHmac, timingSafeEqual } from "node:crypto"
 import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import { prismaId } from "@/lib/ids"
 import {
@@ -23,6 +37,92 @@ import {
   findTotpMatch,
   getTotpEncryptionKey,
 } from "@/lib/totp"
+
+export const MONEY_TRUST_WINDOW_MS = 15 * 60 * 1000
+const MONEY_TRUST_COOKIE = "jasakite-uang-trust"
+
+/** Kunci HMAC jendela kepercayaan — label sendiri agar tidak sama dengan kunci enkripsi TOTP. */
+export function getMoneyTrustKey(): Buffer {
+  const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? ""
+  if (secret.length < 16) {
+    throw new Error("AUTH_SECRET minimal 16 karakter untuk kunci kepercayaan uang")
+  }
+  return createHash("sha256").update(`money-trust:v1:${secret}`).digest()
+}
+
+/** Buat token jendela: `userId.untilEpochMs.hmac` (murni — mudah diuji). */
+export function signMoneyTrust(
+  userId: string,
+  untilEpochMs: number,
+  key: Buffer
+): string {
+  const payload = `${userId}.${untilEpochMs}`
+  const mac = createHmac("sha256", key).update(payload).digest("base64url")
+  return `${payload}.${mac}`
+}
+
+/**
+ * Baca token jendela untuk `userId`. Mengembalikan tanggal kedaluwarsa bila
+ * tanda tangan cocok, pemilik cocok, dan belum lewat — selain itu null.
+ * (Murni — mudah diuji.)
+ */
+export function parseMoneyTrust(
+  token: string,
+  key: Buffer,
+  userId: string,
+  at: Date
+): Date | null {
+  const parts = token.split(".")
+  if (parts.length !== 3) return null
+  const [tokenUserId, untilRaw, mac] = parts
+  const expected = createHmac("sha256", key)
+    .update(`${tokenUserId}.${untilRaw}`)
+    .digest("base64url")
+  const macBuf = Buffer.from(mac)
+  const expectedBuf = Buffer.from(expected)
+  if (macBuf.length !== expectedBuf.length || !timingSafeEqual(macBuf, expectedBuf)) {
+    return null
+  }
+  if (tokenUserId !== userId) return null
+  const untilEpochMs = Number(untilRaw)
+  if (!Number.isFinite(untilEpochMs)) return null
+  const until = new Date(untilEpochMs)
+  if (at.getTime() >= until.getTime()) return null
+  return until
+}
+
+async function readMoneyTrustUntil(userId: string): Promise<Date | null> {
+  try {
+    const jar = await cookies()
+    const token = jar.get(MONEY_TRUST_COOKIE)?.value
+    if (!token) return null
+    return parseMoneyTrust(token, getMoneyTrustKey(), userId, new Date())
+  } catch {
+    // Di luar konteks request (mis. pengujian unit) tidak ada cookie — anggap
+    // tidak ada jendela kepercayaan; jalan kode penuh tetap tersedia.
+    return null
+  }
+}
+
+async function writeMoneyTrust(userId: string): Promise<void> {
+  try {
+    const jar = await cookies()
+    jar.set(MONEY_TRUST_COOKIE, signMoneyTrust(userId, Date.now() + MONEY_TRUST_WINDOW_MS, getMoneyTrustKey()), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: Math.floor(MONEY_TRUST_WINDOW_MS / 1000),
+    })
+  } catch {
+    // Gagal menulis cookie ≠ gagal keputusan: verifikasi kodenya sudah sah.
+  }
+}
+
+/** Untuk GET antrean: sampai kapan perangkat ini tepercaya (null = harus kode). */
+export async function getMoneyTrustUntil(userId: string): Promise<Date | null> {
+  return readMoneyTrustUntil(userId)
+}
 
 export type TotpAccountSnapshot = {
   role: string | null | undefined
@@ -158,6 +258,11 @@ export function moneyAccessResponse(
 /**
  * Gabungan baca-akun → putuskan → klaim. Mengembalikan `null` bila aksi boleh
  * lanjut, atau NextResponse siap kirim bila ditolak.
+ *
+ * Jendela kepercayaan dicek SETELAH akun dibaca tapi SEBELUM kode disyaratkan:
+ * peran dan status 2FA tetap divalidasi setiap kali (lewat decideMoneyAccess
+ * dengan kode kosong — cabang `code-missing` hanya tercapai bila kedua lapis
+ * awal lolos), lalu cookie jendela melompati kebutuhan kode.
  */
 export async function requireMoneyAccess(
   userId: string,
@@ -188,6 +293,22 @@ export async function requireMoneyAccess(
     })
   }
 
+  // Lapis peran + pendaftaran tetap berjalan untuk setiap keputusan; sonde
+  // dengan kode kosong hanya bisa menghasilkan forbidden / setup-required /
+  // misconfigured / code-missing (kode kosong tak pernah sampai validasi kode,
+  // sehingga cabang allow tidak mungkin — TypeScript tetap perlu disempitkan).
+  const precheck = decideMoneyAccess({ account, submittedCode: "", encryptionKey })
+  if (
+    precheck.kind === "forbidden" ||
+    precheck.kind === "setup-required" ||
+    precheck.kind === "misconfigured"
+  ) {
+    return moneyAccessResponse(precheck)
+  }
+
+  const trustUntil = await readMoneyTrustUntil(userId)
+  if (trustUntil) return null
+
   const decision = decideMoneyAccess({
     account,
     submittedCode,
@@ -201,5 +322,7 @@ export async function requireMoneyAccess(
   if (!claimed) {
     return moneyAccessResponse({ kind: "code-already-used" })
   }
+
+  await writeMoneyTrust(userId)
   return null
 }
