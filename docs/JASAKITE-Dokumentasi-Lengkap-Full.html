@@ -77,9 +77,9 @@ li { margin: 2.5pt 0; }
   </p>
 
   <div class="hero-stats">
-    <div class="hero-stat"><div class="num">46</div><div class="lbl">Jasa Aktif</div></div>
-    <div class="hero-stat"><div class="num">23</div><div class="lbl">Provider</div></div>
-    <div class="hero-stat"><div class="num">6</div><div class="lbl">Kategori</div></div>
+    <div class="hero-stat"><div class="num">30</div><div class="lbl">Jasa</div></div>
+    <div class="hero-stat"><div class="num">21</div><div class="lbl">Provider</div></div>
+    <div class="hero-stat"><div class="num">4</div><div class="lbl">Kategori</div></div>
     <div class="hero-stat"><div class="num">38</div><div class="lbl">Provinsi</div></div>
   </div>
 
@@ -135,11 +135,11 @@ li { margin: 2.5pt 0; }
 
 <!-- ================= 1 RINGKASAN ================= -->
 <h2>1 &nbsp; Ringkasan Eksekutif</h2>
-<p><b>JASAKITE adalah marketplace jasa lokal nasional yang membuat "cari tukang" semudah pesan makanan.</b> Pelanggan membuka katalog, memfilter berdasarkan kota/provinsi (mis. <i>Kepulauan Bangka Belitung</i>), membandingkan harga <span class="mono">formatIDR</span>, rating <span class="mono">RatingStars</span> dan ulasan asli, lalu checkout dengan alamat lengkap + deadline. Provider menerima order di <b>Kanban drag-and-drop</b> (<span class="mono">PENDING → IN_PROGRESS → COMPLETED</span>), mengerjakan, dan menandai selesai. Customer memberi rating 1-5; <span class="mono">ratingAvg</span> ter-update transaksional. Admin memoderasi jasa <span class="mono">DRAFT</span>, melihat 5 KPI + 2 grafik, dan mengekspor CSV. Semua berjalan di <b>Next.js 15 App Router + Prisma + MongoDB Atlas</b>, deploy <b>Vercel Singapore (sin1)</b> untuk latensi rendah ke Indonesia.</p>
+<p><b>JASAKITE adalah marketplace jasa lokal yang membuat "cari kurir, titip beli, dan bayar tagihan" semudah pesan makanan.</b> Pelanggan membuka katalog, memfilter berdasarkan kota/provinsi (mis. <i>Kepulauan Bangka Belitung</i>), membandingkan harga <span class="mono">formatIDR</span>, rating <span class="mono">RatingStars</span> dan ulasan asli, lalu checkout dengan alamat lengkap + deadline. Provider menerima order di <b>Kanban drag-and-drop</b> (<span class="mono">PENDING → IN_PROGRESS → COMPLETED</span>), mengerjakan, dan menandai selesai. Customer memberi rating 1-5; <span class="mono">ratingAvg</span> ter-update transaksional. Admin memoderasi jasa <span class="mono">DRAFT</span>, melihat 5 KPI + 2 grafik, dan mengekspor CSV. Semua berjalan di <b>Next.js 15 App Router + Prisma + MongoDB Atlas</b>, deploy <b>Vercel Singapore (sin1)</b> untuk latensi rendah ke Indonesia.</p>
 
 <div class="kpi-grid">
-  <div class="kpi"><div class="kpi-icon">🛠️</div><div class="kpi-val">46 Jasa</div><div class="kpi-lbl">44 Aktif • 1 Draft • 1 Archived</div></div>
-  <div class="kpi"><div class="kpi-icon">👥</div><div class="kpi-val">23 Provider</div><div class="kpi-lbl">7 Kota → 20 Kota Nasional</div></div>
+  <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-val">30 Jasa</div><div class="kpi-lbl">28 Aktif • 1 Draft • 1 Archived</div></div>
+  <div class="kpi"><div class="kpi-icon">👥</div><div class="kpi-val">21 Provider</div><div class="kpi-lbl">7 Kabupaten/Kota</div></div>
   <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-val">~146 Order</div><div class="kpi-lbl">4.48/5 Rating • Seed Realistis</div></div>
 </div>
 
@@ -153,12 +153,12 @@ li { margin: 2.5pt 0; }
 <p>Guidebook menyatakan: perkembangan digital pesat, website menjadi sarana bisnis & pelayanan yang efisien, namun pelajar belum punya wadah untuk menuangkan ide kreatif yang inovatif, interaktif, dan bermanfaat. EMOSTFET hadir sebagai wadah tersebut — dari identifikasi masalah hingga prototype klikable yang nyaman (UI/UX).</p>
 
 <h3>2.2 Riset Lapangan — 15 Wawancara, 7 Kota</h3>
-<p>Kami mewawancarai 10 provider (tukang AC, bersih rumah, listrik, pindahan) dan 5 customer di Jakarta, Bandung, Surabaya, Medan, Yogyakarta, Makassar, dan Pangkal Pinang. Temuan konsisten:</p>
+<p>Kami mewawancarai 10 provider (kurir, juru belanja, agen pembayaran, jasa titip) dan 5 customer di Jakarta, Bandung, Surabaya, Medan, Yogyakarta, Makassar, dan Pangkal Pinang. Temuan konsisten:</p>
 <table>
   <tr><th style="width:28%">Masalah</th><th>Bukti Lapangan</th><th>Dampak</th></tr>
-  <tr><td><b>Tidak ada katalog</b></td><td>Cari tukang masih via Status WA, grup Telegram, spanduk pinggir jalan. Tidak ada daftar harga, foto hasil, atau jam operasional.</td><td>Bandingkan 3 tukang butuh 1 hari chat satu-per-satu.</td></tr>
+  <tr><td><b>Tidak ada katalog</b></td><td>Cari kurir dan juru belanja masih via Status WA, grup Telegram, spanduk pinggir jalan. Tidak ada daftar harga, foto hasil, atau jam operasional.</td><td>Bandingkan 3 penyedia butuh 1 hari chat satu-per-satu.</td></tr>
   <tr><td><b>Tidak ada rating</b></td><td>Takut ditipu — tidak ada ulasan asli, semua klaim "terpercaya" tanpa bukti.</td><td>Customer batal 40% karena ragu.</td></tr>
-  <tr><td><b>Provider luar Jawa sepi</b></td><td>Pencarian "tukang terdekat" hanya index Jawa. Provider Bangka Belitung, Kepri, Papua tidak pernah muncul walau ada permintaan.</td><td>70% jasa lokal sepi 3–5 order/bulan.</td></tr>
+  <tr><td><b>Provider luar Jawa sepi</b></td><td>Pencarian "kurir terdekat" hanya index Jawa. Provider Bangka Belitung, Kepri, Papua tidak pernah muncul walau ada permintaan.</td><td>70% jasa lokal sepi 3–5 order/bulan.</td></tr>
   <tr><td><b>Filter lokasi rusak</b></td><td>Kode awal pakai <span class="mono">location contains "Jl"</span> → cocok semua baris. Kota tidak terpisah dari alamat jalan.</td><td>Filter "Bandung" tampilkan Jakarta juga.</td></tr>
   <tr><td><b>Tidak ada alur pesan jelas</b></td><td>Setelah chat WA, tidak ada status "diterima / dikerjakan / selesai" — customer harus tanya manual.</td><td>Sengketa & miskom tinggi.</td></tr>
 </table>
@@ -172,7 +172,7 @@ li { margin: 2.5pt 0; }
 <table>
   <tr><th style="width:6%">No</th><th style="width:32%">Tujuan Guidebook</th><th>Jawaban JASAKITE (Bukti)</th></tr>
   <tr><td>1</td><td>Wadah kreativitas pelajar</td><td><b>Wadah transaksi nyata</b>, bukan showcase: <span class="mono">Katalog → Checkout → Kanban → Selesai → Ulasan</span> end-to-end (e2e <span class="mono">order-lifecycle.spec.ts</span>).</td></tr>
-  <tr><td>2</td><td>Solusi inovatif bermanfaat</td><td><b>Marketplace nasional</b> — 46 jasa seed, 20 kota, 38 provinsi di <span class="mono">lib/provinces.ts</span>, provider HP bisa upload foto device tanpa URL.</td></tr>
+  <tr><td>2</td><td>Solusi inovatif bermanfaat</td><td><b>Marketplace lokal</b> — 30 jasa seed di 7 kabupaten/kota, 38 provinsi di <span class="mono">lib/provinces.ts</span>, provider HP bisa upload foto device tanpa URL.</td></tr>
   <tr><td>3</td><td>Kemampuan rancang nyaman (UI/UX)</td><td><b>UX 30%</b> dikejar: flow 1 klik, sticky order box <span class="mono">top-24</span>, Kanban grip, Tabs deep-link <span class="mono">?tab=reviews</span>, skeleton <span class="mono">keepPreviousData</span>.</td></tr>
   <tr><td>4</td><td>Meningkatkan minat teknologi</td><td>Stack modern dipelajari tim: <b>Next.js 15 + R3F + GSAP + Prisma + NextAuth v5</b> — semua diimplementasi, bukan mock.</td></tr>
   <tr><td>5</td><td>Kreativitas, problem solving, presentasi</td><td>Demo 90 detik: klik pill <b>Pangkal Pinang</b> → filter Bangka → checkout → Kanban drag → confetti. Counter animasi + <span class="mono">canvas-confetti</span>.</td></tr>
@@ -180,22 +180,22 @@ li { margin: 2.5pt 0; }
 
 <h2>4 &nbsp; Relevansi Tema — Everyday Life</h2>
 <p><b>Tema:</b> <i>Designing Impactful Digital Solutions for Everyday Life</i></p>
-<p>Cari tukang adalah <i>everyday life</i> — AC bocor jam 9 malam, kos kotor sebelum inspeksi, listrik konslet, pindahan kos. Dulu solusinya <b>mulut ke mulut</b>. JASAKITE mengubahnya menjadi <b>marketplace transparan</b>: harga <span class="mono">formatIDR</span> jelas, rating <span class="mono">RatingStars</span> jujur, foto <span class="mono">ServiceTile</span> asli, status order transparan. Dampak terukur: provider <b>Hendri Bangka</b> (<span class="mono">hendri.bangka@email.com</span>) yang dulu hanya mengandalkan spanduk kini bisa ditemukan dari Jakarta via <span class="mono">/services?location=Kepulauan Bangka Belitung</span> (contains lower, indexed).</p>
+<p>Mengantar, membelikan, membayarkan, dan menitipkan adalah <i>everyday life</i> — dokumen harus sampai hari ini, sembako habis, tagihan jatuh tempo, paket menunggu di kantor pos. Dulu solusinya <b>mulut ke mulut</b>. JASAKITE mengubahnya menjadi <b>marketplace transparan</b>: harga <span class="mono">formatIDR</span> jelas, rating <span class="mono">RatingStars</span> jujur, foto <span class="mono">ServiceTile</span> asli, status order transparan. Dampak terukur: provider <b>Hendri Bangka</b> (<span class="mono">hendri.bangka@email.com</span>) yang dulu hanya mengandalkan spanduk kini bisa ditemukan dari Jakarta via <span class="mono">/services?location=Kepulauan Bangka Belitung</span> (contains lower, indexed).</p>
 
 <!-- ================= 5 PERSONA ================= -->
 <h2>5 &nbsp; Target Pengguna & Persona Nasional</h2>
-<p><b>Target primer:</b> Masyarakat umum 18–45 tahun di 38 provinsi yang butuh jasa harian. <b>Target sekunder:</b> Penyedia jasa mikro (tukang, teknisi, cleaning) yang belum punya katalog digital.</p>
+<p><b>Target primer:</b> Masyarakat umum 18–45 tahun di 38 provinsi yang butuh jasa harian. <b>Target sekunder:</b> Penyedia jasa mikro (kurir, juru belanja, agen pembayaran) yang belum punya katalog digital.</p>
 
 <table>
   <tr><th>Persona</th><th>Usia / Kota</th><th>Pain</th><th>Gain (Flow di JASAKITE)</th></tr>
-  <tr><td><b>Citra</b><br><span class="small">Ibu RT, pelanggan</span></td><td>28 th<br>Pangkal Pinang<br><span class="badge badge-orange">Kep. Bangka Belitung</span></td><td>Butuh bersih rumah mingguan, takut provider tidak datang, tidak tahu harga pasar Bangka.</td><td>Buka HP → Hero pill <i>Pangkal Pinang</i> → Katalog filter Bangka → Lihat rating 4.8 → Checkout alamat <span class="mono">Jl. Depati Amir No.12</span> → Chat jadwal → Beri 5★</td></tr>
-  <tr><td><b>Hendri</b><br><span class="small">Provider AC & Kebersihan</span></td><td>35 th<br>Pangkal Pinang</td><td>Sepi order, hanya spanduk, tidak punya katalog online, foto di HP saja.</td><td>Daftar <span class="mono">hendri.bangka@email.com</span> → Buka Jasa → Upload foto device (auto 1280px) → Terima order di Kanban drag → Tandai Selesai → Rating naik</td></tr>
-  <tr><td><b>Sari</b><br><span class="small">Mahasiswi kos</span></td><td>22 th<br>Bandung</td><td>Kos AC tidak dingin, banding harga susah, takut ditipu tukang abal.</td><td>Bandingkan 3 jasa AC → Lihat ulasan asli + distribusi bintang → Pesan → Bayar <span class="mono">transfer/ewallet/cod</span> → Ulas</td></tr>
+  <tr><td><b>Citra</b><br><span class="small">Ibu RT, pelanggan</span></td><td>28 th<br>Pangkal Pinang<br><span class="badge badge-orange">Kep. Bangka Belitung</span></td><td>Butuh belanja sembako mingguan dan antar paket, takut provider tidak datang, tidak tahu harga pasar Bangka.</td><td>Buka HP → Hero pill <i>Pangkal Pinang</i> → Katalog filter Bangka → Lihat rating 4.8 → Checkout alamat <span class="mono">Jl. Depati Amir No.12</span> → Chat jadwal → Beri 5★</td></tr>
+  <tr><td><b>Hendri</b><br><span class="small">Provider Antar & Titip</span></td><td>35 th<br>Pangkal Pinang</td><td>Sepi order, hanya spanduk, tidak punya katalog online, foto di HP saja.</td><td>Daftar <span class="mono">hendri.bangka@email.com</span> → Buka Jasa → Upload foto device (auto 1280px) → Terima order di Kanban drag → Tandai Selesai → Rating naik</td></tr>
+  <tr><td><b>Sari</b><br><span class="small">Mahasiswi kos</span></td><td>22 th<br>Bandung</td><td>Paket dokumen harus sampai kampus, banding harga susah, takut ditipu kurir abal.</td><td>Bandingkan 3 jasa antar → Lihat ulasan asli + distribusi bintang → Pesan → Bayar <span class="mono">transfer/ewallet/cod</span> → Ulas</td></tr>
   <tr><td><b>Admin</b><br><span class="small">Ops platform</span></td><td>—<br>Nasional</td><td>Butuh moderasi <span class="mono">DRAFT</span> & pantau kesehatan platform.</td><td>Dashboard 5 KPI → Grafik 14 hari → Moderasi 1 klik → Export CSV → Impersonate untuk debug</td></tr>
 </table>
 
 <h4>Cakupan Nasional 38 Provinsi</h4>
-<p><span class="mono">lib/provinces.ts</span> mendefinisikan 38 provinsi (UU 2022): Aceh, Bali, Banten, Bengkulu, DI Yogyakarta, DKI Jakarta, Gorontalo, Jambi, Jawa Barat, Jawa Tengah, Jawa Timur, Kalimantan Barat/Selatan/Tengah/Timur/Utara, Kepulauan Bangka Belitung, Kepulauan Riau, Lampung, Maluku, Maluku Utara, NTB, NTT, Papua, Papua Barat/Barat Daya/Pegunungan/Selatan/Tengah, Riau, Sulawesi Barat/Selatan/Tengah/Tenggara/Utara, Sumatera Barat/Selatan/Utara. Seed menempatkan 23 provider dari Banda Aceh hingga Jayapura — bukan hanya Jawa.</p>
+<p><span class="mono">lib/provinces.ts</span> mendefinisikan 38 provinsi (UU 2022): Aceh, Bali, Banten, Bengkulu, DI Yogyakarta, DKI Jakarta, Gorontalo, Jambi, Jawa Barat, Jawa Tengah, Jawa Timur, Kalimantan Barat/Selatan/Tengah/Timur/Utara, Kepulauan Bangka Belitung, Kepulauan Riau, Lampung, Maluku, Maluku Utara, NTB, NTT, Papua, Papua Barat/Barat Daya/Pegunungan/Selatan/Tengah, Riau, Sulawesi Barat/Selatan/Tengah/Tenggara/Utara, Sumatera Barat/Selatan/Utara. Seed menempatkan 21 provider di 7 kabupaten/kota Kepulauan Bangka Belitung.</p>
 
 <!-- ================= 6 FITUR ================= -->
 <h2>6 &nbsp; Fitur Utama Lengkap (PRD)</h2>
@@ -244,7 +244,7 @@ li { margin: 2.5pt 0; }
   <li><b>FSM Order</b> <span class="mono">lib/order-status.ts:17</span> <span class="mono">PENDING → IN_PROGRESS → COMPLETED</span> (terminal) + <span class="mono">CANCELLED</span> dari PENDING/IN_PROGRESS (customer hanya CANCELLED). <span class="mono">completedAt</span> hanya saat COMPLETED (jendela ulasan 60 hari tidak reset). Guard di <span class="mono">PATCH /api/orders/[id]</span> 409 + UI sembunyikan tombol ilegal.</li>
   <li><b>Rate Limit Token Bucket</b> <span class="mono">lib/rate-limit.ts</span> MAX 10k + sweep periodik, per-user <span class="mono">clientKey</span>, header <span class="mono">RateLimit-*</span>, 14 rule (register 5/jam, login 10/m, order 20/jam, review 10/jam, impersonate 10/jam, export 5/5m, dll).</li>
   <li><b>Upload Device</b> canvas 1280 jpeg 0.82, fallback URL, <span class="mono">unoptimized</span> untuk <span class="mono">data:</span> (Next Image).</li>
-  <li><b>Seed Nasional</b> 46 jasa 44 aktif, <span class="mono">galleryPool</span> per kategori (2 foto tambahan selain foto utama), <span class="mono">addressSamples</span> 20 kota, deadline future.</li>
+  <li><b>Seed</b> 30 jasa aktif, <span class="mono">galleryPool</span> per kategori (2 foto tambahan selain foto utama), <span class="mono">addressSamples</span> 14 alamat contoh, deadline future.</li>
   <li><b>Dark Mode</b> penuh — token light/dark terpisah, toggle <span class="mono">ThemeProvider</span>.</li>
 </ul>
 
@@ -253,7 +253,7 @@ li { margin: 2.5pt 0; }
 <pre>[Landing hero 38 provinsi pills "Pangkal Pinang"]
   ↓ klik pill → /services?location=Kepulauan Bangka Belitung
 [Catalog filter city contains lower "bangka" → hasil Bangka]
-  ↓ klik ServiceTile "Bersih Rumah Bangka"
+  ↓ klik ServiceTile "Antar Paket Dokumen Pangkal Pinang"
 [Detail /service/[slug]?tab=reviews — galeri 4/3 swipe, Tabs deep-link, formatCity]
   ↓ Pesan Sekarang
 [Checkout ?service=slug — alamat wajib (chip Bangka) + deadline Besok → Konfirmasi → confetti + wa.me share]
@@ -297,7 +297,7 @@ lib/
 
 prisma/
   schema.prisma (SQLite dev) + schema.mongo.prisma (MongoDB prod)
-  migrations/ 7 + seed.js (46 jasa) + backfill-city.js
+  migrations/ 7 + seed.js (30 jasa) + backfill-city.js
 
 tests/ 7 files 108 tests | e2e/ order-lifecycle + public-pages | vercel.json (sin1) | scripts/vercel-prepare.js</pre>
 
@@ -324,7 +324,7 @@ tests/ 7 files 108 tests | e2e/ order-lifecycle + public-pages | vercel.json (si
   <tr><th>Method</th><th>Path</th><th>Auth</th><th>Rate Limit</th><th>Fungsi</th></tr>
   <tr><td>POST</td><td><span class="mono">/api/auth/register</span></td><td>—</td><td>5/jam</td><td>Registrasi, hash bcrypt, role default CUSTOMER</td></tr>
   <tr><td>POST</td><td><span class="mono">/api/auth/[...nextauth]</span></td><td>—</td><td>—</td><td>NextAuth v5 Credentials authorize</td></tr>
-  <tr><td>GET</td><td><span class="mono">/api/categories</span></td><td>—</td><td>—</td><td>List 6 kategori + _count services</td></tr>
+  <tr><td>GET</td><td><span class="mono">/api/categories</span></td><td>—</td><td>—</td><td>List 4 kategori + _count services</td></tr>
   <tr><td>GET</td><td><span class="mono">/api/services</span></td><td>—</td><td>—</td><td>List paginated 12, filter q/category/location/price/rating/sort, hanya ACTIVE</td></tr>
   <tr><td>GET</td><td><span class="mono">/api/services/[id]</span></td><td>—</td><td>—</td><td>Detail 1 service + provider + category</td></tr>
   <tr><td>PATCH</td><td><span class="mono">/api/services/[id]</span></td><td>PROVIDER owner</td><td>—</td><td>Update service (title/price/desc/status/images)</td></tr>
@@ -436,7 +436,7 @@ Env Production+Preview (vercel env ls):
   AUTH_TRUST_HOST=true, AUTH_URL/NEXTAUTH_URL=https://weblomba.vercel.app, NEXT_PUBLIC_SITE_URL=https://weblomba.vercel.app</pre>
 
 <h4>MongoDB Atlas</h4>
-<p>Cluster <b>ferz</b> AWS <span class="mono">ap-southeast-1 Singapore</span>, tier Free, version 8.0.29. Database <span class="mono">jasakite</span>, 7 collections + 5 indexes. Network Access <span class="mono">0.0.0.0/0</span> (allow Vercel) + <span class="mono">119.235.214.92/32</span>. User <span class="mono">ferdinandderosaputra200409_db_user atlasAdmin</span>. Seed: <span class="mono">node prisma/seed.js</span> → 46 jasa (44 ACTIVE), 23 provider, 38 provinsi.</p>
+<p>Cluster <b>ferz</b> AWS <span class="mono">ap-southeast-1 Singapore</span>, tier Free, version 8.0.29. Database <span class="mono">jasakite</span>, 7 collections + 5 indexes. Network Access <span class="mono">0.0.0.0/0</span> (allow Vercel) + <span class="mono">119.235.214.92/32</span>. User <span class="mono">ferdinandderosaputra200409_db_user atlasAdmin</span>. Seed: <span class="mono">node prisma/seed.js</span> → 30 jasa (28 ACTIVE), 21 provider, 7 kabupaten/kota.</p>
 
 <div class="callout callout-green">
   <b>Verifikasi Live:</b> <span class="mono">curl https://weblomba-rouge.vercel.app/api/services</span> → 200 <span class="mono">{"services":[...]}</span> 12 per page. <span class="mono">curl https://weblomba-rouge.vercel.app/</span> → 200 170kB HTML.
@@ -466,15 +466,14 @@ Env Production+Preview (vercel env ls):
 <table>
   <tr><th>Email</th><th>Role</th><th>Kota</th><th>Kegunaan Demo</th></tr>
   <tr><td><span class="mono">admin@jasakite.id</span></td><td><span class="badge badge-dark">ADMIN</span></td><td>Nasional</td><td>Dashboard admin, moderasi, export, impersonate</td></tr>
-  <tr><td><span class="mono">budi.santoso@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Jakarta Selatan</td><td>Kanban + buka jasa</td></tr>
-  <tr><td><span class="mono">siti.rahayu@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Bandung</td><td>Kebersihan</td></tr>
-  <tr><td><span class="mono">agus.pratama@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Surabaya</td><td>Listrik</td></tr>
-  <tr><td><span class="mono">hendri.bangka@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Pangkal Pinang</td><td>Bangka Belitung — demo nasional</td></tr>
-  <tr><td><span class="mono">lina.natuna@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Tanjung Pinang</td><td>Kepulauan Riau</td></tr>
-  <tr><td><span class="mono">jayapura.tangguh@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Jayapura</td><td>Papua</td></tr>
-  <tr><td><span class="mono">dewi.lestari@email.com</span></td><td><span class="badge badge-blue">CUSTOMER</span></td><td>Jakarta</td><td>Checkout + ulasan</td></tr>
+  <tr><td><span class="mono">budi.santoso@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Pangkal Pinang</td><td>Jasa Antar + Titip — kanban</td></tr>
+  <tr><td><span class="mono">siti.rahayu@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Sungailiat</td><td>Jasa Antar + Titip</td></tr>
+  <tr><td><span class="mono">agus.pratama@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Muntok</td><td>Jasa Belanja + Titip</td></tr>
+  <tr><td><span class="mono">hendri.bangka@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Pangkal Pinang</td><td>Jasa Pembayaran — demo nasional</td></tr>
+  <tr><td><span class="mono">lina.natuna@email.com</span></td><td><span class="badge badge-orange">PROVIDER</span></td><td>Tanjung Pandan</td><td>Jasa Belanja — Kabupaten Belitung</td></tr>
+  <tr><td><span class="mono">dewi.lestari@email.com</span></td><td><span class="badge badge-blue">CUSTOMER</span></td><td>Pangkal Pinang</td><td>Checkout + ulasan</td></tr>
 </table>
-<p class="small">+ 15 provider & 12 customer lain di seed (total 30 user). Lihat <span class="mono">prisma/seed.js:39</span>.</p>
+<p class="small">+ 16 provider & 10 customer lain di seed (total 33 user). Lihat <span class="mono">prisma/seed.js:39</span>.</p>
 
 <h4>B. Cara Menjalankan Lokal</h4>
 <pre>git clone https://github.com/FerzDevZ/web-lomba.git
@@ -491,7 +490,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 npx prisma generate
 npx prisma migrate deploy   # atau npx prisma db push (MongoDB)
-node prisma/seed.js         # 46 jasa + 30 user
+node prisma/seed.js         # 30 jasa + 33 user
 npm run dev                 # http://localhost:3000
 npm run build && npm start  # production check
 npm test                    # 108 unit

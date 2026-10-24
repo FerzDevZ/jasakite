@@ -30,9 +30,9 @@ Semua rute punya `loading.tsx` + `error.tsx` sendiri.
 ## 3. Flow Utama — Customer Pesan Sampai Ulasan (Happy Path)
 
 ### 3.1 Landing `/` (Server `app/page.tsx:27` force-dynamic)
-1. Server `Promise.all` 7 query: 6 kategori + 6 jasa `ACTIVE orderBy createdAt desc` + providerCount + completedCount + ratingAvg + cityCount distinct + 5 heroProvider (punya jasa ACTIVE).
+1. Server `Promise.all` 7 query: kategori (maks 12) + 6 jasa `ACTIVE orderBy createdAt desc` + providerCount + completedCount + ratingAvg + cityCount distinct + 5 heroProvider (punya jasa ACTIVE).
 2. Render: `Hero` (badge `38 provinsi Aceh→Papua`, H1 `Jasa terbaik dari orang terpercaya`, search besar `list="hero-search-list"` + `⌘K`, pills kategori, pills nasional `Pangkal Pinang | Tanjung Pinang | Jayapura` → `?location=...`) → Kategori bento `grid 2→3→6` `auto-rows-fr h-full min-h-[148px]` (fix jitter) → Jasa ramai 6 `ServiceTile` → Cara kerja 4 → Statistik 4 `Counter` → CTA `Punya keahlian?` 2 tombol (`bg-background text-primary-strong` 5.0:1, bukan `primary-foreground`).
-3. Klik kategori → `/services?category=1` atau search submit → `/services?search=AC`.
+3. Klik kategori → `/services?category=1` atau search submit → `/services?search=antar`.
 
 ### 3.2 Katalog `/services` (`page.tsx` Server wrapper → `page.client.tsx` Client)
 - **State:** `search` (500ms debounce `useDebouncedValue`) + `filters: CatalogFilters {category, location, minPrice, maxPrice, rating}` (400ms) + `sort` + `page` + `drawerOpen`.

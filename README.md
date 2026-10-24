@@ -133,7 +133,7 @@ Semua akun hasil seed memakai password `password123`.
 | Provider | `budi.santoso@email.com` |
 | Customer | `dewi.lestari@email.com` |
 
-Seed menghasilkan 30 pengguna (1 admin, 14 provider, 15 customer), 6 kategori, 30 jasa, 133 pesanan, dan 86 ulasan.
+Seed menghasilkan 34 pengguna (1 admin, 21 provider, 12 customer), 4 kategori, dan 30 jasa (28 aktif) yang tersebar di 7 kabupaten/kota Kepulauan Bangka Belitung.
 
 ---
 
@@ -223,7 +223,7 @@ prisma/
 ├── schema.prisma                Model data (MongoDB @id @default(auto()) @map("_id") @db.ObjectId) — SATU-SATUNYA schema
 ├── migrations/                  Riwayat migrasi (SQLite dev)
 ├── postgresql/                  Panduan & script migrasi ke PostgreSQL
-├── seed.js                      Data contoh (46 jasa, 23 provider, 6 kategori, 38 provinsi)
+├── seed.js                      Data contoh (30 jasa, 21 provider, 4 kategori, 7 kabupaten/kota)
 └── backfill-city.js             Backfill kolom city
 
 tests/                           Unit test Vitest (9 berkas, 149 test)

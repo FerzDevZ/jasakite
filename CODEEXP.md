@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**JASAKITE** — Marketplace jasa lokal untuk pasar Indonesia. Menghubungkan pelanggan dengan penyedia jasa profesional (AC, kebersihan, listrik, pindahan, tukang).
+**JASAKITE** — Marketplace jasa lokal untuk pasar Indonesia. Menghubungkan pelanggan dengan penyedia jasa profesional (jasa antar, jasa belanja, jasa pembayaran, jasa titip).
 
 **Stack:**
 - Next.js 15.5.24 (App Router, Server Components)

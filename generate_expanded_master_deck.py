@@ -1,7 +1,8 @@
 import os
 import weasyprint
 
-ASSETS_DIR = "/home/firman/weblomba/docs/pdf-assets"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, "docs", "pdf-assets")
 
 def get_img(filename):
     return f"file://{os.path.join(ASSETS_DIR, filename)}"
@@ -594,18 +595,18 @@ html_content = f"""<!DOCTYPE html>
 
   <div class="slide-title-area">
     <div class="slide-title">Kenapa Jasa Lokal di Indonesia Masih Tertinggal Secara Digital?</div>
-    <div class="slide-subtitle">Hasil riset dan wawancara mendalam terhadap 15 responden pelanggan dan teknisi lokal di berbagai daerah.</div>
+    <div class="slide-subtitle">Hasil riset dan wawancara mendalam terhadap 15 responden pelanggan dan penyedia jasa lokal di berbagai daerah.</div>
   </div>
 
   <div class="slide-body">
     <div class="col-left">
       <div class="card card-orange">
-        <div class="card-title">1. Cari Tukang via Status WhatsApp / Mulut-ke-Mulut</div>
-        <div class="card-desc">Pelanggan tidak memiliki etalase pembanding; tarif baru dinegosiasikan setelah tukang tiba, memicu kecemasan atas risiko manipulasi harga dan kualitas pengerjaan yang buruk.</div>
+        <div class="card-title">1. Cari Kurir &amp; Juru Belanja via Status WhatsApp / Mulut-ke-Mulut</div>
+        <div class="card-desc">Pelanggan tidak memiliki etalase pembanding; tarif baru dinegosiasikan setelah penyedia jasa tiba, memicu kecemasan atas risiko manipulasi harga dan kualitas pengerjaan yang buruk.</div>
       </div>
 
       <div class="card card-orange">
-        <div class="card-title">2. Teknisi Daerah Terisolasi (Hanya Spanduk Tiang Listrik)</div>
+        <div class="card-title">2. Penyedia jasa Daerah Terisolasi (Hanya Jaringan Offline)</div>
         <div class="card-desc">Studi kasus nyata: <strong>Pak Hendri di Pangkal Pinang (Bangka Belitung)</strong> hanya memperoleh rata-rata 2 order/bulan karena jangkauan pemasarannya terbatas 1 kelurahan saja.</div>
       </div>
 
@@ -628,12 +629,12 @@ html_content = f"""<!DOCTYPE html>
         </div>
         <img src="{get_img('hero-desktop.png')}" class="img-shot" style="height: 52mm;" alt="Hero JASAKITE">
       </div>
-      <div class="img-caption">JASAKITE: Menjawab isolasi pasar teknisi daerah dengan menghadirkan etalase digital terverifikasi di 38 provinsi.</div>
+      <div class="img-caption">JASAKITE: Menjawab isolasi pasar penyedia jasa daerah dengan menghadirkan etalase digital terverifikasi di 38 provinsi.</div>
     </div>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 0:00 - 0:30: Angkat studi kasus Pak Hendri di Bangka Belitung untuk membuktikan bahwa masalah ini dialami jutaan teknisi di Indonesia.</div>
+    <div class="speaker-cue">🎙️ Waktu 0:00 - 0:30: Angkat studi kasus Pak Hendri di Bangka Belitung untuk membuktikan bahwa masalah ini dialami jutaan penyedia jasa di Indonesia.</div>
     <div>Sumber: Riset Wawancara 15 Pengguna (Dokumen Penjelasan Hal. 3)</div>
   </div>
 </div>
@@ -706,7 +707,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Bicara lugas: "Kami tidak mengambil komisi 20% yang mencekik tukang lokal. JASAKITE adalah platform etalase &amp; reputasi untuk 38 provinsi."</div>
+    <div class="speaker-cue">🎙️ Bicara lugas: "Kami tidak mengambil komisi 20% yang mencekik penyedia jasa lokal. JASAKITE adalah platform etalase &amp; reputasi untuk 38 provinsi."</div>
     <div>Tolok Ukur: Pemberdayaan UMKM &amp; Kepercayaan Konsumen</div>
   </div>
 </div>
@@ -734,18 +735,18 @@ html_content = f"""<!DOCTYPE html>
           <span class="tag tag-blue">Pencari Jasa</span>
         </div>
         <div class="card-desc">
-          • <strong>Sasaran:</strong> Perbaikan AC mendesak di rumah saat anak demam.<br>
-          • <strong>Titik Tekan UX:</strong> Pencarian instan berdasarkan kota &rarr; Ulasan berfoto asli &rarr; Checkout tanpa form berbelit &rarr; Kepastian kehadiran teknisi.
+          • <strong>Sasaran:</strong> Kebutuhan layanan jasa mendesak di rumah saat anak demam.<br>
+          • <strong>Titik Tekan UX:</strong> Pencarian instan berdasarkan kota &rarr; Ulasan berfoto asli &rarr; Checkout tanpa form berbelit &rarr; Kepastian status pesanan.
         </div>
       </div>
 
       <div class="card card-orange">
         <div class="card-title">
-          <span>Provider: Pak Hendri (42 th, Teknisi Listrik &amp; AC Mandiri)</span>
+          <span>Provider: Pak Hendri (42 th, Penyedia Jasa Antar &amp; Titip)</span>
           <span class="tag tag-orange">Penyedia Jasa</span>
         </div>
         <div class="card-desc">
-          • <strong>Sasaran:</strong> Memperoleh orderan berkelanjutan tanpa biaya iklan spanduk.<br>
+          • <strong>Sasaran:</strong> Memperoleh orderan berkelanjutan tanpa biaya iklan fisik.<br>
           • <strong>Titik Tekan UX:</strong> Notifikasi order masuk &rarr; Drag-and-drop papan Kanban &rarr; Konfirmasi pembayaran &rarr; Akumulasi reputasi bintang 5.
         </div>
       </div>
@@ -785,12 +786,12 @@ html_content = f"""<!DOCTYPE html>
         </div>
         <img src="{get_img('provider.png')}" class="img-shot" style="height: 48mm;" alt="Provider Dashboard">
       </div>
-      <div class="img-caption">Workspace Provider: Dirancang intuitif dengan visual kanban cards agar mudah dioperasikan oleh teknisi lapangan.</div>
+      <div class="img-caption">Workspace Provider: Dirancang intuitif dengan visual kanban cards agar mudah dioperasikan oleh penyedia jasa lapangan.</div>
     </div>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 0:30 - 1:00: Paparkan bahwa pengalaman pengguna tidak digeneralisir: teknisi mendapatkan papan kerja, pelanggan mendapatkan katalog ringkas.</div>
+    <div class="speaker-cue">🎙️ Waktu 0:30 - 1:00: Paparkan bahwa pengalaman pengguna tidak digeneralisir: penyedia jasa mendapatkan papan kerja, pelanggan mendapatkan katalog ringkas.</div>
     <div>Prinsip UX: Role-Based Mental Model Alignment</div>
   </div>
 </div>
@@ -897,16 +898,16 @@ html_content = f"""<!DOCTYPE html>
       <div class="img-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">weblomba-rouge.vercel.app/catalog?q=AC</div>
+          <div class="browser-url">weblomba-rouge.vercel.app/services</div>
         </div>
         <img src="{get_img('catalog-search.png')}" class="img-shot" style="height: 55mm;" alt="Katalog Pencarian">
       </div>
-      <div class="img-caption">Tampilan Katalog: Pencarian multi-kata dengan pencocokan instan judul, deskripsi, dan nama teknisi.</div>
+      <div class="img-caption">Tampilan Katalog: Pencarian multi-kata dengan pencocokan instan judul, deskripsi, dan nama penyedia jasa.</div>
     </div>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 1:00 - 1:30: Demonstrasikan kemudahan pencarian: "Pengguna cukup mengetik 'AC' dan menekan Enter untuk menyaring teknisi terdekat."</div>
+    <div class="speaker-cue">🎙️ Waktu 1:00 - 1:30: Demonstrasikan kemudahan pencarian: "Pengguna cukup mengetik 'antar paket' dan menekan Enter untuk menyaring penyedia terdekat."</div>
     <div>Responsivitas: Filter Sub-50ms di Sisi Klien</div>
   </div>
 </div>
@@ -923,7 +924,7 @@ html_content = f"""<!DOCTYPE html>
 
   <div class="slide-title-area">
     <div class="slide-title">Detail Jasa &amp; Checkout: Transparan Tanpa Biaya Tersembunyi</div>
-    <div class="slide-subtitle">Menghilangkan keraguan pemesan melalui informasi garansi, profil teknisi, dan alur 2 langkah.</div>
+    <div class="slide-subtitle">Menghilangkan keraguan pemesan melalui informasi estimasi, profil penyedia jasa, dan alur 2 langkah.</div>
   </div>
 
   <div class="slide-body">
@@ -931,7 +932,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="img-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">weblomba-rouge.vercel.app/service/servis-ac-cuci-bersih</div>
+          <div class="browser-url">weblomba-rouge.vercel.app/service/antar-paket-dokumen-pangkal-pinang-79326</div>
         </div>
         <img src="{get_img('service-detail.png')}" class="img-shot" style="height: 52mm;" alt="Detail Layanan">
       </div>
@@ -951,7 +952,7 @@ html_content = f"""<!DOCTYPE html>
 
       <div class="card card-orange">
         <div class="card-title">3. Pencegahan Self-Ordering (Anti-Fraud Guard)</div>
-        <div class="card-desc">Sistem memblokir teknisi yang mencoba memesan jasanya sendiri demi manipulasi rating dengan respon <code>400 Bad Request</code>.</div>
+        <div class="card-desc">Sistem memblokir penyedia jasa yang mencoba memesan jasanya sendiri demi manipulasi rating dengan respon <code>400 Bad Request</code>.</div>
       </div>
 
       <div class="card card-orange">
@@ -1170,7 +1171,7 @@ html_content = f"""<!DOCTYPE html>
   city      String?  // Kolom kota terpisah untuk geo-query
   services  Service[]
   orders    Order[]
-  @@index([role, city]) // Indeks majemuk pencarian teknisi per kota
+  @@index([role, city]) // Indeks majemuk pencarian penyedia jasa per kota
 }}</code></pre>
         </div>
       </div>
@@ -1207,7 +1208,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 3:00 - 3:20: Tekankan bahwa basis data menggunakan compound index @@index([role, city]) sehingga pencarian ribuan teknisi tetap instan.</div>
+    <div class="speaker-cue">🎙️ Waktu 3:00 - 3:20: Tekankan bahwa basis data menggunakan compound index @@index([role, city]) sehingga pencarian ribuan penyedia jasa tetap instan.</div>
     <div>File Sumber: prisma/schema.prisma (7 Entitas Relasional, MongoDB Atlas)</div>
   </div>
 </div>
@@ -1353,7 +1354,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="card card-red" style="border-left: 3.5px solid #ef4444;">
         <div class="card-title">Mitigasi Benturan: HTTP 409 Conflict Response</div>
         <div class="card-desc">
-          Jika teknisi menekan tombol "Selesai" di smartphone sementara pelanggan membatalkan pesanan di laptop secara simultan, backend mendeteksi ketidakabsahan transisi dan mengembalikan respon:
+          Jika penyedia jasa menekan tombol "Selesai" di smartphone sementara pelanggan membatalkan pesanan di laptop secara simultan, backend mendeteksi ketidakabsahan transisi dan mengembalikan respon:
           <pre><code>HTTP/2 409 Conflict
 {{
   "error": "Transisi status tidak sah dari CANCELLED ke COMPLETED."
@@ -1452,7 +1453,7 @@ const LIMITS = {{
 
   <div class="slide-title-area">
     <div class="slide-title">Optimasi Klien: Auto-Kompresi Gambar Canvas Menghemat Bandwidth 80%</div>
-    <div class="slide-subtitle">Solusi cerdas mengatasi kendala jaringan internet lambat bagi teknisi di pelosok daerah.</div>
+    <div class="slide-subtitle">Solusi cerdas mengatasi kendala jaringan internet lambat bagi penyedia jasa di pelosok daerah.</div>
   </div>
 
   <div class="slide-body">
@@ -1460,7 +1461,7 @@ const LIMITS = {{
       <div class="card card-orange">
         <div class="card-title">Kendala Lapangan: Upload Foto 5MB di Pelosok</div>
         <div class="card-desc">
-          Kamera ponsel modern menghasilkan foto berukuran 4–8 Megabyte. Di daerah dengan sinyal seluler 3G/HSDPA yang lemah, pengunggahan foto portofolio seringkali timeout dan menghabiskan kuota teknisi secara boros.
+          Kamera ponsel modern menghasilkan foto berukuran 4–8 Megabyte. Di daerah dengan sinyal seluler 3G/HSDPA yang lemah, pengunggahan foto portofolio seringkali timeout dan menghabiskan kuota penyedia jasa secara boros.
         </div>
       </div>
 
@@ -1497,7 +1498,7 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
       <div class="card card-blue" style="margin-top: 1mm;">
         <div class="card-title">Manfaat Ganda: Klien Hemat &amp; Server Bebas Beban</div>
         <div class="card-desc">
-          • <strong>Bagi Teknisi:</strong> Pengunggahan foto berhasil dalam waktu kurang dari 2 detik meski sinyal lemah.<br>
+          • <strong>Bagi Penyedia jasa:</strong> Pengunggahan foto berhasil dalam waktu kurang dari 2 detik meski sinyal lemah.<br>
           • <strong>Bagi Server:</strong> Beban komputasi resizing terdistribusi ke prosesor masing-masing pengguna, menghemat biaya RAM server cloud hingga 70%.<br>
           • <strong>Batas Payload Aman:</strong> Server mematok batas maksimum upload 2.5MB untuk mencegah eksploitasi buffer overflow.
         </div>
@@ -1506,7 +1507,7 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Tekankan inovasi ini: "Kami tidak membebani teknisi di pelosok dengan upload 5MB. Semuanya dikompresi instan di browser menjadi 240KB."</div>
+    <div class="speaker-cue">🎙️ Tekankan inovasi ini: "Kami tidak membebani penyedia jasa di pelosok dengan upload 5MB. Semuanya dikompresi instan di browser menjadi 240KB."</div>
     <div>Dampak Teknis: Efisiensi Bandwidth 80% &amp; Zero Server CPU Overhead</div>
   </div>
 </div>
@@ -1560,14 +1561,14 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
       <div class="card card-green">
         <div class="card-title">Fitur Impersonasi Admin (Audit Cepat)</div>
         <div class="card-desc">
-          Administrator dapat berpindah peran sementara (*Impersonate User*) untuk meninjau secara langsung tampilan yang dilihat oleh teknisi atau pelanggan yang mengalami kendala teknis.
+          Administrator dapat berpindah peran sementara (*Impersonate User*) untuk meninjau secara langsung tampilan yang dilihat oleh penyedia jasa atau pelanggan yang mengalami kendala teknis.
         </div>
       </div>
     </div>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Jelaskan perbedaan: "Admin butuh grafik analitik, teknisi butuh kartu kerja kanban, pelanggan butuh daftar aktivitas simpel."</div>
+    <div class="speaker-cue">🎙️ Jelaskan perbedaan: "Admin butuh grafik analitik, penyedia jasa butuh kartu kerja kanban, pelanggan butuh daftar aktivitas simpel."</div>
     <div>Arsitektur UX: Context-Specific Dashboard Architecture</div>
   </div>
 </div>
@@ -1656,7 +1657,7 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
 
   <div class="slide-title-area">
     <div class="slide-title">Infrastruktur Global Edge, Dampak Ekonomi Kerakyatan, &amp; Roadmap</div>
-    <div class="slide-subtitle">Menghubungkan efisiensi komputasi cloud modern dengan peningkatan kesejahteraan teknisi lokal.</div>
+    <div class="slide-subtitle">Menghubungkan efisiensi komputasi cloud modern dengan peningkatan kesejahteraan penyedia jasa lokal.</div>
   </div>
 
   <div class="slide-body">
@@ -1673,8 +1674,8 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
       <div class="card card-green">
         <div class="card-title">Dampak Nyata bagi Kehidupan Sehari-Hari</div>
         <div class="card-desc">
-          • <strong>Efisiensi Waktu Konsumen:</strong> Memangkas pencarian tukang dari 1 hari menjadi &lt; 5 menit.<br>
-          • <strong>Pemberdayaan Teknisi Daerah:</strong> Membuka potensi kenaikan pesanan hingga +40% bagi teknisi luar Jawa yang sebelumnya terisolasi spanduk fisik.
+          • <strong>Efisiensi Waktu Konsumen:</strong> Memangkas pencarian penyedia jasa dari 1 hari menjadi &lt; 5 menit.<br>
+          • <strong>Pemberdayaan Penyedia jasa Daerah:</strong> Membuka potensi kenaikan pesanan hingga +40% bagi penyedia jasa luar Jawa yang sebelumnya terisolasi jaringan offline.
         </div>
       </div>
     </div>
@@ -1685,7 +1686,7 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
         <div class="card-desc">
           • <strong>Sprint 1 (Minggu 1–2):</strong> Integrasi Payment Gateway Nasional (Midtrans Snap &amp; QRIS Dinamis).<br>
           • <strong>Sprint 2 (Minggu 3–4):</strong> Notifikasi Real-time WhatsApp via Webhook untuk pengguna non-smartphone canggih.<br>
-          • <strong>Sprint 3 (Minggu 5–6):</strong> Program Verifikasi Sertifikasi Keahlian teknisi bekerja sama dengan Balai Latihan Kerja (BLK).
+          • <strong>Sprint 3 (Minggu 5–6):</strong> Program Verifikasi Sertifikasi Keahlian penyedia jasa bekerja sama dengan Balai Latihan Kerja (BLK).
         </div>
       </div>
 
@@ -1722,7 +1723,7 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
       <div style="flex: 1; background: #171310; border: 1.5px solid #F97316; border-radius: 2.5mm; padding: 3mm 3.5mm;">
         <div style="font-size: 9.5pt; font-weight: 800; color: #F97316; margin-bottom: 1.2mm;">1. Masalah Nyata &amp; Solutif (20%)</div>
         <div style="font-size: 7.2pt; color: #d6d3d1; line-height: 1.4;">
-          Berangkat dari wawancara nyata 15 orang; membuka isolasi ekonomi ribuan teknisi di 38 provinsi di luar pulau Jawa.
+          Berangkat dari wawancara nyata 15 orang; membuka isolasi ekonomi ribuan penyedia jasa di 38 provinsi di luar pulau Jawa.
         </div>
       </div>
 
@@ -1763,8 +1764,8 @@ const compressed = canvas.toDataURL("image/jpeg", 0.82);</code></pre>
 </html>
 """
 
-html_file = "/home/firman/weblomba/master_presentation_deck.html"
-pdf_file = "/home/firman/weblomba/JASAKITE_MASTER_PRESENTASI_FULLSTACK_EMOSTFET11.pdf"
+html_file = os.path.join(BASE_DIR, "master_presentation_deck.html")
+pdf_file = os.path.join(BASE_DIR, "JASAKITE_MASTER_PRESENTASI_FULLSTACK_EMOSTFET11.pdf")
 
 with open(html_file, "w", encoding="utf-8") as f:
     f.write(html_content)

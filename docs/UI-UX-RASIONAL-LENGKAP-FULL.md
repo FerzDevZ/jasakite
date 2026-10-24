@@ -24,7 +24,7 @@
 
 ## 1. Filosofi Dasar — Titik Terang
 
-**Metafora:** Cahaya oranye hangat di tengah kota gelap. Malam, lampu tukang masih nyala, orang cari bantuan. Oranye = harapan, energi, aksi. Hitam = malam, premium, tegas (transaksi uang).
+**Metafora:** Cahaya oranye hangat di tengah kota gelap. Malam, lampu rumah masih nyala, orang cari bantuan. Oranye = harapan, energi, aksi. Hitam = malam, premium, tegas (transaksi uang).
 
 **Kenapa bukan "Marketplace Biru" seperti Tokopedia/Shopee?** Biru = korporat, dingin, fintech. JASAKITE butuh **hangat tetangga** + **tegas transaksi**. Oranye adalah satu-satunya warna yang bisa dua emosi itu sekaligus (adjecent ke merah = energi, ke kuning = hangat). Riset: Fiverr 2024, Urban Company juga oranye/amber untuk jasa.
 
@@ -55,7 +55,7 @@
 | `primary-strong = primary` di dark | Di dark, `primary` sudah 8.43:1 sebagai teks, jadi tidak perlu versi gelap. |
 | `border 24 8% 16% #2B2722` | Garis 16% di dark, terlihat tapi tidak garis putih keras. |
 
-**Kenapa dua mode penuh, bukan toggle invert?** Karena 60% user buka malam (tukang cari order malam). Dark bukan `filter:invert`, token dihitung ulang kontrasnya (`tests/color-contrast.test.ts` baca `globals.css` langsung, gagal CI kalau <4.5:1).
+**Kenapa dua mode penuh, bukan toggle invert?** Karena 60% user buka malam (penyedia jasa cari order malam). Dark bukan `filter:invert`, token dihitung ulang kontrasnya (`tests/color-contrast.test.ts` baca `globals.css` langsung, gagal CI kalau <4.5:1).
 
 ### 2.3 Psikologi Warna
 - Oranye = **urgensi tanpa panik** (merah panik, kuning ceria, oranye di tengah). Cocok untuk "pesan sekarang".

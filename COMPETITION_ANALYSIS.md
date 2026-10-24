@@ -132,7 +132,7 @@
 
 ### 1. Breadcrumb Navigation (Impact: High, Effort: Low)
 ```
-Beranda > Jasa > Service AC > Checkout
+Beranda > Jasa > Jasa Antar > Checkout
 ```
 - Membantu user memahami posisi mereka
 - Memudahkan navigasi kembali

@@ -1,7 +1,8 @@
 import os
 import weasyprint
 
-ASSETS_DIR = "/home/firman/weblomba/docs/pdf-assets"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, "docs", "pdf-assets")
 
 def get_img(filename):
     return f"file://{os.path.join(ASSETS_DIR, filename)}"
@@ -437,7 +438,7 @@ html_content = f"""<!DOCTYPE html>
     </div>
     <div style="font-size: 9pt; color: #94a3b8; max-width: 190mm; margin-top: 2.5mm; line-height: 1.45;">
       Tema: <em>“Designing Impactful Digital Solutions for Everyday Life”</em><br>
-      Solusi digital berdampak nyata yang memberdayakan ribuan UMKM teknisi &amp; pekerja jasa lokal dengan transparansi harga, rating terverifikasi, dan alur pemesanan aman.
+      Solusi digital berdampak nyata yang memberdayakan ribuan UMKM penyedia jasa antar, belanja, pembayaran, dan titip dengan transparansi harga, rating terverifikasi, dan alur pemesanan aman.
     </div>
   </div>
 
@@ -466,7 +467,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Hook Pembuka (0:00 - 0:30): Sambut juri, perkenalkan visi JASAKITE dari masalah tukang offline ke pasar digital nasional.</div>
+    <div class="speaker-cue">🎙️ Hook Pembuka (0:00 - 0:30): Sambut juri, perkenalkan visi JASAKITE dari masalah penyedia jasa offline ke pasar digital nasional.</div>
     <div style="font-size: 7.2pt; color: #f8fafc;">
       🌐 Live URL: <strong>weblomba-rouge.vercel.app</strong> (Bukan Figma Mockup)
     </div>
@@ -499,7 +500,7 @@ html_content = f"""<!DOCTYPE html>
         </div>
         <div class="card-desc">
           • Wawancara 15 pengguna &amp; penyedia jasa di Indonesia.<br>
-          • Kasus nyata: Hendri (Teknisi AC di Pangkal Pinang) hanya dapat 2 order/bulan dari spanduk fisik.<br>
+          • Kasus nyata: Hendri (Penyedia jasa antar &amp; titip di Pangkal Pinang) hanya dapat 2 order/bulan dari jaringan offline.<br>
           • Benchmark komparatif: WhatsApp Group vs Facebook Marketplace vs JASAKITE.
         </div>
       </div>
@@ -580,18 +581,18 @@ html_content = f"""<!DOCTYPE html>
 
   <div class="slide-title-area">
     <div class="slide-title">Kenapa Jasa Lokal di Indonesia Masih Tertinggal Secara Digital?</div>
-    <div class="slide-subtitle">Hasil wawancara mendalam dengan 15 pelanggan dan teknisi lokal di berbagai daerah.</div>
+    <div class="slide-subtitle">Hasil wawancara mendalam dengan 15 pelanggan dan penyedia jasa lokal di berbagai daerah.</div>
   </div>
 
   <div class="slide-body">
     <div class="col-left">
       <div class="card card-orange">
-        <div class="card-title">1. Cari Tukang via Status WhatsApp / Mulut-ke-Mulut</div>
-        <div class="card-desc">Tidak ada etalase resmi, harga baru diketahui setelah tukang datang, dan pelanggan cemas terhadap risiko pengerjaan yang buruk.</div>
+        <div class="card-title">1. Cari Kurir &amp; Juru Belanja via Status WhatsApp / Mulut-ke-Mulut</div>
+        <div class="card-desc">Tidak ada etalase resmi, harga baru diketahui setelah penyedia jasa datang, dan pelanggan cemas terhadap risiko pengerjaan yang buruk.</div>
       </div>
 
       <div class="card card-orange">
-        <div class="card-title">2. Teknisi Daerah Sepi Order (Hanya Spanduk Fisik)</div>
+        <div class="card-title">2. Penyedia Jasa Daerah Sepi Order (Hanya Mengandalkan Jaringan Offline)</div>
         <div class="card-desc">Studi kasus nyata: <strong>Pak Hendri di Pangkal Pinang</strong> hanya mendapat 2 order/bulan karena jangkauannya terbatas 1 kelurahan saja.</div>
       </div>
 
@@ -620,7 +621,7 @@ html_content = f"""<!DOCTYPE html>
 
   <div class="slide-footer">
     <div class="speaker-cue">🎙️ Waktu 0:00 - 0:30: Tekankan kasus Pak Hendri di Bangka Belitung untuk menunjukkan bahwa masalah ini berakar dari realitas nyata.</div>
-    <div>Sumber Data: Wawancara Lapangan 15 Responden (Pelanggan &amp; Teknisi)</div>
+    <div>Sumber Data: Wawancara Lapangan 15 Responden (Pelanggan &amp; Penyedia jasa)</div>
   </div>
 </div>
 
@@ -724,14 +725,14 @@ html_content = f"""<!DOCTYPE html>
           <span class="tag tag-blue">Pencari Jasa</span>
         </div>
         <div class="card-desc">
-          <strong>Kebutuhan:</strong> Perbaikan AC cepat di rumah saat anak sakit.<br>
-          <strong>Titik Sentuh UX:</strong> Filter kota instan &rarr; Lihat rating bintang &amp; ulasan foto &rarr; Checkout tanpa ribet &rarr; Lacak kedatangan teknisi.
+          <strong>Kebutuhan:</strong> Antar belanja dan titip barang mendesak saat sibuk bekerja.<br>
+          <strong>Titik Sentuh UX:</strong> Filter kota instan &rarr; Lihat rating bintang &amp; ulasan foto &rarr; Checkout tanpa ribet &rarr; Lacak status pesanan.
         </div>
       </div>
 
       <div class="card card-orange">
         <div class="card-title">
-          <span>Provider: Pak Hendri (42 th, Teknisi Listrik/AC)</span>
+          <span>Provider: Pak Hendri (42 th, Penyedia Jasa Antar &amp; Titip)</span>
           <span class="tag tag-orange">Penyedia Jasa</span>
         </div>
         <div class="card-desc">
@@ -775,12 +776,12 @@ html_content = f"""<!DOCTYPE html>
         </div>
         <img src="{get_img('provider.png')}" class="img-shot" style="height: 48mm;" alt="Provider Dashboard">
       </div>
-      <div class="img-caption">Dashboard Provider: Menggunakan konsep Kanban Linear yang disederhanakan untuk kemudahan teknisi daerah.</div>
+      <div class="img-caption">Dashboard Provider: Menggunakan konsep Kanban Linear yang disederhanakan untuk kemudahan penyedia jasa daerah.</div>
     </div>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 0:30 - 1:00: Jelaskan bahwa UX JASAKITE membedakan tampilan bagi pencari jasa dan tukang secara radikal.</div>
+    <div class="speaker-cue">🎙️ Waktu 0:30 - 1:00: Jelaskan bahwa UX JASAKITE membedakan tampilan bagi pencari jasa dan penyedia jasa secara radikal.</div>
     <div>Cakupan: Seluruh Indonesia dari Sabang sampai Merauke</div>
   </div>
 </div>
@@ -891,7 +892,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="img-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">weblomba-rouge.vercel.app/catalog?q=AC</div>
+          <div class="browser-url">weblomba-rouge.vercel.app/services</div>
         </div>
         <img src="{get_img('catalog-search.png')}" class="img-shot" style="height: 55mm;" alt="Katalog Pencarian">
       </div>
@@ -900,7 +901,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 1:00 - 1:30: Demonstrasikan kemudahan filter: "Hanya butuh 2 klik untuk menemukan teknisi AC di Kepulauan Bangka Belitung."</div>
+    <div class="speaker-cue">🎙️ Waktu 1:00 - 1:30: Demonstrasikan kemudahan filter: "Hanya butuh 2 klik untuk menemukan layanan antar paket di Kepulauan Bangka Belitung."</div>
     <div>Pilar UX: Fast Retrieval, Zero Friction, Responsive Breakpoints</div>
   </div>
 </div>
@@ -927,7 +928,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="img-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">weblomba-rouge.vercel.app/service/servis-ac-cuci-bersih</div>
+          <div class="browser-url">weblomba-rouge.vercel.app/service/antar-paket-dokumen-pangkal-pinang-79326</div>
         </div>
         <img src="{get_img('service-detail.png')}" class="img-shot" style="height: 52mm;" alt="Detail Layanan">
       </div>
@@ -1080,7 +1081,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 2:30 - 3:00: Soroti bahwa antarmuka ponsel didesain mobile-first karena mayoritas teknisi mengakses web via smartphone.</div>
+    <div class="speaker-cue">🎙️ Waktu 2:30 - 3:00: Soroti bahwa antarmuka ponsel didesain mobile-first karena mayoritas penyedia jasa mengakses web via smartphone.</div>
     <div>Performa: 60 FPS Animasi Tanpa Jank GPU di Perangkat Seluler</div>
   </div>
 </div>
@@ -1114,7 +1115,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="card card-orange">
         <div class="card-title">2. Client-Side Image Compression (HTML5 Canvas)</div>
         <div class="card-desc">
-          Teknisi di pelosok daerah seringkali memiliki kuota internet terbatas. Saat upload foto jasa, gambar otomatis di-resize menjadi maksimal 1280px dengan kompresi kualitas 0.82 langsung di browser sebelum terkirim ke server (hemat kuota 80%).
+          Penyedia jasa di pelosok daerah seringkali memiliki kuota internet terbatas. Saat upload foto jasa, gambar otomatis di-resize menjadi maksimal 1280px dengan kompresi kualitas 0.82 langsung di browser sebelum terkirim ke server (hemat kuota 80%).
         </div>
       </div>
     </div>
@@ -1139,7 +1140,7 @@ html_content = f"""<!DOCTYPE html>
   </div>
 
   <div class="slide-footer">
-    <div class="speaker-cue">🎙️ Waktu 3:00 - 3:45: Tunjukkan nilai inovasi kompresi foto di browser teknisi untuk membuktikan empati teknis pada pengguna daerah.</div>
+    <div class="speaker-cue">🎙️ Waktu 3:00 - 3:45: Tunjukkan nilai inovasi kompresi foto di browser penyedia jasa untuk membuktikan empati teknis pada pengguna daerah.</div>
     <div>Fokus Inovasi: Efisiensi Bandwidth, Konsistensi Status, dan UX Khusus Peran</div>
   </div>
 </div>
@@ -1237,18 +1238,18 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide-body">
     <div class="col-left">
       <div class="card card-orange">
-        <div class="card-title">1. Dari Spanduk Tiang Listrik ke Pasar Digital Nasional</div>
-        <div class="card-desc">Teknisi di daerah kini memiliki etalase portofolio profesional tanpa harus membayar biaya iklan spanduk fisik yang mahal dan merusak estetika kota.</div>
+        <div class="card-title">1. Dari Jaringan Offline ke Pasar Digital Nasional</div>
+        <div class="card-desc">Penyedia jasa di daerah kini memiliki etalase portofolio profesional tanpa harus membayar biaya iklan jaringan offline yang mahal dan merusak estetika kota.</div>
       </div>
 
       <div class="card card-green">
         <div class="card-title">2. Efisiensi Waktu Transaksi (1 Hari Menjadi 5 Menit)</div>
-        <div class="card-desc">Masyarakat tidak lagi membuang waktu berjam-jam mencari kontak tukang. Kepastian pengerjaan dan harga langsung didapat dalam hitungan menit.</div>
+        <div class="card-desc">Masyarakat tidak lagi membuang waktu berjam-jam mencari kontak penyedia jasa. Kepastian pengerjaan dan harga langsung didapat dalam hitungan menit.</div>
       </div>
 
       <div class="card card-blue">
-        <div class="card-title">3. Peningkatan Pendapatan Teknisi Hingga +40%</div>
-        <div class="card-desc">Keterlihatan profil teknisi lintas kecamatan dan kabupaten membuka peluang pesanan baru yang sebelumnya mustahil dijangkau secara luring.</div>
+        <div class="card-title">3. Peningkatan Pendapatan Penyedia jasa Hingga +40%</div>
+        <div class="card-desc">Keterlihatan profil penyedia jasa lintas kecamatan dan kabupaten membuka peluang pesanan baru yang sebelumnya mustahil dijangkau secara luring.</div>
       </div>
     </div>
 
@@ -1258,7 +1259,7 @@ html_content = f"""<!DOCTYPE html>
         <div class="card-desc">
           • <strong>Sprint 1:</strong> Integrasi Payment Gateway Nasional (Midtrans Snap / QRIS Dinamis).<br>
           • <strong>Sprint 2:</strong> Real-time Push Notification WhatsApp via webhook untuk pengguna daerah.<br>
-          • <strong>Sprint 3:</strong> Sertifikasi keahlian teknisi bekerja sama dengan Balai Latihan Kerja (BLK).
+          • <strong>Sprint 3:</strong> Sertifikasi keahlian penyedia jasa bekerja sama dengan Balai Latihan Kerja (BLK).
         </div>
       </div>
 
@@ -1338,8 +1339,8 @@ html_content = f"""<!DOCTYPE html>
 </html>
 """
 
-html_file = "/home/firman/weblomba/presentation_deck.html"
-pdf_file = "/home/firman/weblomba/JASAKITE_PRESENTASI_GRAND_FINAL_EMOSTFET11.pdf"
+html_file = os.path.join(BASE_DIR, "presentation_deck.html")
+pdf_file = os.path.join(BASE_DIR, "JASAKITE_PRESENTASI_GRAND_FINAL_EMOSTFET11.pdf")
 
 with open(html_file, "w", encoding="utf-8") as f:
     f.write(html_content)

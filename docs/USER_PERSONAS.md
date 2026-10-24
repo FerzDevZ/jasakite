@@ -14,19 +14,19 @@
 - **Tech-savvy:** Medium (pintar pakai HP, jarang pakai laptop)
 
 ### Kebutuhan
-- Butuh jasa service AC yang rusak
-- Ingin membandingkan harga beberapa provider
+- Butuh antar dokumen kerja ke kantor kecamatan sebelum jam 12
+- Ingin menitip beli obat di apotek tanpa keluar rumah
 - Ingin tahu rating provider sebelum memesan
-- Ingin koordinasi jadwal dengan mudah
+- Ingin koordinasi alamat dan jadwal dengan mudah
 
 ### Frustrasi
-- Sulit cari jasa yang terpercaya di kota kecil
+- Sulit cari kurir yang terpercaya di kota kecil
 - Harga tidak transparan di WhatsApp groups
 - Tidak ada sistem review yang bisa dipercaya
-- Sulit koordinasi jadwal dengan provider
+- Sulit koordinasi titik antar dan jadwal dengan provider
 
 ### Goals
-- Menemukan provider AC yang terpercaya dan harganya wajar
+- Menemukan kurir atau juru belanja yang terpercaya dan harganya wajar
 - Bisa memesan dengan mudah tanpa perlu telepon
 - Bisa memberikan review setelah jasa selesai
 
@@ -44,8 +44,8 @@
 ### Profil
 - **Nama:** Budi Santoso
 - **Usia:** 35 tahun
-- **Pekerjaan:** Tukang service AC
-- **Lokasi:** Bandung, Jawa Barat
+- **Pekerjaan:** Kurir antar barang & juru belanja
+- **Lokasi:** Pangkal Pinang, Kepulauan Bangka Belitung
 - **Tech-savvy:** Low (pandai pakai WA, jarang buka browser)
 
 ### Kebutuhan

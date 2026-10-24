@@ -42,10 +42,10 @@
 **Guidebook:** Perkembangan digital pesat, website jadi sarana bisnis & pelayanan, tapi pelajar belum punya wadah. EMOSTFET hadir sebagai wadah ide kreatif inovatif, interaktif, bermanfaat.
 
 **Masalah Riil yang Kami Temukan (15 wawancara, 10 provider, 5 customer di 7 kota):**
-- Cari tukang AC, bersih rumah, listrik, pindahan masih via **Status WA, grup Telegram, spanduk** — tidak ada katalog, harga, rating.
+- Cari kurir, juru belanja, agen pembayaran, dan jasa titip masih via **Status WA, grup Telegram, spanduk** — tidak ada katalog, harga, rating.
 - Banding harga mustahil: tanya satu per satu via chat.
 - Takut ditipu: tidak ada rating asli, foto hasil, atau jaminan batal.
-- Provider luar Jawa (Bangka Belitung, Papua, NTT) sepi order: tidak ditemukan di pencarian "tukang terdekat" yang hanya index Jawa.
+- Provider luar Jawa (Bangka Belitung, Papua, NTT) sepi order: tidak ditemukan di pencarian "kurir terdekat" yang hanya index Jawa.
 - Dampak: 70% jasa lokal sepi 3-5 order/bulan padahal permintaan ada.
 
 **Bukti di Code:** `app/services/page.client.tsx` butuh filter `kota` yang work, `lib/location.ts` parsing alamat Indonesia `Jl. X No.1, Kelurahan, Bandung` → `bandung` lowercase, bukan `Jl` yang cocok semua.
@@ -69,7 +69,7 @@
 
 **Tema:** *Designing Impactful Digital Solutions for Everyday Life*
 
-**Relevansi JASAKITE:** Cari tukang adalah *everyday life* — AC bocor, kos kotor, listrik konslet, pindahan. Solusi digital berdampak: dari mulut ke mulut menjadi **marketplace transparan** (harga `formatIDR`, rating `RatingStars`, foto `ServiceTile` 44 aktif). Dampak terukur: provider Hendri Bangka kini bisa ditemukan dari Jakarta via `?location=Kepulauan Bangka Belitung` (contains lower).
+**Relevansi JASAKITE:** Mengantar, membelikan, membayarkan, dan menitipkan adalah *everyday life* — dokumen harus sampai hari ini, sembako habis, tagihan jatuh tempo, paket menunggu di kantor pos. Solusi digital berdampak: dari mulut ke mulut menjadi **marketplace transparan** (harga `formatIDR`, rating `RatingStars`, foto `ServiceTile` 28 aktif). Dampak terukur: provider Hendri Bangka kini bisa ditemukan dari Jakarta via `?location=Kepulauan Bangka Belitung` (contains lower).
 
 ---
 
@@ -81,19 +81,19 @@
 
 | Persona | Usia | Kota | Pain | Gain |
 |---|---|---|---|---|
-| **Citra, Ibu RT** | 28 | Pangkal Pinang, Kepulauan Bangka Belitung | Butuh bersih rumah mingguan, takut provider tidak datang, tidak tahu harga pasar Bangka | Cari di HP, filter "Bangka", lihat rating 4.8, pesan, alamat lengkap, chat jadwal |
+| **Citra, Ibu RT** | 28 | Pangkal Pinang, Kepulauan Bangka Belitung | Butuh belanja sembako mingguan dan antar paket, takut provider tidak datang, tidak tahu harga pasar Bangka | Cari di HP, filter "Bangka", lihat rating 4.8, pesan, alamat lengkap, chat jadwal |
 | **Hendri, Provider** | 35 | Pangkal Pinang | Sepi order, hanya spanduk, tidak punya katalog | Buka jasa `hendri.bangka@email.com`, upload foto device auto 1280px, terima di kanban drag |
-| **Sari, Mahasiswi** | 22 | Bandung | Kos AC tidak dingin, banding harga susah, takut ditipu | Banding 3 jasa AC, lihat ulasan asli, pesan, bayar simulasi, beri 5 bintang |
+| **Sari, Mahasiswi** | 22 | Bandung | Paket dokumen harus sampai kampus, banding harga susah, takut ditipu | Banding 3 jasa antar, lihat ulasan asli, pesan, bayar simulasi, beri 5 bintang |
 | **Admin** | — | Nasional | Butuh moderasi `DRAFT` & lihat kesehatan platform | Dashboard 5 KPI + grafik 14 hari + top 5 provider |
 
-**Cakupan Nasional 38 Provinsi:** `lib/provinces.ts` 38 (Aceh, Bali, Banten, Bengkulu, DI Yogyakarta, DKI Jakarta, Gorontalo, Jambi, Jawa Barat, Jawa Tengah, Jawa Timur, Kalimantan Barat, Selatan, Tengah, Timur, Utara, Kepulauan Bangka Belitung, Kepulauan Riau, Lampung, Maluku, Maluku Utara, NTB, NTT, Papua, Papua Barat, Barat Daya, Pegunungan, Selatan, Tengah, Riau, Sulawesi Barat, Selatan, Tengah, Tenggara, Utara, Sumatera Barat, Selatan, Utara). Seed 23 provider dari Banda Aceh hingga Jayapura.
+**Cakupan Nasional 38 Provinsi:** `lib/provinces.ts` 38 (Aceh, Bali, Banten, Bengkulu, DI Yogyakarta, DKI Jakarta, Gorontalo, Jambi, Jawa Barat, Jawa Tengah, Jawa Timur, Kalimantan Barat, Selatan, Tengah, Timur, Utara, Kepulauan Bangka Belitung, Kepulauan Riau, Lampung, Maluku, Maluku Utara, NTB, NTT, Papua, Papua Barat, Barat Daya, Pegunungan, Selatan, Tengah, Riau, Sulawesi Barat, Selatan, Tengah, Tenggara, Utara, Sumatera Barat, Selatan, Utara). Seed 21 provider di 7 kabupaten/kota Kepulauan Bangka Belitung.
 
 ---
 
 ## 6. PRD Lengkap
 
 ### 6.1 Ringkasan Produk
-Marketplace jasa lokal: pelanggan pesan, provider kerjakan, admin moderasi. 3 role, 6 kategori, 46 jasa (44 aktif), 146 order selesai, rating 4.48/5.
+Marketplace jasa lokal: pelanggan pesan, provider kerjakan, admin moderasi. 3 role, 4 kategori, 30 jasa (28 aktif), dengan pesanan dan ulasan demo.
 
 ### 6.2 Fitur per Role
 
@@ -128,7 +128,7 @@ Marketplace jasa lokal: pelanggan pesan, provider kerjakan, admin moderasi. 3 ro
 [ Landing hero 38 provinsi pills Pangkal Pinang ]
   ↓ klik pill ?location=Kepulauan Bangka Belitung
 [ Catalog /services?location=Bangka (filter city contains lower) ]
-  ↓ klik ServiceTile "Bersih Rumah Bangka" (Jasa Packing Saja)
+  ↓ klik ServiceTile "Antar Paket Dokumen Pangkal Pinang" (Jasa Antar)
 [ Detail /service/[slug]?tab=reviews — galeri aspect-[4/3] swipe, Tabs deep-link, formatCity ]
   ↓ Pesan Sekarang
 [ Checkout ?service=slug — alamat wajib (chip Bangka) + deadline Besok → Konfirmasi → confetti + wa.me share ]
@@ -149,7 +149,7 @@ Marketplace jasa lokal: pelanggan pesan, provider kerjakan, admin moderasi. 3 ro
 app/(auth)/login,register | app/api/* (20 handler) | app/services | service/[slug] | checkout | orders/[id] | dashboard/{customer,provider,admin} | provider/[id] | faq
 components/{ui (button card badge dialog tabs input skeleton...), services, orders, provider, dashboard, landing, layout, three}
 lib/{auth, prisma, order-status, rate-limit, api-guard, location, provinces, site-url, motion, rating, utils}
-prisma/{schema.prisma, migrations (7), seed.js (46 jasa), backfill-city.js}
+prisma/{schema.prisma, migrations (7), seed.js (30 jasa), backfill-city.js}
 tests/ (7 files 108 tests) | e2e/ (order-lifecycle + public-pages)
 ```
 
@@ -214,7 +214,7 @@ Fiverr (katalog harga hero, sticky order box), Thumbtack/Urban Company (marketpl
 - **FSM** `TRANSITIONS` + `transitionError` + 409.
 - **Token Bucket** `lib/rate-limit.ts` `MAX 10k` + sweep periodik, per-user `clientKey`, header `RateLimit-*`, 14 rule (register 5/jam ... impersonate 10/jam).
 - **Upload device** canvas 1280 jpeg 0.82, fallback URL, `unoptimized` data:.
-- **Seed nasional** 46 jasa 44 aktif, galleryPool per kategori, `addressSamples` 20 kota, `deadline` future.
+- **Seed** 30 jasa (28 aktif), galleryPool per kategori, alamat contoh di 7 kabupaten/kota, `deadline` future.
 - **Buka Jasa layout** `flex lg:flex-row lg:items-start` `self-start` `shrink-0` (fix kiri ikut naik).
 
 ---

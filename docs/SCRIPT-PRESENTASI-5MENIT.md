@@ -3,7 +3,7 @@
 > Untuk 3 tim final 7 Sep (10% nilai). Latihan 4:30 agar sisa tanya.
 
 **0:00-0:30 — Hook masalah (20%)**
-"Kami wawancara 15 orang: cari tukang AC masih via status WA, tidak ada harga, tidak ada rating. Di Bangka Belitung, Hendri provider Pangkal Pinang hanya dapat order dari spanduk. Tema *Impactful for Everyday Life* — kami buat marketplace jasa lokal nasional."
+"Kami wawancara 15 orang: cari penyedia jasa masih via status WA, tidak ada harga, tidak ada rating. Di Bangka Belitung, Hendri penyedia jasa Pangkal Pinang hanya dapat order dari jaringan offline. Tema *Impactful for Everyday Life* — kami buat marketplace jasa lokal nasional."
 
 **0:30-1:30 — Demo 90 detik (UX 30%)**
 1. Landing `38 provinsi Aceh→Papua` → klik pill `Pangkal Pinang`

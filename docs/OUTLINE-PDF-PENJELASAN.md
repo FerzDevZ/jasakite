@@ -9,14 +9,14 @@
 - Tim, 30 Aug 2025, jasakite.id
 
 ## Hal 2 — Latar Belakang Masalah (Pemahaman 20%)
-- Foto WA grup "cari tukang AC" vs screenshot kosong.
+- Foto chat WA grup "cari kurir / juru belanja" vs screenshot kosong.
 - Data: 70% jasa lokal masih mulut-ke-mulut, tidak ada harga/rating (riset 15 wawancara kecil).
 - Pain 3: banding harga susah, takut ditipu, provider Bangka Belitung tidak ditemukan nasional.
 
 ## Hal 3 — Target Pengguna (Persona)
 - **Citra, 28, Ibu RT Bangka Belitung**: butuh bersih rumah mingguan, takut provider tidak datang.
 - **Hendri, 35, Provider Pangkal Pinang**: sepi order, hanya andalkan spanduk.
-- **Sari, 22, Mahasiswa Bandung**: butuh AC kos cepat, banding harga.
+- **Sari, 22, Mahasiswa Bandung**: butuh antar dokumen cepat, banding harga.
 - Tabel Role: Customer / Provider / Admin (kebutuhan berbeda → dashboard terpisah).
 
 ## Hal 4 — User Flow (1 diagram)
