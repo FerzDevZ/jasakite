@@ -76,8 +76,14 @@ jobs:
       # adalah warisan era SQLite (migration_lock.toml bertuliskan "sqlite").
       - name: Prepare database
         run: |
-          npx prisma db push --skip-generate
-          node prisma/seed.js
+          set -o pipefail
+          # Log langkah ini ditulis ke annotation saat gagal (jalur publik —
+          # unduhan log penuh butuh hak admin repo) supaya penyebabnya bisa
+          # dibaca tanpa membuka Actions.
+          (npx prisma db push --skip-generate && node prisma/seed.js) 2>&1 | tee db-prep.log || {
+            echo "::error::Gagal menyiapkan database CI: $(tail -c 700 db-prep.log | tr '\n' ' ')"
+            exit 1
+          }
 
       - name: Typecheck
         run: npm run typecheck
@@ -186,9 +192,13 @@ jobs:
 
       - name: Prepare database
         run: |
-          npx prisma generate
-          npx prisma db push --skip-generate
-          node prisma/seed.js
+          set -o pipefail
+          # Sama seperti job verify: kegagalan ditulis ke annotation agar
+          # terbaca publik tanpa hak admin (lihat komentar di job verify).
+          (npx prisma generate && npx prisma db push --skip-generate && node prisma/seed.js) 2>&1 | tee db-prep.log || {
+            echo "::error::Gagal menyiapkan database CI (e2e): $(tail -c 700 db-prep.log | tr '\n' ' ')"
+            exit 1
+          }
 
       # Build ke folder khusus E2E (`.next-e2e`, lihat next.config.mjs). Di CI
       # tidak ada `next dev` yang berjalan, tetapi jalur yang dipakai harus sama
