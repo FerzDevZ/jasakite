@@ -28,17 +28,23 @@ jobs:
         image: mongo:7
         ports:
           - 27017:27017
+        # Replica set WAJIB: Prisma menjalankan upsert MongoDB lewat
+        # transaksi (P2031 pada standalone) — seed gagal di sini selama ini
+        # karena container masih standalone. rs.initiate dijalankan sekali
+        # oleh healthcheck; percobaan berikutnya menangkap error dan
+        # jatuh ke ping biasa.
         options: >-
-          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-cmd "mongosh --quiet --eval 'try { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"127.0.0.1:27017\"}]}) } catch (e) { db.runCommand({ ping: 1 }) }'"
           --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 5s
 
     env:
       # MongoDB (provider schema = mongodb) — bukan SQLite. `directConnection`
       # menunjuk tepat ke container ini: Prisma tidak mencari replica set yang
       # memang tidak ada di CI.
-      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?directConnection=true&retryWrites=true&w=majority"
+      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?replicaSet=rs0&w=majority"
       # NextAuth v5 menolak start tanpa dua env ini, termasuk saat `next build`
       # mengevaluasi route handler.
       AUTH_SECRET: "ci-placeholder-secret-not-used-in-production"
@@ -151,14 +157,20 @@ jobs:
         image: mongo:7
         ports:
           - 27017:27017
+        # Replica set WAJIB: Prisma menjalankan upsert MongoDB lewat
+        # transaksi (P2031 pada standalone) — seed gagal di sini selama ini
+        # karena container masih standalone. rs.initiate dijalankan sekali
+        # oleh healthcheck; percobaan berikutnya menangkap error dan
+        # jatuh ke ping biasa.
         options: >-
-          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-cmd "mongosh --quiet --eval 'try { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"127.0.0.1:27017\"}]}) } catch (e) { db.runCommand({ ping: 1 }) }'"
           --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 5s
 
     env:
-      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?directConnection=true&retryWrites=true&w=majority"
+      DATABASE_URL: "mongodb://127.0.0.1:27017/jasakite_ci?replicaSet=rs0&w=majority"
       AUTH_SECRET: "ci-placeholder-secret-not-used-in-production"
       AUTH_TRUST_HOST: "true"
 
