@@ -5,6 +5,8 @@ Marketplace jasa lokal untuk pasar Indonesia — pertemukan pelanggan dengan pen
 Dibangun dengan Next.js 15 App Router, React 19, Prisma, dan Tailwind CSS. Mencakup empat peran (customer, provider, admin, super admin) dengan alur pesanan penuh dari pemesanan hingga ulasan, escrow pembayaran QRIS, dompet saldo, dan **langganan penyedia Rp10.000/bulan** yang dipotong otomatis dari saldo.
 
 > Panduan penggunaan lengkap (akun, seluruh alur, langganan, operasional, skenario demo 5 menit): **[docs/PANDUAN-LENGKAP.md](docs/PANDUAN-LENGKAP.md)** · versi PDF: `docs/PANDUAN-LENGKAP.pdf`
+>
+> Manual operasional per peran (klik demi klik untuk Customer, Provider, Admin, Super Admin — semua label tombol diverifikasi dari kode): **[docs/PANDUAN-PENGGUNA-PER-PERAN.md](docs/PANDUAN-PENGGUNA-PER-PERAN.md)** · versi PDF: `docs/PANDUAN-PENGGUNA-PER-PERAN.pdf`
 
 ```
 Katalog  →  Checkout  →  Provider terima  →  Dikerjakan  →  Selesai  →  Ulasan
