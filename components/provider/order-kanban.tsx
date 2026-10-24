@@ -410,29 +410,33 @@ export function OrderKanban() {
 
       const currentStatus = order.status as OrderStatus
 
-      // ArrowRight: Move to next column
-      if (e.key === "ArrowRight") {
+      // Panah memakai tangga status yang sama dengan drag. Transisi yang
+      // ditolak FSM TIDAK boleh diam saja: pengguna keyboard harus tahu
+      // kenapa kartu tidak pindah — toast yang sama dengan jalur drag.
+      const ladder = ["PENDING", "IN_PROGRESS", "COMPLETED"]
+      const currentIdx = ladder.indexOf(currentStatus)
+
+      if (e.key === "ArrowRight" && currentIdx < ladder.length - 1) {
         e.preventDefault()
-        const nextStatuses = ["PENDING", "IN_PROGRESS", "COMPLETED"]
-        const currentIdx = nextStatuses.indexOf(currentStatus)
-        if (currentIdx < nextStatuses.length - 1) {
-          const next = nextStatuses[currentIdx + 1] as OrderStatus
-          if (canTransition(currentStatus, next)) {
-            moveOrder(order.id, next)
-          }
+        const next = ladder[currentIdx + 1] as OrderStatus
+        if (canTransition(currentStatus, next)) {
+          moveOrder(order.id, next)
+        } else {
+          toast.error("Transisi tidak diizinkan", {
+            description: `${currentStatus} tidak bisa pindah ke ${next}.`,
+          })
         }
       }
 
-      // ArrowLeft: Move to previous column
-      if (e.key === "ArrowLeft") {
+      if (e.key === "ArrowLeft" && currentIdx > 0) {
         e.preventDefault()
-        const nextStatuses = ["PENDING", "IN_PROGRESS", "COMPLETED"]
-        const currentIdx = nextStatuses.indexOf(currentStatus)
-        if (currentIdx > 0) {
-          const prev = nextStatuses[currentIdx - 1] as OrderStatus
-          if (canTransition(currentStatus, prev)) {
-            moveOrder(order.id, prev)
-          }
+        const prev = ladder[currentIdx - 1] as OrderStatus
+        if (canTransition(currentStatus, prev)) {
+          moveOrder(order.id, prev)
+        } else {
+          toast.error("Transisi tidak diizinkan", {
+            description: `${currentStatus} tidak bisa pindah ke ${prev}.`,
+          })
         }
       }
 
