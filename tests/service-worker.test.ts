@@ -88,4 +88,14 @@ describe("pendaftaran service worker di root layout", () => {
     expect(layoutSource).toContain("unregister()")
     expect(layoutSource).toContain("caches.delete(")
   })
+
+  it("tidak pernah meng-cache payload RSC/prefetch router (anti refresh-loop lintas deploy)", async () => {
+    // Post-mortem 26-10-24: /services?_rsc=... lolos pengecualian /_next/ dan
+    // ter-cache cache-first — pohon halaman lama bertabrakan dengan chunk baru
+    // setiap deploy (refresh loop, konten salah rute, tombol mati).
+    const guard = /searchParams\.has\('_rsc'\)|searchParams\.has\("_rsc"\)/
+    expect(guard.test(swSource), "fetch handler wajib melewati ?_rsc= tanpa cache").toBe(true)
+    expect(swSource).toContain("RSC")
+    expect(swSource).toContain("Next-Router-Prefetch")
+  })
 })

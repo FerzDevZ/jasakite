@@ -3,7 +3,7 @@
 // Versi cache WAJIB naik setiap kali strategi di bawah berubah: `activate`
 // hanya menghapus cache yang namanya berbeda, jadi nama yang tetap berarti
 // shell hasil strategi lama tetap dipakai oleh pengguna yang sudah pernah buka.
-const CACHE_NAME = 'jasakite-v5'
+const CACHE_NAME = 'jasakite-v6'
 // Dokumen HTML yang disimpan hanya sebagai cadangan OFFLINE. Disajikan lewat
 // jaringan lebih dulu (lihat handler fetch) — bukan dari cache lebih dulu.
 const STATIC_ASSETS = [
@@ -84,6 +84,22 @@ self.addEventListener('fetch', (event) => {
   // berubah setiap build (dan setiap rekompilasi di mode dev), jadi entri
   // cache lama di sini hanya bisa menghasilkan 404.
   if (event.request.url.includes('/_next/')) return
+
+  // Skip payload RSC/prefetch router — INILAH yang membuat "refresh non-stop"
+  // dan konten halaman lain bocor ke katalog setelah deploy: URL seperti
+  // /services?_rsc=... lolos dari pengecualian /_next/ dan ter-cache
+  // CACHE-FIRST di cabang aset, sehingga setiap deploy meninggalkan pohon
+  // halaman lama yang bertabrakan dengan chunk baru (ChunkLoadError →
+  // hydration crash → reload berulang). Payload ini datanya dinamis dan
+  // berumur satu build — tidak boleh pernah masuk cache SW.
+  const reqUrl = new URL(event.request.url, self.location?.href || '')
+  if (
+    reqUrl.searchParams.has('_rsc') ||
+    event.request.headers.get('RSC') === '1' ||
+    event.request.headers.get('Next-Router-Prefetch') === '1'
+  ) {
+    return
+  }
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
