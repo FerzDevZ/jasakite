@@ -160,7 +160,7 @@ describe("merek JASAKITE", () => {
     // Dokumentasi wajib tercakup: dua kebocoran wordmark terbelah di cover
     // HTML dokumen hanya terlihat setelah cakupan ini ada.
     expect(SCANNED.map((f) => f.path)).toContain("README.md")
-    expect(SCANNED.map((f) => f.path)).toContain("docs/FULL-DOKUMENTASI-JASAKITE.md")
+    expect(SCANNED.map((f) => f.path)).toContain("docs/PANDUAN-LENGKAP.md")
     expect(SCANNED.map((f) => f.path)).toContain("docs/pdf-assets/dokumen-penjelasan.html")
   })
 
