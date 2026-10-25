@@ -27,8 +27,10 @@ export async function GET(request: Request) {
       where: {
         service: { providerId },
       },
+      // paymentMethod (skalar) ikut teririm otomatis oleh findMany —
+      // include KHUSUS relasi; menaruh skalar di dalamnya membuat Prisma
+      // melempar error validasi saat RUNTIME (500) meski typecheck lolos.
       include: {
-        paymentMethod: true,
         service: {
           include: {
             category: { select: { name: true } },

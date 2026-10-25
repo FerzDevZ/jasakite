@@ -186,12 +186,13 @@ klik **Konfirmasi Pesanan**.
    **Buat pesanan · Rp X**. Bila saldo kurang, tombol terakhir terkunci dan
    muncul tombol **Isi saldo**.
 
-Dua metode pembayaran yang berlaku:
+Tiga metode pembayaran yang berlaku (komisi platform saat ini dinonaktifkan — 0%):
 
 | Metode | Cara kerja |
 |---|---|
 | **QRIS / Transfer platform** | Uang ditahan platform (escrow). Scan QRIS di halaman pesanan, unggah bukti, Super Admin memverifikasi. Provider baru dibayar setelah pesanan selesai. |
 | **Saldo JASAKITE** | Total langsung dipotong dari saldo dompet; pembatalan mengembalikan saldo penuh. |
+| **Bayar Tunai** | Langsung ke penyedia saat pekerjaan selesai — tanpa top-up, tanpa unggah bukti, TANPA potongan |
 
 Checkout multi-jasa otomatis dipecah menjadi **satu pesanan per penyedia**,
 masing-masing dengan kode sendiri — mis. 3 jasa dari 2 penyedia = 2 pesanan.
@@ -559,8 +560,7 @@ masuk lagi** agar sesinya membawa peran baru.
   mutasi bank mudah dicocokkan admin.
 - **Langganan provider** — Rp 10.000 per 30 hari agar jasa tayang; dipotong
   otomatis dari saldo.
-- **Komisi platform** — bagian platform dari nilai pesanan (bawaan 10%),
-  dipotong saat pesanan selesai; sisanya masuk saldo provider.
+- **Komisi platform** — saat ini **dinonaktifkan (0%)**: seluruh nilai pesanan menjadi milik penyedia; pendapatan platform dari langganan Rp 10.000.
 - **Verifikasi** — pemeriksaan bukti transfer oleh Super Admin sebelum uang
   dianggap masuk.
 - **2FA (TOTP)** — kode 6 digit dari aplikasi authenticator yang berganti

@@ -18,8 +18,8 @@ JASAKITE adalah marketplace jasa lokal dengan **uang ditahan platform (escrow)**
 1. Pelanggan memesan jasa dan membayar lewat **QRIS** (transfer manual).
 2. **SUPER_ADMIN** memverifikasi bukti transfer; uang masuk escrow.
 3. Penyedia mengerjakan pesanan **hanya setelah pembayaran terverifikasi**.
-4. Setelah pesanan selesai, pendapatan penyedia masuk ke **saldo dompet** (dipotong komisi
-   platform, bawaan 10%).
+4. Setelah pesanan selesai, pendapatan penyedia masuk ke **saldo dompet** — komisi platform
+   saat ini **dinonaktifkan (0%)**, jadi nilai penuh mengalir ke penyedia.
 5. Penyedia dapat menarik saldo ke rekening bank, atau memakainya untuk **langganan bulanan
    Rp10.000** yang wajib aktif agar jasanya tayang di katalog.
 
