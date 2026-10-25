@@ -30,6 +30,7 @@ import {
 import {
   ArrowLeft,
   Clock,
+  Banknote,
   Landmark,
   Wallet,
   SearchX,
@@ -84,6 +85,12 @@ const PAYMENT_METHODS = [
     description: "Bayar instan dari saldo dompet",
     icon: Wallet,
   },
+  {
+    value: "cash",
+    label: "Bayar Tunai",
+    description: "Langsung ke penyedia saat selesai — tanpa top-up",
+    icon: Banknote,
+  },
 ] as const
 
 type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"]
@@ -95,6 +102,8 @@ const PAYMENT_DETAILS: Record<PaymentMethod, string> = {
     "Total langsung dipotong dari saldo dompet Anda. Penyedia menerima dana saat pesanan selesai; pembatalan mengembalikan saldo penuh.",
   transfer:
     "Uang ditahan platform (escrow) sampai pekerjaan selesai. Scan QRIS di halaman pesanan, unggah bukti transfer, lalu diverifikasi admin. Penyedia baru dibayar setelah pesanan selesai.",
+  cash:
+    "Bayar langsung ke penyedia saat pekerjaan selesai. Tanpa top-up, tanpa unggah bukti, tanpa potongan — penyedia menerima uang tunai utuh dari Anda.",
 }
 
 // Janji platform yang benar-benar dijalankan aplikasi ini — bukan klaim
@@ -304,11 +313,11 @@ function CheckoutContent() {
   })
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => {
     if (typeof window === "undefined") return "transfer"
-    // Draft lama bisa memuat "ewallet"/"cod" yang kini tidak lagi ditawarkan
-    // (dan ditolak server) — nilai tak dikenal jatuh kembali ke "transfer".
+    // Draft lama bisa memuat "ewallet"/"cod" yang memang ditolak server —
+    // nilai tak dikenal jatuh kembali ke "transfer".
     try {
       const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}").paymentMethod
-      return saved === "saldo" || saved === "transfer" ? saved : "transfer"
+      return saved === "saldo" || saved === "transfer" || saved === "cash" ? saved : "transfer"
     } catch { return "transfer" }
   })
 

@@ -28,6 +28,7 @@ export async function GET(request: Request) {
         service: { providerId },
       },
       include: {
+        paymentMethod: true,
         service: {
           include: {
             category: { select: { name: true } },

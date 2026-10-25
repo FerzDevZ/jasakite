@@ -118,7 +118,7 @@ export async function POST(request: Request) {
     const paymentMethod = normalizePaymentMethod(validated.paymentMethod ?? "qris")
     if (!paymentMethod) {
       return NextResponse.json(
-        { error: "Metode pembayaran tidak didukung. Gunakan QRIS atau saldo." },
+        { error: "Metode pembayaran tidak didukung. Gunakan QRIS, saldo, atau tunai." },
         { status: 400 }
       )
     }

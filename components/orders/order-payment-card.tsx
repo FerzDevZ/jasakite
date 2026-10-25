@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { BadgeCheck, Clock, ImagePlus, Loader2, ShieldCheck, Upload, XCircle } from "lucide-react"
+import { BadgeCheck, Banknote, Clock, ImagePlus, Loader2, ShieldCheck, Upload, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ import { compressProofImage, validateProofImage } from "@/lib/proof-image"
 import {
   PLATFORM_QRIS,
   canProviderStart,
+  paymentDisplayLabel,
   paymentStatusLabel,
   paymentStatusTone,
 } from "@/lib/payments"
@@ -35,7 +36,13 @@ const TONE_CLASS: Record<string, string> = {
   muted: "bg-muted text-muted-foreground",
 }
 
-function PaymentStatusPill({ status }: { status: string }) {
+function PaymentStatusPill({
+  status,
+  method,
+}: {
+  status: string
+  method?: string | null
+}) {
   return (
     <span
       className={cn(
@@ -43,7 +50,7 @@ function PaymentStatusPill({ status }: { status: string }) {
         TONE_CLASS[paymentStatusTone(status)] ?? TONE_CLASS.muted
       )}
     >
-      {paymentStatusLabel(status)}
+      {paymentDisplayLabel(status, method)}
     </span>
   )
 }
@@ -160,17 +167,36 @@ export function OrderPaymentCard({
     <Card className={cn(isPaid && "border-success/30")}>
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle className="text-base">Pembayaran</CardTitle>
-        <PaymentStatusPill status={order.paymentStatus} />
+        <PaymentStatusPill status={order.paymentStatus} method={order.paymentMethod} />
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-muted/50 px-4 py-3">
-          <span className="text-sm text-muted-foreground">
-            {isPaid ? "Dana diterima platform" : "Nominal yang harus dibayar"}
-          </span>
-          <span className="text-xl font-extrabold tabular-nums text-primary-strong">
-            {formatIDR(order.totalPrice)}
-          </span>
-        </div>
+        {order.paymentMethod === "cash" ? (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-muted/50 px-4 py-3">
+              <span className="text-sm text-muted-foreground">
+                {isPaid ? "Diterima tunai dari pelanggan" : "Bayar tunai ke penyedia saat selesai"}
+              </span>
+              <span className="text-xl font-extrabold tabular-nums text-primary-strong">
+                {formatIDR(order.totalPrice)}
+              </span>
+            </div>
+            <p className="flex items-start gap-2 rounded-xl bg-warning-soft px-3.5 py-3 text-sm text-warning">
+              <Banknote className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              {isPaid
+                ? "Pesanan ini diselesaikan dengan pembayaran tunai langsung — tanpa potongan apa pun."
+                : "Pembayaran tunai dilakukan langsung ke penyedia saat pekerjaan selesai. Tanpa top-up, tanpa unggah bukti, tanpa potongan."}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl bg-muted/50 px-4 py-3">
+            <span className="text-sm text-muted-foreground">
+              {isPaid ? "Dana diterima platform" : "Nominal yang harus dibayar"}
+            </span>
+            <span className="text-xl font-extrabold tabular-nums text-primary-strong">
+              {formatIDR(order.totalPrice)}
+            </span>
+          </div>
+        )}
 
         {isPaid && (
           <p className="flex items-start gap-2 rounded-xl bg-success-soft px-3.5 py-3 text-sm text-success">

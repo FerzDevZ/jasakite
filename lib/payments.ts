@@ -37,18 +37,23 @@ export const PLATFORM_QRIS = {
 
 // ── Metode pembayaran pesanan ────────────────────────────────────────────────
 
-export const ORDER_PAYMENT_METHODS = ["qris", "saldo"] as const
+export const ORDER_PAYMENT_METHODS = ["qris", "saldo", "cash"] as const
 export type OrderPaymentMethod = (typeof ORDER_PAYMENT_METHODS)[number]
 
 /**
  * `transfer` adalah nilai lama dari checkout versi sebelumnya dan tetap
  * diterima sebagai alias QRIS supaya klien yang belum diperbarui tidak
- * membuat pesanan dengan metode yang tidak bisa diverifikasi. `ewallet` dan
- * `cod` sengaja DITOLAK: keduanya tidak punya bukti yang bisa dicocokkan
- * super admin, dan model escrow tidak mengenal uang tunai di luar platform.
+ * membuat pesanan dengan metode yang tidak bisa diverifikasi.
+ *
+ * `cash` = BAYAR TUNAI pelanggan → penyedia, langsung saat pekerjaan selesai:
+ * tidak lewat platform, tanpa top-up, tanpa bukti, tanpa potongan. Risiko
+ * penagihan bergeser ke penyedia (ia melihat badge TUNAI sebelum menerima),
+ * dan `canProviderStart` melonggarkan gerbang escrow khusus metode ini.
+ * `ewallet` tetap DITOLAK: tidak punya bukti yang bisa dicocokkan super admin.
  */
 export function normalizePaymentMethod(value: unknown): OrderPaymentMethod | null {
   if (value === "saldo") return "saldo"
+  if (value === "cash") return "cash"
   if (value === "qris" || value === "transfer") return "qris"
   return null
 }
@@ -56,6 +61,7 @@ export function normalizePaymentMethod(value: unknown): OrderPaymentMethod | nul
 const METHOD_LABELS: Record<OrderPaymentMethod, string> = {
   qris: "QRIS / Transfer platform",
   saldo: "Saldo JASAKITE",
+  cash: "Bayar Tunai",
 }
 
 export function paymentMethodLabel(method: string | null | undefined): string {
@@ -109,16 +115,45 @@ export function paymentStatusTone(status: string): StatusTone {
  * Penyedia hanya boleh mulai bekerja setelah uang benar-benar diterima
  * platform. Dipakai UI (tombol) DAN route PATCH pesanan — UI saja tidak cukup
  * karena tombol bisa dilewati dengan memanggil API langsung.
+ *
+ * Pengecualian `cash`: tidak ada uang yang ditahan platform, jadi gerbang
+ * escrow tidak berlaku — penyedia sendiri yang menanggung penagihan tunai
+ * saat pekerjaan selesai (badge TUNAI di kanban membuat keputusan itu sadar).
  */
-export function canProviderStart(paymentStatus: string): boolean {
+export function canProviderStart(
+  paymentStatus: string,
+  paymentMethod?: string | null
+): boolean {
+  if (paymentMethod === "cash") return true
   return paymentStatus === "PAID"
+}
+
+/**
+ * Label status pembayaran yang sadar metode: pesanan tunai belum "belum
+ * dibayar" dalam arti utang — uangnya baru berpindah saat pekerjaan selesai.
+ */
+export function paymentDisplayLabel(
+  status: string,
+  method?: string | null
+): string {
+  if (method === "cash") {
+    if (status === "PAID") return "Dibayar tunai"
+    if (status === "UNPAID") return "Tunai — dibayar saat selesai"
+  }
+  return paymentStatusLabel(status)
 }
 
 // ── Komisi platform ──────────────────────────────────────────────────────────
 
 /** Batas atas yang waras; persentase di luar ini hampir pasti salah konfigurasi. */
 const MAX_COMMISSION_PERCENT = 50
-export const DEFAULT_COMMISSION_PERCENT = 10
+/**
+ * Komisi DINONAKTIFKAN (keputusan pemilik, 2026-10-24): persentase bawaan 0,
+ * seluruh nilai pesanan mengalir ke penyedia. Mekanisme pemotongannya tetap
+ * utuh di kode — aktifkan kembali kapan saja dengan menyetel env
+ * PLATFORM_COMMISSION_PERCENT (maksimum 50) tanpa mengubah logika.
+ */
+export const DEFAULT_COMMISSION_PERCENT = 0
 
 /**
  * Persentase komisi dari env `PLATFORM_COMMISSION_PERCENT`. Dibaca per
@@ -157,28 +192,20 @@ export function computeOrderSplit(
 }
 
 /**
- * Pembagian yang tersimpan di pesanan menang atas perhitungan ulang.
+ * Selalu hitung dengan persentase SAAT INI, abaikan nilai tersimpan.
  *
- * Pesanan lama (sebelum fitur komisi) punya 0/0; untuk itu pembagian dihitung
- * dengan persentase saat ini. Pesanan yang sudah punya nilai sah tidak boleh
- * berubah ketika admin menaikkan komisi di kemudian hari.
+ * Dulu nilai tersimpan menang (pesanan lama tidak boleh berubah ketika komisi
+ * dinaikkan). Sejak komisi dinonaktifkan pemilik (2026-10-24), aturan itu
+ * justru menyesatkan: pesanan tertunda yang tersimpan 10% akan tetap
+ * dipotong padahal sistem komisinya sudah dimatikan. Pesanan yang selesai
+ * setelah penonaktifan dinormalisasi ke pembagian berlaku (0/total), dan
+ * nilai tersimpannya ikut diperbarui saat penyelesaian.
  */
 export function resolveOrderSplit(
   totalPrice: number,
-  storedPlatformFee: number | null | undefined,
-  storedProviderPayout: number | null | undefined
+  _storedPlatformFee: number | null | undefined,
+  _storedProviderPayout: number | null | undefined
 ): OrderSplit {
-  const fee = storedPlatformFee ?? 0
-  const payout = storedProviderPayout ?? 0
-  const total = Math.round(totalPrice)
-  const hasStoredSplit =
-    fee >= 0 &&
-    payout >= 0 &&
-    fee + payout > 0 &&
-    Math.round(fee + payout) === total
-  if (hasStoredSplit) {
-    return { platformFee: Math.round(fee), providerPayout: Math.round(payout) }
-  }
   return computeOrderSplit(totalPrice)
 }
 

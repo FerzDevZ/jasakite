@@ -211,11 +211,12 @@ export async function PATCH(
 
     // Gerbang escrow: penyedia baru boleh mulai setelah SUPER_ADMIN
     // memverifikasi pembayaran. Diperiksa di server, bukan hanya tombol UI —
-    // PATCH bisa dipanggil langsung tanpa melewati halaman.
+    // PATCH bisa dipanggil langsung tanpa melewati halaman. Pengecualian:
+    // pesanan Bayar Tunai (canProviderStart melonggarkan untuk metode itu).
     if (
       isProvider &&
       status === "IN_PROGRESS" &&
-      !canProviderStart(order.paymentStatus)
+      !canProviderStart(order.paymentStatus, order.paymentMethod)
     ) {
       return NextResponse.json(
         {
@@ -287,10 +288,27 @@ export async function PATCH(
             data: agg,
           })
 
+          // Pesanan BAYAR TUNAI: uang berpindah langsung pelanggan→penyedia
+          // di luar platform saat pekerjaan selesai — nol pergerakan saldo,
+          // nol komisi (sistem komisi dinonaktifkan). Tandai lunas supaya
+          // status pesanan tidak menggantung sebagai "belum dibayar" selamanya.
+          if (ord.paymentMethod === "cash") {
+            await tx.order.update({
+              where: { id: ord.id },
+              data: {
+                paymentStatus: "PAID",
+                paidAt: now,
+                platformFee: 0,
+                providerPayout: ord.totalPrice,
+              },
+            })
+          }
+
           // Escrow dilepas DI SINI: uang pelanggan sudah diterima platform
-          // (paymentStatus PAID) dan baru sekarang berpindah ke penyedia,
-          // dipotong komisi. Pembagian yang tersimpan di pesanan menang atas
-          // env saat ini supaya pesanan lama tidak berubah nilainya.
+          // (paymentStatus PAID) dan baru sekarang berpindah ke penyedia.
+          // Split SELALU dihitung ulang dengan persentase berlaku (lihat
+          // catatan di resolveOrderSplit: komisi dinonaktifkan 2026-10-24,
+          // pesanan lama dinormalisasi 0/total saat selesai).
           if (ord.paymentStatus === "PAID") {
             const split = resolveOrderSplit(
               ord.totalPrice,

@@ -19,7 +19,7 @@ import { toast } from "@/lib/toast-dynamic"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { GripVertical, Inbox, Loader2 } from "lucide-react"
+import { GripVertical, Inbox, Loader2, Banknote } from "lucide-react"
 import { formatIDR } from "@/lib/utils"
 import { sameId } from "@/lib/ids"
 import { csrfFetch } from "@/lib/csrf-fetch"
@@ -37,6 +37,7 @@ export type ProviderOrder = {
   createdAt: string
   orderNotes: string | null
   service: { title: string; slug: string }
+  paymentMethod?: string | null
 }
 
 // Titik warna kolom memakai token status yang sama dengan OrderStatusBadge,
@@ -91,6 +92,13 @@ function OrderCard({
         Pesanan #{order.id} •{" "}
         {new Date(order.createdAt).toLocaleDateString("id-ID")}
       </p>
+
+      {order.paymentMethod === "cash" && (
+        <p className="mt-2 flex items-center gap-1.5 rounded-lg bg-warning-soft px-3 py-2 text-xs font-semibold text-warning">
+          <Banknote className="h-3.5 w-3.5" aria-hidden /> TUNAI — dibayar
+          langsung oleh pelanggan saat selesai, tanpa potongan.
+        </p>
+      )}
 
       {order.orderNotes && (
         <p className="mt-2 rounded-lg bg-muted px-3 py-2 text-xs">

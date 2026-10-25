@@ -102,6 +102,12 @@ const PAYMENT_METHODS = [
     description: "Bayar instan dari saldo dompet",
     icon: Wallet,
   },
+  {
+    value: "cash",
+    label: "Bayar Tunai",
+    description: "Langsung ke penyedia saat selesai — tanpa top-up",
+    icon: Wallet,
+  },
 ] as const
 
 type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"]
@@ -111,6 +117,8 @@ const PAYMENT_DETAILS: Record<PaymentMethod, string> = {
     "Uang ditahan platform (escrow) sampai pekerjaan selesai. Scan QRIS di halaman pesanan, unggah bukti, lalu SUPER_ADMIN memverifikasi. Penyedia baru dibayar setelah pesanan selesai.",
   saldo:
     "Total langsung dipotong dari saldo dompet dan ditahan platform. Penyedia menerima dana setelah pesanan selesai; pembatalan mengembalikan saldo penuh.",
+  cash:
+    "Bayar langsung ke masing-masing penyedia saat pekerjaannya selesai. Tanpa top-up, tanpa unggah bukti, tanpa potongan — penyedia menerima uang tunai utuh dari Anda.",
 }
 
 const SCHEDULE_PRESETS = [

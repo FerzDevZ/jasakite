@@ -5,6 +5,7 @@ import {
   DEFAULT_COMMISSION_PERCENT,
   PLATFORM_QRIS,
   canProviderStart,
+  paymentDisplayLabel,
   commissionPercent,
   computeOrderSplit,
   isAllowedProofImage,
@@ -24,12 +25,14 @@ afterEach(() => {
 })
 
 describe("komisi platform", () => {
-  it("memakai 10% sebagai default", () => {
+  it("default 0 — sistem komisi dinonaktifkan pemilik (2026-10-24)", () => {
     delete process.env.PLATFORM_COMMISSION_PERCENT
     expect(commissionPercent()).toBe(DEFAULT_COMMISSION_PERCENT)
+    expect(DEFAULT_COMMISSION_PERCENT).toBe(0)
+    // Tanpa env: seluruh nilai mengalir ke penyedia.
     expect(computeOrderSplit(150_000)).toEqual({
-      platformFee: 15_000,
-      providerPayout: 135_000,
+      platformFee: 0,
+      providerPayout: 150_000,
     })
   })
 
@@ -58,19 +61,21 @@ describe("komisi platform", () => {
     expect(computeOrderSplit(-10)).toEqual({ platformFee: 0, providerPayout: 0 })
   })
 
-  it("pembagian tersimpan menang atas persentase saat ini", () => {
+  it("nilai tersimpan diabaikan — selalu persentase berjalan (komisi nonaktif)", () => {
+    // Sejak komisi dinonaktifkan, pesanan tertentu yang tersimpan 10% tidak
+    // boleh tetap dipotong saat selesai: sistemnya sudah dimatikan pemilik.
     process.env.PLATFORM_COMMISSION_PERCENT = "50"
     expect(resolveOrderSplit(100_000, 10_000, 90_000)).toEqual({
-      platformFee: 10_000,
-      providerPayout: 90_000,
+      platformFee: 50_000,
+      providerPayout: 50_000,
     })
   })
 
-  it("pesanan lama tanpa pembagian dihitung ulang dengan persentase berjalan", () => {
-    process.env.PLATFORM_COMMISSION_PERCENT = "10"
-    expect(resolveOrderSplit(100_000, 0, 0)).toEqual({
-      platformFee: 10_000,
-      providerPayout: 90_000,
+  it("tanpa env, resolve menormalkan pesanan lama ke 0/total", () => {
+    delete process.env.PLATFORM_COMMISSION_PERCENT
+    expect(resolveOrderSplit(100_000, 10_000, 90_000)).toEqual({
+      platformFee: 0,
+      providerPayout: 100_000,
     })
   })
 })
@@ -119,7 +124,8 @@ describe("metode & status pembayaran", () => {
     expect(normalizePaymentMethod("saldo")).toBe("saldo")
   })
 
-  it("menolak metode yang tidak bisa diverifikasi", () => {
+  it("menerima tunai dan menolak yang tak bisa diverifikasi", () => {
+    expect(normalizePaymentMethod("cash")).toBe("cash")
     expect(normalizePaymentMethod("cod")).toBeNull()
     expect(normalizePaymentMethod("ewallet")).toBeNull()
     expect(normalizePaymentMethod(undefined)).toBeNull()
@@ -131,11 +137,24 @@ describe("metode & status pembayaran", () => {
     expect(paymentMethodLabel("lain")).toBe("lain")
   })
 
-  it("penyedia hanya boleh mulai setelah PAID", () => {
+  it("penyedia hanya boleh mulai setelah PAID — kecuali pesanan tunai", () => {
     expect(canProviderStart("PAID")).toBe(true)
     expect(canProviderStart("UNPAID")).toBe(false)
     expect(canProviderStart("WAITING_VERIFICATION")).toBe(false)
     expect(canProviderStart("REFUNDED")).toBe(false)
+    // Tunai: tidak ada dana ditahan platform, gerbang escrow dilonggarkan.
+    expect(canProviderStart("UNPAID", "cash")).toBe(true)
+    expect(canProviderStart("WAITING_VERIFICATION", "cash")).toBe(true)
+    // Metode lain tetap ketat.
+    expect(canProviderStart("UNPAID", "qris")).toBe(false)
+    expect(canProviderStart("", undefined)).toBe(false)
+  })
+
+  it("label status pembayaran sadar metode tunai", () => {
+    expect(paymentDisplayLabel("UNPAID", "cash")).toMatch(/Tunai/)
+    expect(paymentDisplayLabel("PAID", "cash")).toMatch(/tunai/i)
+    expect(paymentDisplayLabel("UNPAID", "qris")).toMatch(/Belum/)
+    expect(paymentDisplayLabel("PAID", undefined)).toMatch(/terverifikasi/)
   })
 
   it("status pembayaran punya label dan tone untuk semua nilai", () => {

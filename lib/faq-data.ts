@@ -48,7 +48,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
     items: [
       {
         q: "Metode pembayaran apa saja yang tersedia?",
-        a: "Ada dua cara membayar pesanan: QRIS (scan kode di halaman pesanan, transfer, unggah bukti, lalu diverifikasi admin) atau Saldo JASAKITE yang terpotong otomatis. Uang ditahan platform sampai pesanan selesai.",
+        a: "Ada tiga cara membayar pesanan: Bayar Tunai (langsung ke penyedia saat pekerjaan selesai — tanpa top-up, tanpa unggah bukti, tanpa potongan), QRIS (scan kode di halaman pesanan, transfer, unggah bukti, lalu diverifikasi admin), atau Saldo JASAKITE yang terpotong otomatis.",
       },
       {
         q: "Apakah pembayaran saya aman?",
@@ -56,7 +56,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       },
       {
         q: "Apakah ada biaya tambahan?",
-        a: "Tidak ada biaya layanan untuk pelanggan. Harga yang tertera di halaman jasa adalah harga final yang Anda bayar. Biaya langganan dan komisi platform hanya berlaku untuk penyedia jasa.",
+        a: "Tidak ada biaya layanan untuk pelanggan — harga yang tertera adalah harga final yang Anda bayar. Untuk penyedia, komisi platform saat ini dinonaktifkan (0%): seluruh nilai pesanan menjadi milik penyedia, dan pendapatan platform berasal dari langganan penyedia Rp 10.000 per 30 hari.",
       },
     ],
   },
@@ -70,7 +70,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       },
       {
         q: "Berapa biaya untuk menjadi penyedia jasa?",
-        a: "Pendaftaran gratis. Untuk menayangkan jasa berlaku langganan Rp 10.000 per 30 hari (dipotong otomatis dari saldo dompet), dan platform memotong komisi 10% dari nilai pesanan yang selesai — sisanya masuk saldo Anda.",
+        a: "Pendaftaran gratis. Untuk menayangkan jasa berlaku langganan Rp 10.000 per 30 hari (dipotong otomatis dari saldo dompet). Komisi platform saat ini dinonaktifkan (0%), jadi seluruh nilai pesanan yang selesai — tunai maupun escrow — menjadi milik Anda.",
       },
       {
         q: "Bagaimana cara mendapat pesanan?",
